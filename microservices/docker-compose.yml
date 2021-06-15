@@ -1,0 +1,49 @@
+version: "3.8"
+services:
+
+  gateway:
+    image: nginx:1.19.8-alpine
+    restart: on-failure
+    ports:
+      - 8080:8080
+    networks:
+      - backend
+    volumes:
+      - ./Gateway/nginx.conf:/etc/nginx/nginx.conf
+      - ./Gateway/api_gateway.conf:/etc/nginx/api_gateway.conf
+
+  auth-service:
+    image: auth-service:compose_build
+    restart: on-failure
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    environment:
+      PORT: ${AUTH_SERVICE_PORT}
+      PSQL_USER: ${PSQL_USER}
+      PSQL_PASS: ${PSQL_PASS}
+      PSQL_DBNAME: ${PSQL_DBNAME}
+      PSQL_PORT: ${PSQL_PORT}
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres
+    restart: on-failure
+    environment:
+      POSTGRES_USER: ${PSQL_USER}
+      POSTGRES_DB: ${PSQL_DBNAME}
+      POSTGRES_PASSWORD: ${PSQL_PASS}
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgre-volumes:/data/db
+    networks:
+      - backend
+
+networks:
+  backend:
+    name: nistagram-backend
+    driver: bridge
