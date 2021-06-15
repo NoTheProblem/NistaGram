@@ -47,6 +47,7 @@ func handleFunc(handler *handler.AuthHandler) {
 	router.HandleFunc("/register", handler.RegisterUser).Methods("POST")
 	router.HandleFunc("/login", handler.Login).Methods("POST")
 	router.HandleFunc("/update", handler.UpdateUser).Methods("POST")
+	router.HandleFunc("/passwordChange", handler.PasswordChange).Methods("POST")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
 

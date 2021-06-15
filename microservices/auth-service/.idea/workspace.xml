@@ -2,25 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1c4c9b49-db07-4775-a3d3-2ba7f55fea35" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../.idea/microservices.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/auth-service.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dto/LogInDTO.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dto/RegisterDTO.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dto/ResponseDTO.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dto/UpdateDTO.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/handler/authHandler.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/model/Role.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/model/gender.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/model/user.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/repository/authRepository.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service/authService.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/util/tokenUtils.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dto/PasswordChangerDTO.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dto/RegisterDTO.go" beforeDir="false" afterPath="$PROJECT_DIR$/dto/RegisterDTO.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handler/authHandler.go" beforeDir="false" afterPath="$PROJECT_DIR$/handler/authHandler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/gender.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/model/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/authService.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/authService.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

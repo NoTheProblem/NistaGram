@@ -65,7 +65,9 @@ func(handler *AuthHandler) Login(res http.ResponseWriter, req *http.Request){
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	if user.Password != logInDTO.Password {
+	match := service.CheckPasswordHash(logInDTO.Password, user.Password)
+	fmt.Println("Match:   ", match)
+	if !service.CheckPasswordHash(logInDTO.Password, user.Password){
 		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -87,3 +89,22 @@ func(handler *AuthHandler) Login(res http.ResponseWriter, req *http.Request){
 func (handler *AuthHandler) Hello(writer http.ResponseWriter, request *http.Request) {
 	fmt.Printf("Pozdrav iz kontorolera")
 }
+
+func (handler *AuthHandler) PasswordChange(res http.ResponseWriter, req *http.Request) {
+	var passwordChangerDTO dto.PasswordChangerDTO
+	username := util.GetUsernameFromToken(req)
+	err := json.NewDecoder(req.Body).Decode(&passwordChangerDTO)
+	if err != nil {
+		res.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	fmt.Println(err)
+	_, err = handler.AuthService.ChangePassword(username,passwordChangerDTO)
+	if err != nil {
+		fmt.Println(err)
+		res.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	res.WriteHeader(http.StatusOK)
+}
+
