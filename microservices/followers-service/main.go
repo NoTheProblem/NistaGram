@@ -7,7 +7,6 @@ import (
 	"followers-service/service"
 	"github.com/gorilla/mux"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
-	"github.com/rs/cors"
 	"log"
 	"net/http"
 	"os"
@@ -25,14 +24,6 @@ func initFollowHandler(service *service.FollowService) *handler.FollowHandler {
 	return &handler.FollowHandler{FollowService: service}
 }
 
-func SetupCors() *cors.Cors {
-	return cors.New(cors.Options{
-		AllowedOrigins: []string{"*"}, // All origins, for now
-		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders: []string{"*"},
-		AllowCredentials: true,
-	})
-}
 
 func handleFunc(handler *handler.FollowHandler) {
 	router := mux.NewRouter().StrictSlash(true)
@@ -40,15 +31,7 @@ func handleFunc(handler *handler.FollowHandler) {
 	router.HandleFunc("/follow/{follower}/{following}", handler.FollowRequest).Methods("PUT")
 	router.HandleFunc("/hello", handler.Hello).Methods("GET")
 
-	c := SetupCors()
-
-	fmt.Println("Server is running...")
-
-	http.Handle("/", c.Handler(router))
-	err := http.ListenAndServe(fmt.Sprintf(":8081"), c.Handler(router))
-	if err != nil {
-		log.Println(err)
-	}
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
 }
 
 func initDatabase() *neo4j.Driver {
