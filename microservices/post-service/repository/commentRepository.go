@@ -5,13 +5,15 @@ import (
 	"post-service/model"
 )
 
-type PostRepository struct {
+type CommentRepository struct {
 	Database *gorm.DB
 }
 
-func (repo *PostRepository) CreatePost(post *model.Post) error {
-	result := repo.Database.Create(post)
+func (repo *CommentRepository) CreateComment(comment *model.Comment) error {
+	result := repo.Database.Create(comment)
 	print(result.Error)
 	print(result.RowsAffected)
 	return nil
 }
+
+

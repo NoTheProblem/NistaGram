@@ -1,17 +1,17 @@
 package model
 
-import "github.com/google/uuid"
+import "gorm.io/gorm"
 
 type Post struct {
-	ID uuid.UUID `json:"id"`
+	gorm.Model
 	Description string `json:"description"`
 	NumberOfLikes int `json:"NumberOfLikes"`
 	NumberOfDislikes int `json:"NumberOfDislikes"`
 	IsAdd bool `json:"isAdd"`
 	IsAlbum bool `json:"isAlbum"`
 	NumberOfReaches int `json:"NumberOfReaches"`
-	ListOfComments []Comment
-	PostLocation Location
-	ListOfTags []Tag
-	ListOfPaths []string
+	PostComments []Comment
+	LocationID uint
+	Tags []Tag `gorm:"many2many:post_tags;"`
+
 }

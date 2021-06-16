@@ -1,9 +1,10 @@
 package model
 
+import "gorm.io/gorm"
+
 type Comment struct {
-	ID int `json:"PostId"`
+	gorm.Model
 	CommentText string `json:"CommentText"`
 	CommentDate string `json:"CommentDate"`
-	CommentPost Post `json:"posts" gorm:"foreignKey:PostID"`
-
+	PostID uint
 }

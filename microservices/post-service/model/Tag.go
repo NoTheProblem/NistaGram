@@ -1,12 +1,9 @@
 package model
 
-import (
-	"github.com/google/uuid"
-)
-
+import "gorm.io/gorm"
 
 type Tag struct {
-	ID uuid.UUID `json:"id"`
+	gorm.Model
 	Name string `json:"tagName"`
-	TaggedPosts  []Post `json:"posts" gorm:"foreignKey:PostID"`
+
 }

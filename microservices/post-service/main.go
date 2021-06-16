@@ -24,17 +24,33 @@ func initDB() *gorm.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	database.AutoMigrate(&model.Post{},&model.Tag{},&model.Comment{}, &model.Location{})
+	database.AutoMigrate(&model.Post{})
+	database.AutoMigrate(&model.Comment{})
+	database.AutoMigrate(&model.Tag{})
+	database.AutoMigrate(&model.Location{})
 	return database
 }
 
-func initRepo(database *gorm.DB) *repository.PostRepository {
+func initPostRepo(database *gorm.DB) *repository.PostRepository {
 	return &repository.PostRepository{Database: database}
 }
 
-func initServices(repository *repository.PostRepository) *service.PostService {
-	return &service.PostService{PostRepository: repository}
+func initCommentRepo(database *gorm.DB) *repository.CommentRepository {
+	return &repository.CommentRepository{Database: database}
+}
+
+func initTagRepo(database *gorm.DB) *repository.TagRepository {
+	return &repository.TagRepository{Database: database}
+}
+
+func initLocationRepo(database *gorm.DB) *repository.LocationRepository {
+	return &repository.LocationRepository{Database: database}
+}
+
+func initServices(locationRepo *repository.LocationRepository, commentRepo *repository.CommentRepository,
+	postRepo *repository.PostRepository, tagRepo *repository.TagRepository) *service.PostService {
+	return &service.PostService{LocationRepository: locationRepo, CommentRepository: commentRepo, PostRepository: postRepo,
+		TagRepository: tagRepo}
 }
 
 func initHandler(service *service.PostService) *handler.PostHandler {
@@ -52,8 +68,12 @@ func handleFunc(handler *handler.PostHandler) {
 
 func main() {
 	database := initDB()
-	repo := initRepo(database)
-	service := initServices(repo)
+	locationRepo := initLocationRepo(database)
+	commentRepo := initCommentRepo(database)
+	postRepo := initPostRepo(database)
+	tagRepo := initTagRepo(database)
+	service := initServices(locationRepo,commentRepo,postRepo,tagRepo)
 	handler := initHandler(service)
+
 	handleFunc(handler)
 }
