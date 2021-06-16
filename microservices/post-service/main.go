@@ -8,6 +8,7 @@ import (
 	"gorm.io/gorm/logger"
 	"log"
 	"net/http"
+	"os"
 	"post-service/handler"
 	"post-service/model"
 	"post-service/repository"
@@ -16,8 +17,8 @@ import (
 
 func initDB() *gorm.DB {
 
-	dsn := fmt.Sprintf("host=localhost user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Kolkata",
-		"postgres","root","post-service","5432")
+	dsn := fmt.Sprintf("host=postgres user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Kolkata",
+		"postgres","1234567","auth-service","5432")
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
@@ -62,7 +63,7 @@ func handleFunc(handler *handler.PostHandler) {
 
 	router.HandleFunc("/uploadPost/{username}", handler.CreateNewPost).Methods("POST")
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":8081"), router))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
 
 }
 

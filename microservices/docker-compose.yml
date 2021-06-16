@@ -22,6 +22,25 @@ services:
       - backend
     environment:
       PORT: ${AUTH_SERVICE_PORT}
+      AUTH_SERVICE_DOMAIN: ${AUTH_SERVICE_DOMAIN}
+      PSQL_USER: ${PSQL_USER}
+      PSQL_PASS: ${PSQL_PASS}
+      PSQL_DBNAME: ${PSQL_DBNAME}
+      PSQL_PORT: ${PSQL_PORT}
+    depends_on:
+      - postgres
+
+  post-service:
+    image: post-service:compose_build
+    restart: on-failure
+    build:
+      context: ./post-service
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    environment:
+      PORT: ${POST_SERVICE_PORT}
+      POST_SERVICE_DOMAIN: ${POST_SERVICE_DOMAIN}
       PSQL_USER: ${PSQL_USER}
       PSQL_PASS: ${PSQL_PASS}
       PSQL_DBNAME: ${PSQL_DBNAME}
