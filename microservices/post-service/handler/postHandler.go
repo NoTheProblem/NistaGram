@@ -1,12 +1,10 @@
 package handler
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
-	"post-service/dto"
 	"post-service/service"
 )
 
@@ -15,27 +13,13 @@ type PostHandler struct {
 }
 
 func (handler *PostHandler) CreateNewPost(w http.ResponseWriter, r *http.Request) {
-	var postDTO dto.PostDTO
-	err := json.NewDecoder(r.Body).Decode(&postDTO)
-	if err != nil {
-		fmt.Println(err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	err = handler.PostService.AddPost(postDTO)
-	if err != nil {
-		fmt.Println(err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
 	w.Header().Set("Content-Type", "application/json")
 	param := mux.Vars(r)
 	username := param["username"]
 	r.ParseMultipartForm(10 << 20)
 
-	var file, fileHandler, err2 = r.FormFile("myFile")
-	if err2 != nil {
+	var file, fileHandler, err = r.FormFile("myFile")
+	if err != nil {
 		fmt.Println("Error Retrieving the File")
 		fmt.Println(err)
 		return
