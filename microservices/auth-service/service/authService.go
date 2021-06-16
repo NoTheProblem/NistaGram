@@ -30,6 +30,11 @@ func (service *AuthService) UpdateUser(dto dto.UpdateDTO, username string) error
 	user.Surname = dto.Surname
 	user.Username = dto.Username
 	user.Email = dto.Email
+	user.Gender = dto.Gender
+	user.PhoneNumber = dto.PhoneNumber
+	user.DateOfBirth = dto.DateOfBirth
+	user.WebSite = dto.WebSite
+	user.Bio = dto.Bio
 	err = service.AuthRepository.UpdateUser(user)
 	if err != nil {
 		return err

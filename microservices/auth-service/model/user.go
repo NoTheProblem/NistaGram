@@ -9,4 +9,10 @@ type User struct {
 	UserRole Role `json:"role"`
 	Name string `json:"name"`
 	Surname string `json:"surname"`
+	PhoneNumber string `json:"phoneNumber"`
+	Gender string `json:"gender"`
+	DateOfBirth string `json:"birth"`
+	WebSite string `json:"webSite"`
+	Bio string `json:"bio"`
+
 }
