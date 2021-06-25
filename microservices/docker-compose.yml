@@ -57,8 +57,8 @@ services:
       POSTGRES_PASSWORD: ${PSQL_PASS}
     ports:
       - 5432:5432
-    volumes:
-      - ./postgre-volumes:/data/db
+    volumes: 
+      - ./docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
     networks:
       - backend
 
