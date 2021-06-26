@@ -1,0 +1,56 @@
+.register-container {
+  background-color: #f0f2f5;
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.register_card {
+  height: 70vh;
+  width: 100%;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+.register_card_content {
+  height: 400px;
+  width: 400px;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+.register_card_form {
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+}
+.register_card_form .register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.register_card_form .register-form input {
+  padding: 20px;
+  outline: none;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+}
+.register_card_form .register-form input::placeholder {
+  font-size: 16px;
+  font-weight: normal;
+}
+.register_card_form .register-form .register-button {
+  background-color: #1877F2;
+  padding: 15px;
+  outline: none;
+  border: none;
+  border-radius: 7px;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+

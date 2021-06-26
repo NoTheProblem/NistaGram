@@ -1,0 +1,40 @@
+<div class="container posts-content">
+  <br><Br><br>
+  <div class="col" *ngFor="let p of posts">
+    <div class="col-lg-6" >
+      <div class="card mb-4" >
+        <div class="card-body" >
+          <div class="media mb-3">
+            <img src="https://bootdey.com/img/Content/avatar/avatar3.png" class="d-block ui-w-40 rounded-circle" alt="">
+            <div class="media-body ml-3">
+              {{p?.username}}
+              <div class="text-muted small">{{p?.date | date:'longDate'}}</div>
+            </div>
+          </div>
+
+          <p>
+            {{p?.message}}
+          </p>
+          <a href="javascript:void(0)" class="ui-rect ui-bg-cover" style="background-image: url('https://bootdey.com/img/Content/avatar/avatar3.png');"></a>
+        </div>
+        <div class="card-footer">
+          <mat-icon>favorite_border</mat-icon>
+          <mat-icon>favorite</mat-icon>
+          <mat-icon>comment</mat-icon>
+
+          <br>
+          <a href="javascript:void(0)" class="d-inline-block text-muted">
+            <strong>{{p?.likes}}</strong> <small>Likes</small>
+          </a>
+          <a href="javascript:void(0)" class="d-inline-block text-muted ml-3">
+            <strong>{{p?.comments}}</strong><small> Comments</small>
+          </a>
+          <a href="javascript:void(0)" class="d-inline-block text-muted ml-3">
+            <small class="align-middle">Report</small>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

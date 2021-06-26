@@ -1,0 +1,49 @@
+<div class="home-container">
+  <div class="home__header">
+    <div class="home__header__left">
+      <mat-icon routerLink="/home">camera_enhance</mat-icon>NistaGram
+    </div>
+    <div class="home__header__middle">
+      <div class="input">
+        <mat-icon class="search-icon">search_outline</mat-icon>
+        <form>
+          <input placeholder="Search NistaGram" type="text">
+        </form>
+      </div>
+
+    </div>
+    <div class="home__header__right">
+      <div>
+        <img
+          alt=""
+          mat-card-avatar>
+        <span class="name" routerLink="/profile">{{'UserName'}}</span>
+      </div>
+      <div>
+        <mat-icon routerLink="/home">home</mat-icon>
+      </div>
+      <div>
+        <mat-icon>forum</mat-icon>
+      </div>
+      <div>
+        <mat-icon>add_a_photo</mat-icon>
+      </div>
+      <div>
+        <mat-icon>settings</mat-icon>
+      </div>
+
+      <div>
+          <mat-icon>logout</mat-icon>
+      </div>
+
+      <div>
+        <mat-icon click routerLink="/login">login</mat-icon>
+      </div>
+
+      <div>
+        <mat-icon click routerLink="/register">app_registration</mat-icon>
+      </div>
+
+    </div>
+  </div>
+</div>

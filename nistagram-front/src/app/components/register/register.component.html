@@ -1,0 +1,24 @@
+<div class="register-container">
+  <br><br><br><br>
+  <div class="register_card">
+    <mat-card class="register_card_content">
+      <div style="text-align: center;">
+        <h1>Register form</h1>
+      </div>
+      <mat-card-content class="register_card_form">
+        <form #form="ngForm" (ngSubmit)="register(form)" class="register-form">
+          <input name="username" ngModel placeholder="Username" required type="text">
+          <input name="email" ngModel placeholder="Email" required type="email">
+          <input name="password" ngModel placeholder="Password" required type="text">
+          <input name="passwordConf" ngModel placeholder="Confirm Password" required type="text">
+          <button [disabled]="form.invalid || form.pending"
+                  class="register-button"
+                  *ngIf="!form.pending"
+                  type="submit">Sign Up
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+</div>

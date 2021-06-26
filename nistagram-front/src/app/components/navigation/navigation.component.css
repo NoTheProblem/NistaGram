@@ -1,0 +1,87 @@
+.home-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: #f0f2f5;
+}
+/* HEADER SECTION */
+.home__header {
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  padding: 5px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+.home__header__left {
+  display: flex;
+  margin-left: 10px;
+  align-items: center;
+  gap: 10px;
+  flex: 0.5;
+  height: 100%;
+}
+
+.home__header__middle {
+  padding: 10px;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 0.5;
+}
+.home__header__middle div.input {
+  position: relative;
+  width: fit-content;
+}
+.home__header__middle div.input input {
+  outline: none;
+  border: 1px solid lightgray;
+  background-color: #f0f2f5;
+  padding: 10px 40px;
+  border-radius: 20px;
+}
+.home__header__middle div.input input::placeholder {
+  padding-left: 20px;
+  font-size: 15px;
+}
+.home__header__middle div.input .search-icon {
+  position: absolute;
+  top: 6px;
+  font-size: x-large;
+  left: 10px;
+  color: #828890;
+}
+
+
+.home__header__right {
+  flex: 0.5;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 15px;
+  gap: 10px;
+}
+.home__header__right > * {
+  margin-right: 10px;
+  cursor: pointer;
+}
+.home__header__right span.name {
+  font-size: 16px;
+}
+.home__header__right div {
+  display: flex;
+  align-items: center;
+}
+.home__header__right div span {
+  margin-left: 5px;
+}
+.home__header__right div:not(:first-of-type) {
+  padding: 10px;
+  border-radius: 50%;
+  background-color: #e4e6eb;
+}
