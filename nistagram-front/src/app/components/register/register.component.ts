@@ -13,6 +13,7 @@ export class RegisterComponent implements OnInit {
   }
 
   register(form: any): void {
-
+    console.log('pozdrav');
+    console.log(form.form);
   }
 }

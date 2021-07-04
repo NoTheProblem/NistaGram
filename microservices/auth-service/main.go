@@ -42,7 +42,7 @@ func initHandler(service *service.AuthService) *handler.AuthHandler {
 }
 func handleFunc(handler *handler.AuthHandler) {
 	router := mux.NewRouter().StrictSlash(true)
-
+	fmt.Println("napravio")
 	router.HandleFunc("/", handler.Hello).Methods("GET")
 	router.HandleFunc("/register", handler.RegisterUser).Methods("POST")
 	router.HandleFunc("/login", handler.Login).Methods("POST")
