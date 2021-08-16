@@ -1,11 +1,9 @@
-<div class="login-container">
+<div class="login-container" >
   <br><br><br><br>
   <div class="login_card">
       <mat-card class="login_card_content">
-        <div style="text-align: center;">
-          <h1>LogIn form</h1>
-        </div>
         <mat-card-content class="login_card_form">
+          <div *ngIf="!isLoggedIn">
           <form #form="ngForm" (ngSubmit)="login(form)" class="login-form">
             <input name="email" ngModel placeholder="Username" required type="text">
             <input name="password" ngModel placeholder="Password" required type="text">
@@ -18,8 +16,14 @@
           <a>Forgotten account?</a>
           <hr>
           <button class="create-account" routerLink="/register">Create New Account</button>
+          </div>
+          <div *ngIf="isLoggedIn" class = "center">
+            <h2>Welcome, {{username}}!</h2>
+
+          </div>
         </mat-card-content>
       </mat-card>
   </div>
 
 </div>
+

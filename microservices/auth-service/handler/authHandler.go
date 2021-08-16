@@ -15,10 +15,6 @@ type AuthHandler struct {
 }
 
 func (handler *AuthHandler) RegisterUser (res http.ResponseWriter, req *http.Request) {
-	res.Header().Add("Access-Control-Allow-Origin", "*")
-	res.Header().Add("Access-Control-Allow-Methods", "POST")
-	res.Header().Add("Access-Control-Allow-Methods", "OPTIONS")
-	res.Header().Add("Content-Type", "application/json")
 	var registerDTO dto.RegisterDTO
 	err := json.NewDecoder(req.Body).Decode(&registerDTO)
 	if err != nil {
@@ -55,10 +51,6 @@ func (handler *AuthHandler) UpdateUser (res http.ResponseWriter, req *http.Reque
 }
 
 func(handler *AuthHandler) Login(res http.ResponseWriter, req *http.Request){
-	res.Header().Add("Access-Control-Allow-Origin", "*")
-	res.Header().Add("Access-Control-Allow-Methods", "POST")
-	res.Header().Add("Access-Control-Allow-Methods", "OPTIONS")
-	res.Header().Add("Content-Type", "application/json")
 	var logInDTO dto.LogInDTO
 	err := json.NewDecoder(req.Body).Decode(&logInDTO)
 	if err !=nil {

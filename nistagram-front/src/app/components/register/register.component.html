@@ -17,6 +17,12 @@
                   type="submit">Sign Up
           </button>
         </form>
+        <div class="alert alert-success" *ngIf="isSuccessful">
+          Your registration is successful!
+        </div>
+        <div class="alert alert-warning" *ngIf="isSignUpFailed">
+          Signup failed!<br />{{ errorMessage }}
+        </div>
       </mat-card-content>
     </mat-card>
   </div>

@@ -7,6 +7,7 @@ import (
 	"auth-service/service"
 	"fmt"
 	"github.com/gorilla/mux"
+	cors "github.com/rs/cors"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -42,15 +43,29 @@ func initHandler(service *service.AuthService) *handler.AuthHandler {
 }
 func handleFunc(handler *handler.AuthHandler) {
 	router := mux.NewRouter().StrictSlash(true)
-	fmt.Println("napravio")
 	router.HandleFunc("/", handler.Hello).Methods("GET")
 	router.HandleFunc("/register", handler.RegisterUser).Methods("POST")
 	router.HandleFunc("/login", handler.Login).Methods("POST")
 	router.HandleFunc("/update", handler.UpdateUser).Methods("POST")
 	router.HandleFunc("/passwordChange", handler.PasswordChange).Methods("POST")
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
+	c := SetupCors()
 
+	http.Handle("/", c.Handler(router))
+	err := http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), c.Handler(router))
+	if err != nil {
+		log.Println(err)
+	}
+
+}
+
+func SetupCors() *cors.Cors {
+	return cors.New(cors.Options{
+		AllowedOrigins: []string{"*"}, // All origins, for now
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
+		AllowedHeaders: []string{"*"},
+		AllowCredentials: true,
+	})
 }
 
 func main() {

@@ -13,34 +13,34 @@
 
     </div>
     <div class="home__header__right">
-      <div>
+      <div *ngIf="isLoggedIn">
         <img
           alt=""
           mat-card-avatar>
-        <span class="name" routerLink="/profile">{{'UserName'}}</span>
+        <span class="name" routerLink="/profile/{{username}}">{{username}}</span>
       </div>
       <div>
         <mat-icon routerLink="/home">home</mat-icon>
       </div>
-      <div>
+      <div *ngIf="isLoggedIn">
         <mat-icon>forum</mat-icon>
       </div>
-      <div>
+      <div *ngIf="isLoggedIn">
         <mat-icon>add_a_photo</mat-icon>
       </div>
-      <div>
+      <div *ngIf="isLoggedIn">
         <mat-icon>settings</mat-icon>
       </div>
 
-      <div>
-          <mat-icon>logout</mat-icon>
+      <div *ngIf="isLoggedIn">
+          <mat-icon (click)="logout()">logout</mat-icon>
       </div>
 
-      <div>
+      <div *ngIf="!isLoggedIn">
         <mat-icon click routerLink="/login">login</mat-icon>
       </div>
 
-      <div>
+      <div *ngIf="!isLoggedIn">
         <mat-icon click routerLink="/register">app_registration</mat-icon>
       </div>
 

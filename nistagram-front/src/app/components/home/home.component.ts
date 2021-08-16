@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {newArray} from '@angular/compiler/src/util';
+import {PostModel} from '../../models/post.model';
+import {Post} from '../profile/profile.component';
 
 @Component({
   selector: 'app-home',
@@ -12,27 +13,17 @@ export class HomeComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    this.post = new PostModel('slavBrain', 'message1', 10, 20);
+    this.post = {
+      username: 'slavBrain',
+      message: 'message1',
+      likes: 10,
+      comments: 20,
+      date: new Date()
+    };
     this.posts.push(this.post);
-    this.post = new PostModel( 'slavBrain', 'message1', 10, 20);
     this.posts.push(this.post);
-    this.post = new PostModel('slavBrain', 'message1', 10, 20);
     this.posts.push(this.post);
-    this.post = new PostModel('slavBrain', 'message1', 10, 20);
-    this.posts.push(this.post);
-    this.post = new PostModel('slavBrain', 'message1', 10, 20);
     this.posts.push(this.post);
   }
 
-}
-
-export class PostModel{
-  constructor(
-    public username: string,
-    public message: string,
-    public likes: number,
-    public comments: number,
-    public date: Date = new Date()
-  ) {
-  }
 }
