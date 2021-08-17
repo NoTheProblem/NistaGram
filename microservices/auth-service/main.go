@@ -48,6 +48,7 @@ func handleFunc(handler *handler.AuthHandler) {
 	router.HandleFunc("/login", handler.Login).Methods("POST")
 	router.HandleFunc("/update", handler.UpdateUser).Methods("POST")
 	router.HandleFunc("/passwordChange", handler.PasswordChange).Methods("POST")
+	router.HandleFunc("/authorize", handler.Authorize).Methods("GET")
 
 	c := SetupCors()
 
