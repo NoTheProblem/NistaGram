@@ -2,29 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1c4c9b49-db07-4775-a3d3-2ba7f55fea35" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../../nistagram-front/src/app/components/upload-post/upload-post.component.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../nistagram-front/src/app/components/upload-post/upload-post.component.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../nistagram-front/src/app/components/upload-post/upload-post.component.spec.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../nistagram-front/src/app/components/upload-post/upload-post.component.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../nistagram-front/src/app/services/post.service.spec.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../nistagram-front/src/app/services/post.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Gateway/api_gateway.conf" beforeDir="false" afterPath="$PROJECT_DIR$/../Gateway/api_gateway.conf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/handler/authHandler.go" beforeDir="false" afterPath="$PROJECT_DIR$/handler/authHandler.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../post-service/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/../post-service/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../post-service/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/../post-service/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../post-service/handler/postHandler.go" beforeDir="false" afterPath="$PROJECT_DIR$/../post-service/handler/postHandler.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../post-service/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/../post-service/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../nistagram-front/angular.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../nistagram-front/angular.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../nistagram-front/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../nistagram-front/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../nistagram-front/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../nistagram-front/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../nistagram-front/src/app/_services/auth.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../../nistagram-front/src/app/_services/auth.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../nistagram-front/src/app/app-routing.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../../nistagram-front/src/app/app-routing.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../nistagram-front/src/app/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../../nistagram-front/src/app/app.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../nistagram-front/src/app/components/login/login.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../../nistagram-front/src/app/components/login/login.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../nistagram-front/src/app/_services/token-storage.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../../nistagram-front/src/app/_services/token-storage.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../nistagram-front/src/app/components/login/login.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../../nistagram-front/src/app/components/login/login.component.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../nistagram-front/src/app/components/navigation/navigation.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../../nistagram-front/src/app/components/navigation/navigation.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../nistagram-front/src/app/components/register/register.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../../nistagram-front/src/app/components/register/register.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../nistagram-front/src/app/components/register/register.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../../nistagram-front/src/app/components/register/register.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../nistagram-front/src/app/components/navigation/navigation.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../../nistagram-front/src/app/components/navigation/navigation.component.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,7 +56,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="go.import.settings.migrated" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../post-service" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RunManager" selected="Docker.Unnamed">
     <configuration name="go build auth-service" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">

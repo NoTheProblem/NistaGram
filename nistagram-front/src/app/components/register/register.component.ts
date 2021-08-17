@@ -18,11 +18,7 @@ export class RegisterComponent implements OnInit {
   }
 
   register(form: any): void {
-    if (form.form.value.password !== form.form.value.passwordConf){
-      this.isSignUpFailed = true;
-      this.errorMessage = 'Passwords dont match!';
-      return;
-    }
+    console.log(form.form);
     this.authService.register(form.form.value).subscribe(
       data => {
         this.isSuccessful = true;

@@ -1,7 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-import {AuthInterceptor} from './_helpers/auth.interceptor';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -20,10 +19,8 @@ import {MatBadgeModule} from '@angular/material/badge';
 import { ProfileComponent } from './components/profile/profile.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { PostComponent } from './components/post/post.component';
-import { UploadPostComponent } from './components/upload-post/upload-post.component';
-import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -33,8 +30,7 @@ import { ToastrModule } from 'ngx-toastr';
     RegisterComponent,
     NavigationComponent,
     ProfileComponent,
-    PostComponent,
-    UploadPostComponent
+    PostComponent
   ],
   imports: [
     BrowserModule,
@@ -50,16 +46,9 @@ import { ToastrModule } from 'ngx-toastr';
     MatBadgeModule,
     NgbModule,
     FontAwesomeModule,
-    HttpClientModule,
-    ToastrModule.forRoot()
+    HttpClientModule
   ],
-  providers: [
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    }
-  ],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

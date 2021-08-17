@@ -108,19 +108,3 @@ func (handler *AuthHandler) PasswordChange(res http.ResponseWriter, req *http.Re
 	res.WriteHeader(http.StatusOK)
 }
 
-func (handler *AuthHandler) Authorize(writer http.ResponseWriter, request *http.Request) {
-	fmt.Println(request)
-	username := util.GetUsernameFromToken(request)
-	fmt.Println(username)
-	responseJSON, err := json.Marshal(username)
-	if err != nil {
-		fmt.Println(err)
-		writer.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	writer.WriteHeader(http.StatusOK)
-	writer.Write(responseJSON)
-	writer.Header().Set("Content-Type", "application/json")
-
-}
-
