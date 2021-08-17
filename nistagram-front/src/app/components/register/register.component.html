@@ -9,8 +9,8 @@
         <form #form="ngForm" (ngSubmit)="register(form)" class="register-form">
           <input name="username" ngModel placeholder="Username" required type="text">
           <input name="email" ngModel placeholder="Email" required type="email">
-          <input name="password" ngModel placeholder="Password" required type="text">
-          <input name="passwordConf" ngModel placeholder="Confirm Password" required type="text">
+          <input name="password" ngModel placeholder="Password" required type="password">
+          <input name="passwordConf" ngModel placeholder="Confirm Password" required type="password">
           <button [disabled]="form.invalid || form.pending"
                   class="register-button"
                   *ngIf="!form.pending"
