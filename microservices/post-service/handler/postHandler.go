@@ -1,12 +1,14 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
+	"post-service/dto"
 	"post-service/service"
 )
 
@@ -16,15 +18,12 @@ type PostHandler struct {
 
 func (handler *PostHandler) CreateNewPost(w http.ResponseWriter, r *http.Request) {
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", "http://localhost:8080/api/auth/authorize", nil)
-	fmt.Println( r.Header.Get("Authorization"))
-	fmt.Println( r.Header.Get("Host"))
-	req.Header.Set("Host", "http://localhost:4200")
+	requestUrl := fmt.Sprintf("http://%s:%s/authorize", os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
+	req, _ := http.NewRequest("GET", requestUrl, nil)
+	req.Header.Set("Host", "http://post-service:8080")
 	req.Header.Set("Authorization", r.Header.Get("Authorization"))
-	fmt.Println(req)
 	res, err2 := client.Do(req)
 	if err2 != nil {
-		fmt.Println("didnt even call auth")
 		fmt.Println(err2)
 		return
 	}
@@ -34,9 +33,9 @@ func (handler *PostHandler) CreateNewPost(w http.ResponseWriter, r *http.Request
 	}
 	//Convert the body to type string
 	sb := string(body)
-	fmt.Println(sb)
-	param := mux.Vars(r)
-	username := param["username"]
+	username := sb[1:len(sb)-1]
+	makeDirectoryIfNotExists(username)
+
 	r.ParseMultipartForm(10 << 20)
 
 	var file, fileHandler, err = r.FormFile("myFile")
@@ -56,8 +55,8 @@ func (handler *PostHandler) CreateNewPost(w http.ResponseWriter, r *http.Request
 	fmt.Printf("Uploaded File: %+v\n", fileHandler.Filename)
 	fmt.Printf("File Size: %+v\n", fileHandler.Size)
 	fmt.Printf("MIME Header: %+v\n", fileHandler.Header)
-	fileName := fmt.Sprintf("*.jpg")
-	makeDirectoryIfNotExists(username)
+	pictureType := filepath.Ext(fileHandler.Filename)
+	fileName := fmt.Sprintf("*"+pictureType)
 	tempFile, err := ioutil.TempFile(username, fileName)
 	if err != nil {
 		fmt.Println(err)
@@ -77,10 +76,29 @@ func (handler *PostHandler) CreateNewPost(w http.ResponseWriter, r *http.Request
 	// write this byte array to our temporary file
 	tempFile.Write(fileBytes)
 	// return that we have successfully uploaded our file!
+	var post dto.PostDTO
+	post.Location = location
+	json.Unmarshal([]byte(tags), &post.Tags)
+	//post.Tags = tags
+	post.Description = description
+	handler.PostService.AddPost(post,username,tempFile.Name())
 	w.WriteHeader(http.StatusOK)
-
-
 }
+
+func (handler *PostHandler) GetAll(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Content-Type", "application/json")
+	publicPosts := handler.PostService.GetAll()
+	publicPostsJson, err := json.Marshal(publicPosts)
+	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
+	} else {
+		writer.WriteHeader(http.StatusOK)
+		_, _ = writer.Write(publicPostsJson)
+	}
+}
+
+
+
 
 func makeDirectoryIfNotExists(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -88,6 +106,3 @@ func makeDirectoryIfNotExists(path string) error {
 	}
 	return nil
 }
-
-
-

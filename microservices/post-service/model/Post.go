@@ -1,9 +1,11 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"time"
+)
 
 type Post struct {
-	gorm.Model
+
 	Description string `json:"description"`
 	NumberOfLikes int `json:"NumberOfLikes"`
 	NumberOfDislikes int `json:"NumberOfDislikes"`
@@ -11,7 +13,10 @@ type Post struct {
 	IsAlbum bool `json:"isAlbum"`
 	NumberOfReaches int `json:"NumberOfReaches"`
 	PostComments []Comment
-	LocationID uint
-	Tags []Tag `gorm:"many2many:post_tags;"`
+	Location string
+	Tags []string
+	Path  string
+	Owner string
+	Date  time.Time
 
 }

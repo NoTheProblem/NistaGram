@@ -9,7 +9,12 @@
           <p *ngIf="isUploaded" style="text-align: center;">{{fileName}} uploaded! </p>
           <input name="description"  [(ngModel)]="description" placeholder="description" required type="text">
           <input name="location" [(ngModel)]="location" placeholder="location" required type="text">
-          <input name="tags" [(ngModel)]="tags" placeholder="tags" required type="text">
+          <input name="tags" [(ngModel)]="tag" placeholder="tags" required type="text" (keyup.enter)="addTag(tag)">
+          <span>
+            <span  *ngFor="let tag of addedTagsShow" >
+              {{tag}}
+            </span>
+          </span>
         </div>
         <br>
         <button class="create-account" (click)="uploadPost()">Upload post</button>

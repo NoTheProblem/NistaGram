@@ -111,7 +111,12 @@ func (handler *AuthHandler) PasswordChange(res http.ResponseWriter, req *http.Re
 func (handler *AuthHandler) Authorize(writer http.ResponseWriter, request *http.Request) {
 	fmt.Println(request)
 	username := util.GetUsernameFromToken(request)
-	fmt.Println(username)
+	_, er := handler.AuthService.Authenticate(username)
+	if er != nil{
+		fmt.Println(er)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	responseJSON, err := json.Marshal(username)
 	if err != nil {
 		fmt.Println(err)

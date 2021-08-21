@@ -13,17 +13,29 @@ export class UploadPostComponent implements OnInit {
   fileName = '';
   description: string;
   location: string;
-  tags: string;
+  tag: string;
+  addedTags: string[];
+  addedTagsShow: string[];
 
   constructor(private postService: PostService) { }
 
   ngOnInit(): void {
+    this.addedTagsShow = [];
+    this.addedTags  = [];
   }
 
   onFileSelected(event): void{
     this.selectedFile = event.target.files[0];
     this.isUploaded = true;
     this.fileName = this.selectedFile.name;
+    console.log(event.target.files);
+  }
+
+  addTag(newTag: string): void{
+    this.addedTags.push(newTag);
+    newTag = '#' + newTag;
+    this.addedTagsShow.push(newTag);
+    this.tag = null;
   }
 
   uploadPost(): void {
@@ -31,12 +43,13 @@ export class UploadPostComponent implements OnInit {
     fd.append('myFile', this.selectedFile, this.selectedFile.name);
     fd.append('description', this.description);
     fd.append('location', this.location);
-    fd.append('tags', this.tags);
+    fd.append('tags',  JSON.stringify(this.addedTags));
     this.postService.uploadPost(fd);
     this.fileName = null;
     this.isUploaded = false;
     this.description = null;
-    this.tags = null;
+    this.addedTags = null;
+    this.addedTagsShow = null;
     this.location = null;
   }
 }

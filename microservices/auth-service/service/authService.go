@@ -70,3 +70,12 @@ func (service *AuthService) ChangePassword(username string, passwords dto.Passwo
 	return user, err
 }
 
+func (service *AuthService) Authenticate(username string) (model.Role, error){
+	user, err := service.AuthRepository.FindUserByUsername(username)
+	if err != nil {
+		return model.Role(0), err
+	}
+	return user.UserRole, nil
+
+}
+
