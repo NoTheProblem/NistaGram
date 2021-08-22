@@ -34,6 +34,7 @@ import { NotificationSettingsComponent } from './components/notification-setting
 import { PrivacySettingsComponent } from './components/privacy-settings/privacy-settings.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 
+
 @NgModule({
   declarations: [
     AppComponent,

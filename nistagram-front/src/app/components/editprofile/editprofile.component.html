@@ -3,30 +3,30 @@
     <mat-card class="login_card_content">
       <mat-card-content class="login_card_form">
         <form #form="ngForm"  class="register-form">
-          <label> General information:</label>
-          <input name="firstName" ngModel placeholder="First name" type="text">
-          <input name="lastName" ngModel placeholder="Last name" type="text">
+          <label> First name:</label>&nbsp;
+          <input name="firstName" [(ngModel)] = "firstName" placeholder="First name" type="text"> &nbsp;&nbsp;
+          <label> Last name:</label>&nbsp;
+          <input name="lastName" [(ngModel)]= "lastName" placeholder="Last name" type="text">
           <hr>
-          <label> Account information: </label>
-          <input name="email" ngModel placeholder="Email" type="email">
-          <input name="phone" ngModel placeholder="Phone number" type="text">
+          <label> email: </label>&nbsp;
+          <input name="email" [(ngModel)] = "email" placeholder="Email" type="email">&nbsp;&nbsp;
+          <label>phone number:</label>&nbsp;
+          <input name="phone" [(ngModel)] = "phoneNumber" placeholder="Phone number" type="text">
           <hr>
-          <label> Personal info: </label>
-          <input name="web" ngModel placeholder="Web site" type="text">
-          <input name="biography" ngModel placeholder="biography" type="text">
+          <label> Web site: </label>&nbsp;
+          <input name="web" [(ngModel)] = "web" placeholder="Web site" type="text">&nbsp;&nbsp;
+          <label>Bio: </label>&nbsp;
+          <input name="biography" [(ngModel)] = "bio" placeholder="biography" type="text">
           <hr>
           <p>Gender:</p>
-          <input type="radio" id="male" name="gender" value="male">
+          <input type="radio" id="male" name="gender"   [(ngModel)]="gender" [value] = "'male'" >
           <label for="male">Male</label><br>
-          <input type="radio" id="female" name="gender" value="female">
+          <input type="radio" id="female" name="gender" [(ngModel)]="gender" [value] = "'female'" >
           <label for="female">Female</label><br>
           <label> Date of birth:</label>
-          <input type="date" class="form-control" name="startDate"/>
+          <input type="date" [(ngModel)]="birth" class="form-control" name="startDate"/>
           <br>
-          <button [disabled]="form.invalid || form.pending"
-                  class="register-button"
-                  *ngIf="!form.pending"
-                  type="submit">Update profile
+          <button (click)="UpdateProfile()">Update profile
           </button>
         </form>
       </mat-card-content>

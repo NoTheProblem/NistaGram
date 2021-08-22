@@ -35,7 +35,7 @@ func (handler *UserHandler) RegisterUser (res http.ResponseWriter, req *http.Req
 
 func (handler *UserHandler) UpdateProfileInfo(writer http.ResponseWriter, request *http.Request) {
 	var userProfileDTO dto.UserEditDTO
-	username := getUsername(request)
+	username := getUsernameFromToken(request)
 	if username == ""{
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
@@ -57,7 +57,7 @@ func (handler *UserHandler) UpdateProfileInfo(writer http.ResponseWriter, reques
 
 func (handler *UserHandler) UpdateNotificationSettings(writer http.ResponseWriter, request *http.Request) {
 	var userNotificationDTO dto.UserNotificationDTO
-	username := getUsername(request)
+	username := getUsernameFromToken(request)
 	if username == ""{
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
@@ -79,7 +79,7 @@ func (handler *UserHandler) UpdateNotificationSettings(writer http.ResponseWrite
 
 func (handler *UserHandler) UpdatePrivacySettings(writer http.ResponseWriter, request *http.Request) {
 	var userPrivacyDTO dto.UserPrivacyDTO
-	username := getUsername(request)
+	username := getUsernameFromToken(request)
 	if username == ""{
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
@@ -100,35 +100,7 @@ func (handler *UserHandler) UpdatePrivacySettings(writer http.ResponseWriter, re
 }
 
 func (handler *UserHandler) LoadMyProfile(writer http.ResponseWriter, request *http.Request) {
-	client := &http.Client{}
-	requestUrl := fmt.Sprintf("http://%s:%s/authorize", os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
-	req, _ := http.NewRequest("GET", requestUrl, nil)
-	req.Header.Set("Host", "http://user-service:8080")
-	req.Header.Set("Authorization", request.Header.Get("Authorization"))
-	res, err2 := client.Do(req)
-	fmt.Println("7")
-	if err2 != nil {
-		fmt.Println("8")
-		fmt.Println(err2)
-		fmt.Println("8")
-
-	}
-	fmt.Println(res)
-	body, err5 := ioutil.ReadAll(res.Body)
-	if err5 != nil {
-		fmt.Println("9")
-		log.Fatalln(err5)
-	}
-	fmt.Println("10")
-
-	fmt.Println(body)
-
-	//Convert the body to type string
-	sb := string(body)
-	fmt.Println("11")
-
-	fmt.Println("username: " + sb)
-	username := sb[1:len(sb)-1]
+	username := getUsernameFromToken(request)
 	writer.Header().Set("Content-Type", "application/json")
 
 	if username == ""{
@@ -148,24 +120,23 @@ func (handler *UserHandler) LoadMyProfile(writer http.ResponseWriter, request *h
 }
 
 
-func getUsername(r *http.Request) string{
+func getUsernameFromToken(r *http.Request) string {
 	client := &http.Client{}
-	requestUrl := fmt.Sprintf("https://%s:%s/authorize", os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
+	requestUrl := fmt.Sprintf("http://%s:%s/authorize", os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
 	req, _ := http.NewRequest("GET", requestUrl, nil)
-	req.Header.Set("Host", "https://user-service:8080")
+	req.Header.Set("Host", "http://user-service:8080")
 	req.Header.Set("Authorization", r.Header.Get("Authorization"))
 	res, err2 := client.Do(req)
 	if err2 != nil {
 		fmt.Println(err2)
-		return ""
 	}
+	fmt.Println(res)
 	body, err5 := ioutil.ReadAll(res.Body)
 	if err5 != nil {
 		log.Fatalln(err5)
 	}
 	//Convert the body to type string
 	sb := string(body)
-	fmt.Println("username: " + sb)
 	username := sb[1:len(sb)-1]
 	return username
 }

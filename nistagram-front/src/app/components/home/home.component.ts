@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import {PostModel} from '../../models/post.model';
-import {Post} from '../profile/profile.component';
 
 @Component({
   selector: 'app-home',

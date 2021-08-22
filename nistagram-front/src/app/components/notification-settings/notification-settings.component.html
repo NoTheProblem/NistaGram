@@ -4,28 +4,25 @@
       <mat-card-content class="login_card_form">
         <form #form="ngForm"  class="register-form">
           <p>Receive notifications for posts:</p>
-          <input type="radio" id="yesPosts" name="postNotifications" value="yes">
-          <label for="yesPosts">Public</label><br>
-          <input type="radio" id="noPosts" name="postNotifications" value="no">
-          <label for="noPosts">Private</label><br>
+          <input type="radio" id="yesPosts" name="postNotifications"  [(ngModel)]="postNotifications" [value]="true">
+          <label for="yesPosts">Yes</label><br>
+          <input type="radio" id="noPosts" name="postNotifications" [(ngModel)]="postNotifications" [value]="false">
+          <label for="noPosts"  >No</label><br>
           <hr>
           <p>Receive notifications for comments:</p>
-          <input type="radio" id="yesComments" name="commentNotifications" value="yes">
+          <input type="radio" id="yesComments" name="commentNotifications"  [(ngModel)]="commentNotifications" [value]="true">
           <label for="yesComments">Yes</label><br>
-          <input type="radio" id="noComments" name="commentNotifications" value="no">
+          <input type="radio" id="noComments" name="commentNotifications" [(ngModel)]="commentNotifications" [value]="false">
           <label for="noComments">No</label><br>
           <hr>
           <p>Receive notifications for messages:</p>
-          <input type="radio" id="yesMessages" name="messagesNotifications" value="yes">
+          <input type="radio" id="yesMessages" [(ngModel)]="messageNotifications" name="messagesNotifications" [value]="true">
           <label for="yesMessages">Yes</label><br>
-          <input type="radio" id="noMessages" name="messagesNotifications" value="no">
+          <input type="radio" id="noMessages" [(ngModel)]="messageNotifications" name="messagesNotifications" [value]="false">
           <label for="noMessages">No</label><br>
           <hr>
-          <button [disabled]="form.invalid || form.pending"
-                  class="register-button"
-                  *ngIf="!form.pending"
-                  type="submit">Change notification settings
-          </button>
+          <button  (click)="updateProfile()">Change notification settings</button>
+
         </form>
       </mat-card-content>
     </mat-card>

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {SettingsService} from '../../services/settings.service';
+import {UserModel} from '../../models/user.model';
 
 @Component({
   selector: 'app-settings',
@@ -10,11 +12,17 @@ export class SettingsComponent implements OnInit {
   openPassword: boolean;
   openPrivacy: boolean;
   openNotification: boolean;
+  user: UserModel;
 
-
-  constructor() { }
+  constructor(private settingsService: SettingsService) { }
 
   ngOnInit(): void {
+    this.settingsService.loadMyProfile()
+      .subscribe((profile: UserModel) => {
+        console.log(profile);
+        this.user = profile;
+        console.log(this.user);
+      });
     this.openEdit = true;
     this.openNotification = false;
     this.openPrivacy = false;

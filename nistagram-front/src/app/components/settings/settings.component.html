@@ -17,16 +17,16 @@
           </ul>
         </div>
         <div *ngIf="openEdit">
-          <app-editprofile></app-editprofile>
+          <app-editprofile [userProfile]="user" ></app-editprofile>
         </div>
         <div *ngIf="openPassword">
           <app-reset-password></app-reset-password>
         </div>
         <div *ngIf="openPrivacy">
-          <app-privacy-settings></app-privacy-settings>
+          <app-privacy-settings [userProfile]="user" ></app-privacy-settings>
         </div>
         <div *ngIf="openNotification">
-          <app-notification-settings></app-notification-settings>
+          <app-notification-settings [userProfile]="user" ></app-notification-settings>
         </div>
       </div>
     </mat-card>
