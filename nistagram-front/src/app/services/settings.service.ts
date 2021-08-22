@@ -68,5 +68,17 @@ export class SettingsService {
       })
     );
   }
+
+  sendVerificationRequest(fd: FormData): void{
+    this.http.post('http://localhost:8080/api/verification/user', fd)
+      .subscribe(
+        res => {
+          this.toastr.success('Request sent!');
+        },
+        (error => {
+          this.toastr.error('Request failed!');
+        })
+      );
+  }
 }
 

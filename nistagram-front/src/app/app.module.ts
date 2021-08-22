@@ -33,6 +33,7 @@ import {MatNativeDateModule} from '@angular/material/core';
 import { NotificationSettingsComponent } from './components/notification-settings/notification-settings.component';
 import { PrivacySettingsComponent } from './components/privacy-settings/privacy-settings.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { VerificationComponent } from './components/verification/verification.component';
 
 
 @NgModule({
@@ -49,7 +50,8 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
     EditprofileComponent,
     NotificationSettingsComponent,
     PrivacySettingsComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    VerificationComponent
   ],
   imports: [
     BrowserModule,

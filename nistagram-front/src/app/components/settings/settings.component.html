@@ -14,6 +14,8 @@
             <li (click)="openTab('privacy')" [ngClass]="openPrivacy? 'selected' : ''" ><a href="javascript:;">Privacy Settings </a></li>
             <hr>
             <li (click)="openTab('notification')" [ngClass]="openNotification? 'selected' : ''" ><a href="javascript:;">Notification Settings</a></li>
+            <hr>
+            <li (click)="openTab('verification')" [ngClass]="openVerification? 'selected' : ''" ><a href="javascript:;">Verify profile</a></li>
           </ul>
         </div>
         <div *ngIf="openEdit">
@@ -27,6 +29,9 @@
         </div>
         <div *ngIf="openNotification">
           <app-notification-settings [userProfile]="user" ></app-notification-settings>
+        </div>
+        <div *ngIf="openVerification">
+          <app-verification></app-verification>
         </div>
       </div>
     </mat-card>

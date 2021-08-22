@@ -12,6 +12,7 @@ export class SettingsComponent implements OnInit {
   openPassword: boolean;
   openPrivacy: boolean;
   openNotification: boolean;
+  openVerification: boolean;
   user: UserModel;
 
   constructor(private settingsService: SettingsService) { }
@@ -19,14 +20,13 @@ export class SettingsComponent implements OnInit {
   ngOnInit(): void {
     this.settingsService.loadMyProfile()
       .subscribe((profile: UserModel) => {
-        console.log(profile);
         this.user = profile;
-        console.log(this.user);
       });
     this.openEdit = true;
     this.openNotification = false;
     this.openPrivacy = false;
     this.openPassword = false;
+    this.openVerification = false;
   }
 
   openTab(tab: string): void {
@@ -36,12 +36,14 @@ export class SettingsComponent implements OnInit {
         this.openNotification = false;
         this.openPrivacy = false;
         this.openPassword = false;
+        this.openVerification = false;
         break;
       case 'pw':
         this.openEdit = false;
         this.openNotification = false;
         this.openPrivacy = false;
         this.openPassword = true;
+        this.openVerification = false;
         break;
 
       case 'privacy' :
@@ -49,6 +51,7 @@ export class SettingsComponent implements OnInit {
         this.openNotification = false;
         this.openPrivacy = true;
         this.openPassword = false;
+        this.openVerification = false;
         break;
 
       case  'notification':
@@ -56,6 +59,15 @@ export class SettingsComponent implements OnInit {
         this.openNotification = true;
         this.openPrivacy = false;
         this.openPassword = false;
+        this.openVerification = false;
+        break;
+
+      case 'verification':
+        this.openEdit = false;
+        this.openNotification = false;
+        this.openPrivacy = false;
+        this.openPassword = false;
+        this.openVerification = true;
         break;
 
       default:
@@ -63,6 +75,7 @@ export class SettingsComponent implements OnInit {
         this.openNotification = false;
         this.openPrivacy = false;
         this.openPassword = false;
+        this.openVerification = false;
         break;
       }
     }

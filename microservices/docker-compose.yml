@@ -86,6 +86,26 @@ services:
     depends_on:
       - postgres
 
+  verification-service:
+    image: verification-service:compose_build
+    restart: on-failure
+    build:
+      context: ./verification-service
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    environment:
+      PORT: ${VERIFICATION_SERVICE_PORT}
+      VERIFICATION_SERVICE_DOMAIN: ${VERIFICATION_SERVICE_DOMAIN}
+      PSQL_USER: ${PSQL_USER}
+      PSQL_PASS: ${PSQL_PASS}
+      PSQL_DBNAME: ${PSQL_DBNAME}
+      PSQL_PORT: ${PSQL_PORT}
+      AUTH_SERVICE_DOMAIN: ${AUTH_SERVICE_DOMAIN}
+      AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
+    depends_on:
+      - postgres
+
   followers-service:
     image: followers-service:compose_build
     restart: on-failure
