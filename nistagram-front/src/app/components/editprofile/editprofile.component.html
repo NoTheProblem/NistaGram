@@ -1,0 +1,35 @@
+<div class="login-container" >
+  <div class="login_card">
+    <mat-card class="login_card_content">
+      <mat-card-content class="login_card_form">
+        <form #form="ngForm"  class="register-form">
+          <label> General information:</label>
+          <input name="firstName" ngModel placeholder="First name" type="text">
+          <input name="lastName" ngModel placeholder="Last name" type="text">
+          <hr>
+          <label> Account information: </label>
+          <input name="email" ngModel placeholder="Email" type="email">
+          <input name="phone" ngModel placeholder="Phone number" type="text">
+          <hr>
+          <label> Personal info: </label>
+          <input name="web" ngModel placeholder="Web site" type="text">
+          <input name="biography" ngModel placeholder="biography" type="text">
+          <hr>
+          <p>Gender:</p>
+          <input type="radio" id="male" name="gender" value="male">
+          <label for="male">Male</label><br>
+          <input type="radio" id="female" name="gender" value="female">
+          <label for="female">Female</label><br>
+          <label> Date of birth:</label>
+          <input type="date" class="form-control" name="startDate"/>
+          <br>
+          <button [disabled]="form.invalid || form.pending"
+                  class="register-button"
+                  *ngIf="!form.pending"
+                  type="submit">Update profile
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

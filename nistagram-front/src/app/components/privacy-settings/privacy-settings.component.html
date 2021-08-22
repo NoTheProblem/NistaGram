@@ -1,0 +1,33 @@
+<div class="login-container" >
+  <div class="login_card">
+    <mat-card class="login_card_content">
+      <mat-card-content class="login_card_form">
+        <form #form="ngForm"  class="register-form">
+          <p>Profile privacy:</p>
+          <input type="radio" id="public" name="profilePrivacy" value="public">
+          <label for="public">Public</label><br>
+          <input type="radio" id="private" name="profilePrivacy" value="private">
+          <label for="private">Private</label><br>
+          <hr>
+          <p>Receive messages from unfollowed profiles:</p>
+          <input type="radio" id="yes" name="receiveMessages" value="yes">
+          <label for="yes">Yes</label><br>
+          <input type="radio" id="no" name="receiveMessages" value="no">
+          <label for="no">No</label><br>
+          <hr>
+          <p>Can other profiles tag you:</p>
+          <input type="radio" id="yesTag" name="taggable" value="yes">
+          <label for="yesTag">Yes</label><br>
+          <input type="radio" id="noTag" name="taggable" value="no">
+          <label for="noTag">No</label><br>
+          <hr>
+          <button [disabled]="form.invalid || form.pending"
+                  class="register-button"
+                  *ngIf="!form.pending"
+                  type="submit">Change privacy settings
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

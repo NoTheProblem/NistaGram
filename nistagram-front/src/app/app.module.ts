@@ -24,6 +24,15 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { PostComponent } from './components/post/post.component';
 import { UploadPostComponent } from './components/upload-post/upload-post.component';
 import { ToastrModule } from 'ngx-toastr';
+import { SettingsComponent } from './components/settings/settings.component';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import { EditprofileComponent } from './components/editprofile/editprofile.component';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatNativeDateModule} from '@angular/material/core';
+import { NotificationSettingsComponent } from './components/notification-settings/notification-settings.component';
+import { PrivacySettingsComponent } from './components/privacy-settings/privacy-settings.component';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +43,12 @@ import { ToastrModule } from 'ngx-toastr';
     NavigationComponent,
     ProfileComponent,
     PostComponent,
-    UploadPostComponent
+    UploadPostComponent,
+    SettingsComponent,
+    EditprofileComponent,
+    NotificationSettingsComponent,
+    PrivacySettingsComponent,
+    ResetPasswordComponent
   ],
   imports: [
     BrowserModule,
@@ -51,7 +65,11 @@ import { ToastrModule } from 'ngx-toastr';
     NgbModule,
     FontAwesomeModule,
     HttpClientModule,
-    ToastrModule.forRoot()
+    ToastrModule.forRoot(),
+    MatSidenavModule,
+    MatDividerModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   providers: [
     {

@@ -1,0 +1,42 @@
+
+<div class="login-container" >
+  <br><br><br><br>
+  <div class="login_card">
+    <mat-card class="login_card_content">
+      <div class="box">
+        <div>
+          <br><br><br><br><br>
+          <ul style="list-style-type:none;">
+            <li (click)="openTab('edit')"  [ngClass]="openEdit? 'selected' : ''" ><a href="javascript:;">Edit Profile</a></li>
+            <hr>
+            <li (click)="openTab('pw')"  [ngClass]="openPassword? 'selected' : ''"><a href="javascript:;">Change Password </a> </li>
+            <hr>
+            <li (click)="openTab('privacy')" [ngClass]="openPrivacy? 'selected' : ''" ><a href="javascript:;">Privacy Settings </a></li>
+            <hr>
+            <li (click)="openTab('notification')" [ngClass]="openNotification? 'selected' : ''" ><a href="javascript:;">Notification Settings</a></li>
+          </ul>
+        </div>
+        <div *ngIf="openEdit">
+          <app-editprofile></app-editprofile>
+        </div>
+        <div *ngIf="openPassword">
+          <app-reset-password></app-reset-password>
+        </div>
+        <div *ngIf="openPrivacy">
+          <app-privacy-settings></app-privacy-settings>
+        </div>
+        <div *ngIf="openNotification">
+          <app-notification-settings></app-notification-settings>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+</div>
+
+
+
+
+
+
+
