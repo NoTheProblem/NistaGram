@@ -1,10 +1,6 @@
 package main
 
 import (
-	"auth-service/handler"
-	"auth-service/model"
-	"auth-service/repository"
-	"auth-service/service"
 	"fmt"
 	"github.com/gorilla/mux"
 	cors "github.com/rs/cors"
@@ -14,12 +10,16 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"user-service/handler"
+	"user-service/model"
+	"user-service/repository"
+	"user-service/service"
 )
 
 func initDB() *gorm.DB {
 
 	dsn := fmt.Sprintf("host=postgres user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Kolkata",
-		"auth-service","test","auth-db","5432")
+		"user-service","test","user-db","5432")
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
@@ -31,23 +31,23 @@ func initDB() *gorm.DB {
 	return database
 }
 
-func initRepo(database *gorm.DB) *repository.AuthRepository {
-	return &repository.AuthRepository{Database: database}
+func initRepo(database *gorm.DB) *repository.UserRepository {
+	return &repository.UserRepository{Database: database}
 }
 
-func initServices(repository *repository.AuthRepository) *service.AuthService {
-	return &service.AuthService{AuthRepository: repository}
+func initServices(repository *repository.UserRepository) *service.UserService {
+	return &service.UserService{UserRepository: repository}
 }
-func initHandler(service *service.AuthService) *handler.AuthHandler {
-	return &handler.AuthHandler{AuthService: service}
+func initHandler(service *service.UserService) *handler.UserHandler {
+	return &handler.UserHandler{UserService: service}
 }
-func handleFunc(handler *handler.AuthHandler) {
+func handleFunc(handler *handler.UserHandler) {
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", handler.Hello).Methods("GET")
-	router.HandleFunc("/register", handler.RegisterUser).Methods("POST")
-	router.HandleFunc("/login", handler.Login).Methods("POST")
-	router.HandleFunc("/passwordChange", handler.PasswordChange).Methods("POST")
-	router.HandleFunc("/authorize", handler.Authorize).Methods("GET")
+	router.HandleFunc("/registerUser", handler.RegisterUser).Methods("POST")
+	router.HandleFunc("/updateProfileInfo", handler.UpdateProfileInfo).Methods("POST")
+	router.HandleFunc("/updateNotificationSettings", handler.UpdateNotificationSettings).Methods("POST")
+	router.HandleFunc("/updatePrivacySettings", handler.UpdatePrivacySettings).Methods("POST")
+	router.HandleFunc("/loadMyProfile", handler.LoadMyProfile).Methods("GET")
 
 	c := SetupCors()
 
@@ -75,4 +75,5 @@ func main() {
 	handler := initHandler(service)
 	handleFunc(handler)
 }
+
 

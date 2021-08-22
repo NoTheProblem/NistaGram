@@ -1,10 +1,8 @@
-package model
+package dto
 
-
-type User struct {
+type UserRegisterDTO struct {
 	Email string `json:"email"  gorm:"unique;not null;default:null;"`
-	Password string `json:"password" gorm:"not null;default:null"`
 	Username string `json:"username" gorm:"unique;not null;default:null"`
-	UserRole Role `json:"role"`
-
+	UserRole int `json:"role"`
 }
+

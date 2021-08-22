@@ -27,6 +27,8 @@ services:
       PSQL_PASS: ${PSQL_PASS}
       PSQL_DBNAME: ${PSQL_DBNAME}
       PSQL_PORT: ${PSQL_PORT}
+      USER_SERVICE_DOMAIN: ${USER_SERVICE_DOMAIN}
+      USER_SERVICE_PORT: ${USER_SERVICE_PORT}
     depends_on:
       - postgres
 
@@ -64,6 +66,25 @@ services:
     networks:
       - backend
 
+  user-service:
+    image: user-service:compose_build
+    restart: on-failure
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    environment:
+      PORT: ${USER_SERVICE_PORT}
+      AUTH_SERVICE_DOMAIN: ${USER_SERVICE_DOMAIN}
+      PSQL_USER: ${PSQL_USER}
+      PSQL_PASS: ${PSQL_PASS}
+      PSQL_DBNAME: ${PSQL_DBNAME}
+      PSQL_PORT: ${PSQL_PORT}
+      AUTH_SERVICE_DOMAIN: ${AUTH_SERVICE_DOMAIN}
+      AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
+    depends_on:
+      - postgres
 
   followers-service:
     image: followers-service:compose_build
@@ -76,8 +97,9 @@ services:
       FOLLOWERS_SERVICE_DOMAIN: ${FOLLOWERS_SERVICE_DOMAIN}
     networks:
       - backend
-    depends_on:
-      - neo4j
+#    depends_on:
+#      - neo4j
+
 
   mongo-db:
     image: mongo
@@ -90,24 +112,24 @@ services:
       - backend
 
 
-  neo4j:
-    image: neo4j:latest
-    container_name: 'neo4j-db'
-    volumes:
-      - '$HOME/neo4j/data:/data'
-      - '$HOME/neo4j/conf/:/conf/'
-    environment:
-      NEO4J_USER: ${NEO4J_USER}
-      NEO4J_PASS: ${NEO4J_PASS}
-      NEO4J_DBNAME: ${NEO4J_DBNAME}
-      NEO4J_PORT: ${NEO4J_PORT}
-    ports:
-      - 7474:7474
-      - 7687:7687
-    restart: on-failure
-    networks:
-      - backend
-    command: neo4j
+#  neo4j:
+#    image: neo4j:latest
+#    container_name: 'neo4j-db'
+#    volumes:
+#      - '$HOME/neo4j/data:/data'
+#      - '$HOME/neo4j/conf/:/conf/'
+#    environment:
+#      NEO4J_USER: ${NEO4J_USER}
+#      NEO4J_PASS: ${NEO4J_PASS}
+#      NEO4J_DBNAME: ${NEO4J_DBNAME}
+#      NEO4J_PORT: ${NEO4J_PORT}
+#    ports:
+#      - 7474:7474
+#      - 7687:7687
+#    restart: on-failure
+#    networks:
+#      - backend
+#    command: neo4j
 
 networks:
   backend:

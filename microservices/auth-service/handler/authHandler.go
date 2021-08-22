@@ -32,24 +32,6 @@ func (handler *AuthHandler) RegisterUser (res http.ResponseWriter, req *http.Req
 	res.WriteHeader(http.StatusCreated)
 }
 
-func (handler *AuthHandler) UpdateUser (res http.ResponseWriter, req *http.Request) {
-	var updateDTO dto.UpdateDTO
-	username := util.GetUsernameFromToken(req)
-	err := json.NewDecoder(req.Body).Decode(&updateDTO)
-	if err != nil {
-		res.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	fmt.Println(err)
-	err = handler.AuthService.UpdateUser(updateDTO, username)
-	if err != nil {
-		fmt.Println(err)
-		res.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	res.WriteHeader(http.StatusOK)
-}
-
 func(handler *AuthHandler) Login(res http.ResponseWriter, req *http.Request){
 	var logInDTO dto.LogInDTO
 	err := json.NewDecoder(req.Body).Decode(&logInDTO)

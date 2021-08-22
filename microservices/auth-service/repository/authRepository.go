@@ -13,20 +13,12 @@ type AuthRepository struct {
 func (repository *AuthRepository) RegisterUser(user *model.User) error {
 	result := repository.Database.Create(user)
 	if result.RowsAffected == 0 {
-		return fmt.Errorf("User not registered!")
+		return fmt.Errorf("user not registered")
 	}
-	fmt.Println("User successfuly registered!")
+	fmt.Println("User successfully registered! [auth-repository]")
 	return nil
 }
 
-func (repository *AuthRepository) UpdateUser(user *model.User) error {
-	result := repository.Database.Updates(user)
-	if result.RowsAffected == 0 {
-		return fmt.Errorf("User not update!")
-	}
-	fmt.Println("User successfuly updated!")
-	return nil
-}
 
 func (repository *AuthRepository) FindUserByUsername(username string) (*model.User, error){
 	user := &model.User{}
