@@ -23,7 +23,6 @@ export class PrivacySettingsComponent implements OnInit {
   }
 
   updateProfile(): void {
-    console.log(this.privacy);
     this.settingsService.updatePrivacySettings(this.privacy, this.messages, this.tag);
 
   }

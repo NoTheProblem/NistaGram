@@ -17,8 +17,9 @@ func (service *UserService) RegisterUser (dto dto.UserRegisterDTO) error {
 	t := true
 	f := false
 	user := model.User{Id: uuid.New(), Email: dto.Email, UserRole: model.Role(dto.UserRole), Username: dto.Username,
-		Taggable: &t, ReceiveMessages: &t, NumberOfFollowers: 0, NumberOfFollowing: 0,
-		NumberOfPosts: 0, Verified: &f}
+		Taggable: &t, ReceiveMessages: &t, NumberOfFollowers: 0, NumberOfFollowing: 0, ProfilePrivacy: &f,
+		NumberOfPosts: 0, Verified: &f, ReceiveMessagesNotifications: &t, ReceivePostNotifications: &f,
+		ReceiveCommentNotifications: &f}
 	err := service.UserRepository.RegisterUser(&user)
 	if err != nil {
 		return err
@@ -143,11 +144,13 @@ func (service *UserService) GetUserProfile(username string, requester string) (*
 	}
 	if !*user.ProfilePrivacy {
 		if requester != "" {
-			return nil, errors.New("private profile, log in to send request")
-		}else {
 			//TODO videti da li se prate
 			return nil, errors.New("private profile, send request to follow")
+		}else {
+			return nil, errors.New("private profile, log in to send request")
 		}
 	}
+	fmt.Println("Izlaz getUserProfile service")
+
 	return user, nil
 }

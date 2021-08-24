@@ -13,5 +13,9 @@ export interface PostModel {
   tags: string[];
   path: string;
   owner: string;
-  image: string;
+  images: PostImages[];
+}
+
+interface PostImages{
+  Image: string;
 }

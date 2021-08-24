@@ -16,7 +16,7 @@ type PostService struct {
 }
 
 
-func (service *PostService) AddPost(postDto dto.PostDTO, username string, paths string ) (string, error) {
+func (service *PostService) AddPost(postDto dto.PostDTO, username string, paths []string ) (string, error) {
 	post, err := mapPostDtoTOPost(&postDto, username, paths)
 	if err != nil {
 		return "", err
@@ -42,16 +42,17 @@ func (service *PostService) GetAll() interface{} {
 func (service *PostService) GetHomeFeed(username string) interface{}{
 	publicPostsDocuments := service.PostRepository.GetHomeFeedPublic()
 
-
 	publicPosts := CreatePostsFromDocuments(publicPostsDocuments)
 	for i, s:= range publicPosts{
-		fmt.Println(i)
-		fmt.Println(s.Path)
-		b, err := ioutil.ReadFile(s.Path) // just pass the file name
-		if err != nil {
-			fmt.Print(err)
+		for j, _ := range s.Path {
+			b, err := ioutil.ReadFile(s.Path[j])
+			if err != nil {
+				fmt.Print(err)
+			}
+			var image model.PostImages
+			image.Image = b
+			publicPosts[i].Images = append(publicPosts[i].Images, image)
 		}
-		publicPosts[i].Images = b
 	}
 
 	return  publicPosts
@@ -63,11 +64,15 @@ func (service *PostService) GetProfilePosts(username string) interface{} {
 
 	publicPosts := CreatePostsFromDocuments(publicPostsDocuments)
 	for i, s:= range publicPosts{
-		b, err := ioutil.ReadFile(s.Path) // just pass the file name
-		if err != nil {
-			fmt.Print(err)
+		for j, _ := range s.Path {
+			b, err := ioutil.ReadFile(s.Path[j])
+			if err != nil {
+				fmt.Print(err)
+			}
+			var image model.PostImages
+			image.Image = b
+			publicPosts[i].Images = append(publicPosts[i].Images, image)
 		}
-		publicPosts[i].Images = b
 	}
 
 	return  publicPosts
@@ -84,13 +89,18 @@ func CreatePostsFromDocuments(PostsDocuments []bson.D) []model.Post {
 	return publicPosts
 }
 
-func mapPostDtoTOPost(postDTO *dto.PostDTO, username string, paths string) (*model.Post, error) {
+func mapPostDtoTOPost(postDTO *dto.PostDTO, username string, paths []string) (*model.Post, error) {
 	var post model.Post
 	post.Tags = postDTO.Tags
 	post.Description = postDTO.Description
 	post.Location = postDTO.Location
 	post.NumberOfDislikes, post.NumberOfLikes, post.NumberOfReaches = 0 , 0 , 0
-	post.IsAlbum, post.IsAdd = postDTO.IsAlbum, postDTO.IsAdd
+	post.IsAdd =  postDTO.IsAdd
+	if len(paths) > 1 {
+		post.IsAlbum = true
+	}else {
+		post.IsAlbum = false
+	}
 	post.Owner = username
 	post.Path = paths
 	post.Date = time.Now()

@@ -2,17 +2,30 @@
 <div class="container">
   <div class="profile">
     <div class="profile-image" *ngIf="!isLocked">
+      <!-- TODO get profile pitcure -->
       <img src="https://images.unsplash.com/photo-1513721032312-6a18a42c8763?w=152&h=152&fit=crop&crop=faces" alt="">
     </div>
     <div class="profile-user-settings">
-      <h1 class="profile-user-name">{{username}}</h1>
-      <button class="btn profile-settings-btn" aria-label="profile settings"><i class="fas fa-cog" aria-hidden="true"></i></button>
+      <h2 class="profile-user-name">{{username}}</h2> &nbsp;&nbsp;&nbsp;
+      <mat-icon routerLink="upload-post" *ngIf="profile?.verified">verified</mat-icon>
+
+      <div *ngIf="isLogged && !isMe" >
+        <div *ngIf="!isFollowed">
+          <button class="btn profile-settings-btn" aria-label="profile settings">Follow</button> &nbsp; &nbsp;&nbsp;
+          <button *ngIf="profile.receiveMessages" class="btn profile-settings-btn" aria-label="profile settings">Message</button>
+        </div>
+        <div *ngIf="isFollowed">
+          <button class="btn profile-settings-btn" aria-label="profile settings">UnFollow</button> &nbsp; &nbsp;&nbsp;
+          <button class="btn profile-settings-btn" aria-label="profile settings">Message</button>
+        </div>
+      </div>
+
     </div>
     <div class="profile-stats" *ngIf="!isLocked">
       <ul>
-        <li><span class="profile-stat-count">{{profile?.numberOfPosts}}3 </span> posts</li>
-        <li><span class="profile-stat-count">{{profile?.numberOfFollowers}}2</span> followers</li>
-        <li><span class="profile-stat-count">{{profile?.numberOfFollowing}}1</span> following</li>
+        <li><span class="profile-stat-count">{{profile?.numberOfPosts}}</span> posts</li>
+        <li><span class="profile-stat-count">{{profile?.numberOfFollowers}}</span> followers</li>
+        <li><span class="profile-stat-count">{{profile?.numberOfFollowing}}</span> following</li>
       </ul>
     </div>
     <div class="profile-bio">
@@ -31,7 +44,7 @@
   <div class="container">
     <div class="gallery" >
       <div class="gallery-item" tabindex="0" *ngFor="let p of posts">
-        <app-profile-picture [post]="p"></app-profile-picture>
+        <app-profile-post [post]="p"></app-profile-post>
       </div>
   </div>
   </div>

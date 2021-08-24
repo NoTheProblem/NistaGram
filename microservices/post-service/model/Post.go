@@ -16,9 +16,13 @@ type Post struct {
 	IsPublic bool `json:"isPublic"`
 	Location string `json:"location"`
 	Tags []string `json:"tags"`
-	Path  string `json:"path"`
+	Path  []string `json:"path"`
 	Owner string `json:"owner"`
 	Date  time.Time `json:"date"`
-	Images []byte `json:"image"`
+	Images []PostImages `json:"images"`
 
+}
+
+type PostImages struct {
+	Image []byte
 }

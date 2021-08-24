@@ -21,12 +21,12 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { PostComponent } from './components/post/post.component';
+import { HomePostComponent } from './components/home-post/home-post.component';
 import { UploadPostComponent } from './components/upload-post/upload-post.component';
 import { ToastrModule } from 'ngx-toastr';
 import { SettingsComponent } from './components/settings/settings.component';
 import {MatSidenavModule} from '@angular/material/sidenav';
-import { EditprofileComponent } from './components/editprofile/editprofile.component';
+import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
@@ -34,7 +34,7 @@ import { NotificationSettingsComponent } from './components/notification-setting
 import { PrivacySettingsComponent } from './components/privacy-settings/privacy-settings.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { VerificationComponent } from './components/verification/verification.component';
-import { ProfilePictureComponent } from './components/profile-picture/profile-picture.component';
+import { ProfilePostComponent } from './components/profile-post/profile-post.component';
 
 
 @NgModule({
@@ -45,15 +45,15 @@ import { ProfilePictureComponent } from './components/profile-picture/profile-pi
     RegisterComponent,
     NavigationComponent,
     ProfileComponent,
-    PostComponent,
+    HomePostComponent,
     UploadPostComponent,
     SettingsComponent,
-    EditprofileComponent,
+    EditProfileComponent,
     NotificationSettingsComponent,
     PrivacySettingsComponent,
     ResetPasswordComponent,
     VerificationComponent,
-    ProfilePictureComponent
+    ProfilePostComponent
   ],
   imports: [
     BrowserModule,

@@ -125,8 +125,9 @@ func (handler *UserHandler) LoadMyProfile(writer http.ResponseWriter, request *h
 }
 
 func (handler *UserHandler) GetUserProfile(writer http.ResponseWriter, request *http.Request) {
-	requester, errLoged := getUsernameFromToken(request)
-	if errLoged != nil{
+
+	requester, errLogged := getUsernameFromToken(request)
+	if errLogged != nil{
 		requester = ""
 	}
 	vars := mux.Vars(request)
@@ -174,5 +175,6 @@ func getUsernameFromToken(r *http.Request) (string, error) {
 	if username == ""{
 		return "", errors.New("no such user")
 	}
+
 	return username, nil
 }

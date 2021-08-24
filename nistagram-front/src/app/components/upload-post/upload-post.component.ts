@@ -8,29 +8,32 @@ import {PostService} from '../../services/post.service';
 })
 export class UploadPostComponent implements OnInit {
 
-  selectedFile: File = null;
-  isUploaded = false;
-  fileName = '';
+  selectedFiles: Array<File> = new Array<File>();
   description: string;
   location: string;
   tag: string;
   addedTags: string[];
   addedTagsShow: string[];
+  images: Array<string> = new Array<string>();
+  numberOfImages: number;
 
   constructor(private postService: PostService) { }
 
   ngOnInit(): void {
+    console.log('cao');
     this.addedTagsShow = [];
     this.addedTags  = [];
+    this.numberOfImages = 0;
   }
 
   onFileSelected(event): void{
-    // tslint:disable-next-line:prefer-const
-    // let reader = new FileReader();
-    this.selectedFile = event.target.files[0];
-    this.isUploaded = true;
-    this.fileName = this.selectedFile.name;
-    console.log(event.target.files);
+    const reader = new FileReader();
+    reader.readAsDataURL(event.target.files[0]);
+    this.numberOfImages = this.numberOfImages + 1;
+    reader.onload = (e: any) => {
+      this.images.push(e.target.result);
+    };
+    this.selectedFiles.push(event.target.files[0]);
   }
 
   addTag(newTag: string): void{
@@ -42,13 +45,15 @@ export class UploadPostComponent implements OnInit {
 
   uploadPost(): void {
     const fd = new FormData();
-    fd.append('myFile', this.selectedFile, this.selectedFile.name);
+    fd.append('numberOfImages', JSON.stringify(this.numberOfImages));
+    for (let i = 0; i < this.numberOfImages ; i++){
+       fd.append('myFile' + String(i), this.selectedFiles[i], this.selectedFiles[i].name);
+       console.log('myFile' + String(i));
+    }
     fd.append('description', this.description);
     fd.append('location', this.location);
     fd.append('tags',  JSON.stringify(this.addedTags));
     this.postService.uploadPost(fd);
-    this.fileName = null;
-    this.isUploaded = false;
     this.description = null;
     this.addedTags = null;
     this.addedTagsShow = null;
@@ -56,5 +61,17 @@ export class UploadPostComponent implements OnInit {
   }
 
 
-
+  removeImage(image: string): void {
+      this.numberOfImages = this.numberOfImages - 1;
+      this.images = this.images.filter(img => {
+        return (
+          img !== image
+        );
+      });
+  }
 }
+
+
+
+
+

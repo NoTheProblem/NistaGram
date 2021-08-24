@@ -1,14 +1,13 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {UserModel} from '../../models/user.model';
 import {SettingsService} from '../../services/settings.service';
-import {exhaustMap} from 'rxjs/operators';
 
 @Component({
-  selector: 'app-editprofile',
-  templateUrl: './editprofile.component.html',
-  styleUrls: ['./editprofile.component.css']
+  selector: 'app-edit-profile',
+  templateUrl: './edit-profile.component..html',
+  styleUrls: ['./edit-profile.component.css']
 })
-export class EditprofileComponent implements OnInit {
+export class EditProfileComponent implements OnInit {
   @Input() userProfile: UserModel;
   firstName: string;
   lastName: string;

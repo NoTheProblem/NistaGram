@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"post-service/dto"
 	"post-service/service"
+	"strconv"
 )
 
 type PostHandler struct {
@@ -23,51 +24,60 @@ func (handler *PostHandler) CreateNewPost(w http.ResponseWriter, r *http.Request
 	makeDirectoryIfNotExists(username)
 
 	r.ParseMultipartForm(10 << 20)
-
-	var file, fileHandler, err = r.FormFile("myFile")
-	var description = r.FormValue("description")
 	var location = r.FormValue("location")
 	var tags = r.FormValue("tags")
-	fmt.Println(description)
-	fmt.Println(location)
-	fmt.Println(tags)
-	if err != nil {
-		fmt.Println("Error Retrieving the File")
-		fmt.Println(err)
-		fmt.Fprintf(w, err.Error())
-		return
-	}
-	defer file.Close()
-	fmt.Printf("Uploaded File: %+v\n", fileHandler.Filename)
-	fmt.Printf("File Size: %+v\n", fileHandler.Size)
-	fmt.Printf("MIME Header: %+v\n", fileHandler.Header)
-	pictureType := filepath.Ext(fileHandler.Filename)
-	fileName := fmt.Sprintf("*"+pictureType)
-	tempFile, err := ioutil.TempFile(username, fileName)
-	if err != nil {
-		fmt.Println(err)
-		fmt.Fprintf(w, err.Error())
-	}
-	fmt.Println(tempFile.Name())
-	fmt.Println(tempFile)
-	defer tempFile.Close()
+	var description = r.FormValue("description")
+	var numberOfImagesStr = r.FormValue("numberOfImages")
+	var numberOfImages, _ = strconv.Atoi(numberOfImagesStr)
+	fileNames := make([]string, numberOfImages)
+	fmt.Println(numberOfImages)
+	for i := 0; i < numberOfImages; i++ {
+		var file, fileHandler, err = r.FormFile("myFile" + strconv.Itoa(i))
+		fmt.Println("myFile" + strconv.Itoa(i))
+		fmt.Println(i)
+		fmt.Println(strconv.Itoa(i))
+		if err != nil {
+			fmt.Println("Error Retrieving the File")
+			fmt.Println(err)
+			fmt.Fprintf(w, err.Error())
+			return
+		}
+		defer file.Close()
+		fmt.Printf("File: %+v\n", i)
+		fmt.Printf("Uploaded File: %+v\n", fileHandler.Filename)
+		fmt.Printf("File Size: %+v\n", fileHandler.Size)
+		fmt.Printf("MIME Header: %+v\n", fileHandler.Header)
+		pictureType := filepath.Ext(fileHandler.Filename)
+		fileName := fmt.Sprintf("*"+pictureType)
+		tempFile, err := ioutil.TempFile(username, fileName)
+		if err != nil {
+			fmt.Println(err)
+			fmt.Fprintf(w, err.Error())
+		}
+		fmt.Println(tempFile.Name())
+		fmt.Println(tempFile)
+		defer tempFile.Close()
 
-	// read all of the contents of our uploaded file into a
-	// byte array
-	fileBytes, err := ioutil.ReadAll(file)
-	if err != nil {
-		fmt.Println(err)
-		fmt.Fprintf(w, err.Error())
+		// read all of the contents of our uploaded file into a
+		// byte array
+		fileBytes, err := ioutil.ReadAll(file)
+		if err != nil {
+			fmt.Println(err)
+			fmt.Fprintf(w, err.Error())
+		}
+		// write this byte array to our temporary file
+		tempFile.Write(fileBytes)
+		fileNames[i]  = tempFile.Name()
 	}
-	// write this byte array to our temporary file
-	tempFile.Write(fileBytes)
+
+	fmt.Println(fileNames)
 	// return that we have successfully uploaded our file!
 	var post dto.PostDTO
 	post.Location = location
 	json.Unmarshal([]byte(tags), &post.Tags)
-	//post.Tags = tags
+
 	post.Description = description
-	handler.PostService.AddPost(post,username,tempFile.Name())
+	handler.PostService.AddPost(post,username,fileNames)
 	w.WriteHeader(http.StatusOK)
 }
 
