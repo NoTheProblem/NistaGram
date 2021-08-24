@@ -29,7 +29,28 @@
         <mat-icon routerLink="upload-post">add_a_photo</mat-icon>
       </div>
       <div *ngIf="isLoggedIn">
+        <mat-icon routerLink="">notifications</mat-icon>
+      </div>
+      <div *ngIf="isLoggedIn">
         <mat-icon routerLink="settings">settings</mat-icon>
+      </div>
+      <div *ngIf="role===1">
+        <mat-icon routerLink="">report</mat-icon>
+      </div>
+      <div *ngIf="role===1">
+        <mat-icon routerLink="">verified</mat-icon>
+      </div>
+      <div *ngIf="role===1">
+        <mat-icon routerLink="">feed</mat-icon>
+      </div>
+      <div *ngIf="role===1">
+        <mat-icon routerLink="">manage_accounts</mat-icon>
+      </div>
+      <div *ngIf="role===2">
+        <mat-icon routerLink="">ads_click</mat-icon>
+      </div>
+      <div *ngIf="role===2">
+        <mat-icon routerLink="">personal_video</mat-icon>
       </div>
 
       <div *ngIf="isLoggedIn">

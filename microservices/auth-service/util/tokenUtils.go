@@ -42,7 +42,7 @@ func GetJWT(r http.Header) string {
 	return ""
 }
 
-func GetUsernameFromToken(r *http.Request) (string){
+func GetUsernameFromToken(r *http.Request) string{
 	tokenString := GetJWT(r.Header)
 	token, err := jwt.ParseWithClaims(tokenString, &TokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secret), nil

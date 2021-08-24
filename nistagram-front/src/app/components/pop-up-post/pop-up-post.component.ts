@@ -38,7 +38,6 @@ export class PopUpPostComponent implements OnInit {
 
   addComment(): void {
     this.isCommentInput = false;
-    console.log(this.commentInput);
     this.postService.commentPost({id: this.post.id, text: this.commentInput, date: new Date()});
     this.commentInput = null;
 

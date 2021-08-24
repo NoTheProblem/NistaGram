@@ -10,7 +10,7 @@ export class NavigationComponent implements OnInit {
   user: string;
   isLoggedIn = false;
   username: string;
-  role: string;
+  role: number;
 
   constructor(private tokenStorageService: TokenStorageService) { }
 
@@ -18,6 +18,7 @@ export class NavigationComponent implements OnInit {
     this.isLoggedIn = this.tokenStorageService.isLoggedIn();
     if (this.isLoggedIn){
       this.username = this.tokenStorageService.getUsername();
+      this.role = this.tokenStorageService.getRole();
     }
   }
 
