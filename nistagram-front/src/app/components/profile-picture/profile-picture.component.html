@@ -1,0 +1,16 @@
+<div class="gallery-item">
+  <img [src]="image"  class="gallery-image" alt="">
+
+  <div class="gallery-item-type" *ngIf="post?.isAlbum">
+    <mat-icon>collections</mat-icon>
+  </div>
+
+  <div class="gallery-item-info">
+
+    <ul>
+      <li class="gallery-item-likes"> <mat-icon>favorite</mat-icon> {{post?.NumberOfLikes}}</li>
+      <li class="gallery-item-comments"> <mat-icon>comment</mat-icon> {{post?.numberOfComments}}</li>
+    </ul>
+  </div>
+
+</div>

@@ -12,11 +12,13 @@ type Post struct {
 	IsAdd bool `json:"isAdd"`
 	IsAlbum bool `json:"isAlbum"`
 	NumberOfReaches int `json:"NumberOfReaches"`
-	PostComments []Comment
-	Location string
-	Tags []string
-	Path  string
-	Owner string
-	Date  time.Time
+	PostComments []Comment `json:"comments"`
+	IsPublic bool `json:"isPublic"`
+	Location string `json:"location"`
+	Tags []string `json:"tags"`
+	Path  string `json:"path"`
+	Owner string `json:"owner"`
+	Date  time.Time `json:"date"`
+	Images []byte `json:"image"`
 
 }

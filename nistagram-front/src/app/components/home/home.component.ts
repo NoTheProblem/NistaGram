@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {PostModel} from '../../models/post.model';
+import {PostService} from '../../services/post.service';
 
 @Component({
   selector: 'app-home',
@@ -7,22 +8,22 @@ import {PostModel} from '../../models/post.model';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  public post: PostModel;
   public posts: Array<PostModel> = new Array<PostModel>();
-  constructor() { }
+
+
+
+  constructor(private postService: PostService) { }
 
   ngOnInit(): void {
-    this.post = {
-      username: 'slavBrain',
-      message: 'message1',
-      likes: 10,
-      comments: 20,
-      date: new Date()
-    };
-    this.posts.push(this.post);
-    this.posts.push(this.post);
-    this.posts.push(this.post);
-    this.posts.push(this.post);
+    this.initPosts();
   }
-
+  private initPosts(): void {
+    this.postService.HomeFeed()
+      .subscribe((postsList: Array<PostModel>) => {
+        this.posts = postsList;
+      });
+  }
 }
+
+
+

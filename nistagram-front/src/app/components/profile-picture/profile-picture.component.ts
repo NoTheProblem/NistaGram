@@ -1,15 +1,14 @@
-import { Component, OnInit, Input } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {PostModel} from '../../models/post.model';
 
 @Component({
-  selector: 'app-post',
-  templateUrl: './post.component.html',
-  styleUrls: ['./post.component.css']
+  selector: 'app-profile-picture',
+  templateUrl: './profile-picture.component.html',
+  styleUrls: ['./profile-picture.component.css']
 })
-export class PostComponent implements OnInit {
+export class ProfilePictureComponent implements OnInit {
   @Input() post: PostModel;
   image: any;
-
   constructor() { }
 
   ngOnInit(): void {
@@ -22,3 +21,5 @@ export class PostComponent implements OnInit {
   }
 
 }
+
+

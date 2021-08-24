@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
+	"io/ioutil"
 	"os"
 	"post-service/dto"
 	"post-service/model"
@@ -37,6 +38,40 @@ func (service *PostService) GetAll() interface{} {
 	return publicPosts
 }
 
+
+func (service *PostService) GetHomeFeed(username string) interface{}{
+	publicPostsDocuments := service.PostRepository.GetHomeFeedPublic()
+
+
+	publicPosts := CreatePostsFromDocuments(publicPostsDocuments)
+	for i, s:= range publicPosts{
+		fmt.Println(i)
+		fmt.Println(s.Path)
+		b, err := ioutil.ReadFile(s.Path) // just pass the file name
+		if err != nil {
+			fmt.Print(err)
+		}
+		publicPosts[i].Images = b
+	}
+
+	return  publicPosts
+
+}
+
+func (service *PostService) GetProfilePosts(username string) interface{} {
+	publicPostsDocuments := service.PostRepository.GetProfilePosts(username)
+
+	publicPosts := CreatePostsFromDocuments(publicPostsDocuments)
+	for i, s:= range publicPosts{
+		b, err := ioutil.ReadFile(s.Path) // just pass the file name
+		if err != nil {
+			fmt.Print(err)
+		}
+		publicPosts[i].Images = b
+	}
+
+	return  publicPosts
+}
 
 func CreatePostsFromDocuments(PostsDocuments []bson.D) []model.Post {
 	var publicPosts []model.Post

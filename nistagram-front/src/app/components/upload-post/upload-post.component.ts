@@ -25,6 +25,8 @@ export class UploadPostComponent implements OnInit {
   }
 
   onFileSelected(event): void{
+    // tslint:disable-next-line:prefer-const
+    // let reader = new FileReader();
     this.selectedFile = event.target.files[0];
     this.isUploaded = true;
     this.fileName = this.selectedFile.name;
@@ -52,4 +54,7 @@ export class UploadPostComponent implements OnInit {
     this.addedTagsShow = null;
     this.location = null;
   }
+
+
+
 }

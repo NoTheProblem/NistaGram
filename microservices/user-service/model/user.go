@@ -14,11 +14,14 @@ type User struct {
 	DateOfBirth string `json:"birth"`
 	WebSite string `json:"webSite"`
 	Bio string `json:"bio"`
-	Verified bool `json:"verified"`
-	ProfilePrivacy bool `json:"profilePrivacy"`
-	ReceiveMessages bool `json:"receiveMessages"`
-	Taggable bool `json:"taggable"`
-	ReceivePostNotifications bool `json:"receivePostNotifications"`
-	ReceiveCommentNotifications bool `json:"receiveCommentNotifications"`
-	ReceiveMessagesNotifications bool `json:"receiveMessagesNotifications"`
+	NumberOfPosts int `json:"numberOfPosts"`
+	NumberOfFollowers int `json:"numberOfFollowers"`
+	NumberOfFollowing int `json:"numberOfFollowing"`
+	Verified *bool `json:"verified"`
+	ProfilePrivacy *bool `json:"profilePrivacy"`
+	ReceiveMessages *bool `json:"receiveMessages"`
+	Taggable *bool `json:"taggable"`
+	ReceivePostNotifications *bool `json:"receivePostNotifications"`
+	ReceiveCommentNotifications *bool `json:"receiveCommentNotifications"`
+	ReceiveMessagesNotifications *bool `json:"receiveMessagesNotifications"`
 }

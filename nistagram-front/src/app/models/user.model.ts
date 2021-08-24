@@ -16,5 +16,9 @@ export interface UserModel {
   receivePostNotifications: boolean;
   receiveCommentNotifications: boolean;
   receiveMessagesNotifications: boolean;
+  numberOfPosts: number;
+  numberOfFollowers: number;
+  numberOfFollowing: number;
+  verified: boolean;
 
 }

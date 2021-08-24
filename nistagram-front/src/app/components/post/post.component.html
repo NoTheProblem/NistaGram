@@ -4,15 +4,20 @@
       <div class="media mb-3">
         <img src="https://bootdey.com/img/Content/avatar/avatar3.png" class="d-block ui-w-40 rounded-circle" alt="">
         <div class="media-body ml-3">
-          {{post?.username}}
+            <a routerLink="/{{post?.owner}}" class="d-inline-block text-muted ">
+              {{post?.owner}}
+            </a>
           <div class="text-muted small">{{post?.date | date:'longDate'}}</div>
         </div>
       </div>
 
       <p>
-        {{post?.message}}
+        {{post?.location}}
       </p>
-      <a href="javascript:void(0)" class="ui-rect ui-bg-cover" style="background-image: url('https://bootdey.com/img/Content/avatar/avatar3.png');"></a>
+      <a href="javascript:void(0)" class="ui-rect ui-bg-cover" style="background-image: url({{image}});"></a>.
+      <p>
+        {{post?.description}}
+      </p>
     </div>
     <div class="card-footer">
       <mat-icon>favorite_border</mat-icon>
@@ -21,10 +26,10 @@
 
       <br>
       <a href="javascript:void(0)" class="d-inline-block text-muted">
-        <strong>{{post?.likes}}</strong> <small>Likes</small>
+        <strong>{{post?.NumberOfLikes}}</strong> <small>Likes</small>
       </a>
       <a href="javascript:void(0)" class="d-inline-block text-muted ml-3">
-        <strong>{{post?.comments}}</strong><small> Comments</small>
+        <strong>{{post?.numberOfComments}}</strong><small> Comments</small>
       </a>
       <a href="javascript:void(0)" class="d-inline-block text-muted ml-3">
         <small class="align-middle">Report</small>

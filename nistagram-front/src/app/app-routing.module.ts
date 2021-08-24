@@ -12,9 +12,11 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'home', component: HomeComponent},
-  {path: 'profile', component: ProfileComponent},
   {path: 'upload-post', component: UploadPostComponent},
   {path: 'settings', component: SettingsComponent},
+
+  // Ovaj mora da bude poslednji za sada
+  {path: ':username', component: ProfileComponent},
   {path: '', redirectTo: 'home', pathMatch: 'full'}
 ];
 

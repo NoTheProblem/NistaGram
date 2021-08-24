@@ -34,6 +34,7 @@ import { NotificationSettingsComponent } from './components/notification-setting
 import { PrivacySettingsComponent } from './components/privacy-settings/privacy-settings.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { VerificationComponent } from './components/verification/verification.component';
+import { ProfilePictureComponent } from './components/profile-picture/profile-picture.component';
 
 
 @NgModule({
@@ -51,7 +52,8 @@ import { VerificationComponent } from './components/verification/verification.co
     NotificationSettingsComponent,
     PrivacySettingsComponent,
     ResetPasswordComponent,
-    VerificationComponent
+    VerificationComponent,
+    ProfilePictureComponent
   ],
   imports: [
     BrowserModule,

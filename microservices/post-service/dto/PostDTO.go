@@ -6,4 +6,5 @@ type PostDTO struct {
 	IsAlbum bool `json:"isAlbum"`
 	Location string `json:"location"`
 	Tags []string `json:"tags"`
+	Image []byte `json:"image"`
 }

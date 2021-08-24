@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -17,23 +18,8 @@ type PostHandler struct {
 }
 
 func (handler *PostHandler) CreateNewPost(w http.ResponseWriter, r *http.Request) {
-	client := &http.Client{}
-	requestUrl := fmt.Sprintf("http://%s:%s/authorize", os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
-	req, _ := http.NewRequest("GET", requestUrl, nil)
-	req.Header.Set("Host", "http://post-service:8080")
-	req.Header.Set("Authorization", r.Header.Get("Authorization"))
-	res, err2 := client.Do(req)
-	if err2 != nil {
-		fmt.Println(err2)
-		return
-	}
-	body, err5 := ioutil.ReadAll(res.Body)
-	if err5 != nil {
-		log.Fatalln(err5)
-	}
-	//Convert the body to type string
-	sb := string(body)
-	username := sb[1:len(sb)-1]
+
+	username := getUsernameFromToken(r)
 	makeDirectoryIfNotExists(username)
 
 	r.ParseMultipartForm(10 << 20)
@@ -97,6 +83,66 @@ func (handler *PostHandler) GetAll(writer http.ResponseWriter, request *http.Req
 	}
 }
 
+func (handler *PostHandler) GetHomeFeed(writer http.ResponseWriter, request *http.Request) {
+	//username := getUsernameFromToken(request)
+	publicPosts :=handler.PostService.GetHomeFeed("username")
+	writer.Header().Set("Content-Type", "application/json")
+	publicPostsJson, err := json.Marshal(publicPosts)
+	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
+	} else {
+		writer.WriteHeader(http.StatusOK)
+		_, _ = writer.Write(publicPostsJson)
+	}
+
+
+}
+
+
+
+func (handler *PostHandler) Delete(writer http.ResponseWriter, request *http.Request) {
+	handler.PostService.PostRepository.Delete()
+	writer.WriteHeader(http.StatusOK)
+
+}
+
+func (handler *PostHandler) GetPostsByUsername(writer http.ResponseWriter, request *http.Request) {
+	//username := getUsernameFromToken(request)
+	vars := mux.Vars(request)
+	username := vars["username"]
+	publicPosts :=handler.PostService.GetProfilePosts(username)
+	writer.Header().Set("Content-Type", "application/json")
+	publicPostsJson, err := json.Marshal(publicPosts)
+	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
+	} else {
+		writer.WriteHeader(http.StatusOK)
+		_, _ = writer.Write(publicPostsJson)
+	}
+
+
+}
+
+func getUsernameFromToken(r *http.Request) string {
+	client := &http.Client{}
+	requestUrl := fmt.Sprintf("http://%s:%s/authorize", os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
+	req, _ := http.NewRequest("GET", requestUrl, nil)
+	req.Header.Set("Host", "http://user-service:8080")
+	req.Header.Set("Authorization", r.Header.Get("Authorization"))
+	res, err2 := client.Do(req)
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+	fmt.Println(res)
+	body, err5 := ioutil.ReadAll(res.Body)
+	if err5 != nil {
+		log.Fatalln(err5)
+	}
+	//Convert the body to type string
+	sb := string(body)
+	username := sb[1:len(sb)-1]
+	return username
+}
 
 
 

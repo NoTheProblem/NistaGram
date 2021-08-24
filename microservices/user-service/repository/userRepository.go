@@ -20,8 +20,11 @@ func (repository *UserRepository) RegisterUser(user *model.User) error {
 }
 
 func (repository *UserRepository) UpdateUserProfileInfo(user *model.User) error {
+	fmt.Println("Repozitorijum")
+	fmt.Println(user.ProfilePrivacy)
 	result := repository.Database.Updates(user)
 	if result.RowsAffected == 0 {
+		fmt.Println("greska u repo")
 		return fmt.Errorf("user did not update")
 	}
 	fmt.Println("User successfully updated!")

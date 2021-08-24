@@ -1,6 +1,8 @@
 package service
 
 import (
+	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"user-service/dto"
 	"user-service/model"
@@ -12,7 +14,11 @@ type UserService struct {
 }
 
 func (service *UserService) RegisterUser (dto dto.UserRegisterDTO) error {
-	user := model.User{Id: uuid.New(), Email: dto.Email, UserRole: model.Role(dto.UserRole), Username: dto.Username}
+	t := true
+	f := false
+	user := model.User{Id: uuid.New(), Email: dto.Email, UserRole: model.Role(dto.UserRole), Username: dto.Username,
+		Taggable: &t, ReceiveMessages: &t, NumberOfFollowers: 0, NumberOfFollowing: 0,
+		NumberOfPosts: 0, Verified: &f}
 	err := service.UserRepository.RegisterUser(&user)
 	if err != nil {
 		return err
@@ -42,13 +48,19 @@ func (service *UserService) UpdateProfileInfo(profileDTO dto.UserEditDTO, userna
 }
 
 func (service *UserService) UpdateUserPrivacy(privacyDTO dto.UserPrivacyDTO, username string) error {
+	fmt.Println("Update User Privacy")
+	fmt.Println(privacyDTO)
 	user, err := service.UserRepository.FindUserByUsername(username)
 	if err != nil {
 		return err
 	}
-	user.ProfilePrivacy = privacyDTO.ProfilePrivacy
-	user.ReceiveMessages = privacyDTO.ReceiveMessages
-	user.Taggable = privacyDTO.Taggable
+	fmt.Println("before")
+	fmt.Println(user.ProfilePrivacy)
+	user.ProfilePrivacy = &privacyDTO.ProfilePrivacy
+	user.ReceiveMessages = &privacyDTO.ReceiveMessages
+	user.Taggable = &privacyDTO.Taggable
+	fmt.Println("after")
+	fmt.Println(user.ProfilePrivacy)
 	err = service.UserRepository.UpdateUserProfileInfo(user)
 	if err != nil {
 		return err
@@ -61,12 +73,81 @@ func (service *UserService) UpdateProfileNotification(notificationDTO dto.UserNo
 	if err != nil {
 		return err
 	}
-	user.ReceiveCommentNotifications = notificationDTO.ReceiveCommentNotifications
-	user.ReceiveMessagesNotifications = notificationDTO.ReceiveMessagesNotifications
-	user.ReceivePostNotifications = notificationDTO.ReceivePostNotifications
+	user.ReceiveCommentNotifications = &notificationDTO.ReceiveCommentNotifications
+	user.ReceiveMessagesNotifications = &notificationDTO.ReceiveMessagesNotifications
+	user.ReceivePostNotifications = &notificationDTO.ReceivePostNotifications
 	err = service.UserRepository.UpdateUserProfileInfo(user)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (service *UserService) VerifyProfile(username string) error {
+	user, err := service.UserRepository.FindUserByUsername(username)
+	if err != nil {
+		return err
+	}
+	value := true
+	user.Verified = &value
+	err = service.UserRepository.UpdateUserProfileInfo(user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (service *UserService) AddFollower(username string) error {
+	user, err := service.UserRepository.FindUserByUsername(username)
+	if err != nil {
+		return err
+	}
+	user.NumberOfFollowers = user.NumberOfFollowers + 1
+	err = service.UserRepository.UpdateUserProfileInfo(user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (service *UserService) AddFollowing(username string) error {
+	user, err := service.UserRepository.FindUserByUsername(username)
+	if err != nil {
+		return err
+	}
+	user.NumberOfFollowing = user.NumberOfFollowing + 1
+	err = service.UserRepository.UpdateUserProfileInfo(user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (service *UserService) AddPost(username string) error {
+	user, err := service.UserRepository.FindUserByUsername(username)
+	if err != nil {
+		return err
+	}
+	user.NumberOfPosts = user.NumberOfPosts + 1
+	err = service.UserRepository.UpdateUserProfileInfo(user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (service *UserService) GetUserProfile(username string, requester string) (*model.User, error) {
+	user, err := service.UserRepository.FindUserByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+	if !*user.ProfilePrivacy {
+		if requester != "" {
+			return nil, errors.New("private profile, log in to send request")
+		}else {
+			//TODO videti da li se prate
+			return nil, errors.New("private profile, send request to follow")
+		}
+	}
+	return user, nil
 }
