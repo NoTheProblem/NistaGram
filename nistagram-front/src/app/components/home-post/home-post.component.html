@@ -16,12 +16,12 @@
       </p>
       <a href="javascript:void(0)" class="ui-rect ui-bg-cover" style="background-image: url({{image}});"></a>
       <div *ngIf="post?.isAlbum">
-        <a href="javascript:;" class="d-inline-block text-muted ">
+        <a href="javascript:void(0)" class="d-inline-block text-muted ">
         <mat-icon (click)="albumLeft()">
           arrow_back_ios
         </mat-icon>
         </a>
-        <a href="javascript:;" class="d-inline-block text-muted" style="position: absolute; left: auto; right: 15px;">
+        <a href="javascript:void(0)" class="d-inline-block text-muted" style="position: absolute; left: auto; right: 15px;">
         <mat-icon (click)="albumRight()" >
           arrow_forward_ios
         </mat-icon>
@@ -32,20 +32,33 @@
       </p>
     </div>
     <div class="card-footer">
-      <mat-icon>favorite_border</mat-icon>
-      <mat-icon>favorite</mat-icon>
+      <a href="javascript:void(0)" class="d-inline-block text-muted" *ngIf="!isLiked" (click)="likePost()">
+        <mat-icon>favorite_border</mat-icon>
+      </a>
+      <a href="javascript:void(0)" class="d-inline-block text-muted" *ngIf="isLiked" (click)="unLikePost()">
+        <mat-icon>favorite</mat-icon>
+      </a>
+      <a href="javascript:void(0)" class="d-inline-block text-muted" (click)="isCommentInput = !isCommentInput">
       <mat-icon>comment</mat-icon>
-
+      </a>
       <br>
       <a href="javascript:void(0)" class="d-inline-block text-muted">
         <strong>{{post?.NumberOfLikes}}</strong> <small>Likes</small>
       </a>
-      <a href="javascript:void(0)" class="d-inline-block text-muted ml-3">
+      <a href="javascript:void(0)" class="d-inline-block text-muted ml-3" (click)="showComments = !showComments">
         <strong>{{post?.numberOfComments}}</strong><small> Comments</small>
       </a>
-      <a href="javascript:void(0)" class="d-inline-block text-muted ml-3">
+      <a href="javascript:void(0)" class="d-inline-block text-muted ml-3" (click)="reportPost()">
         <small class="align-middle">Report</small>
       </a>
+      <div *ngIf="isCommentInput">
+        <input name="phone" [(ngModel)] = "commentInput" placeholder="insert comment" type="text"  (keyup.enter)="addComment()">
+      </div>
+      <div *ngIf="showComments">
+        <div  *ngFor="let comment of post?.comments">
+          <p> <b>{{comment?.commentOwnerUsername}}</b> : {{comment?.text}}</p>
+        </div>
+      </div>
     </div>
 
   </div>

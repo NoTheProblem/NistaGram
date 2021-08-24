@@ -1,10 +1,7 @@
 package model
 
-import "gorm.io/gorm"
-
 type Comment struct {
-	gorm.Model
-	CommentText string `json:"CommentText"`
-	CommentDate string `json:"CommentDate"`
-	PostID uint
+	CommentText string `json:"text"`
+	CommentDate string `json:"date"`
+	CommentOwnerUsername string `json:"commentOwnerUsername"`
 }

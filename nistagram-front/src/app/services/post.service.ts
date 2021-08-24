@@ -27,4 +27,43 @@ export class PostService {
   public HomeFeed(): Observable<Array<PostModel>> {
     return this.http.get<Array<PostModel>>('http://localhost:8080/api/post/homeFeed');
   }
+
+  likePost(form: any): void{
+    console.log(form);
+    this.http.put('http://localhost:8080/api/post/likePost', form).subscribe(
+      res => {
+        this.toastr.success('Notification settings updated!');
+      },
+      (error => {
+        console.log(error);
+        this.toastr.error('Update failed');
+      })
+    );
+  }
+
+  disLikePost(form: any): void{
+    console.log(form);
+    this.http.put('http://localhost:8080/api/post/disLikePost', form).subscribe(
+      res => {
+        this.toastr.success('Notification settings updated!');
+      },
+      (error => {
+        console.log(error);
+        this.toastr.error('Update failed');
+      })
+    );
+  }
+
+  commentPost(form: any): void{
+    console.log(form);
+    this.http.put('http://localhost:8080/api/post/commentPost', form).subscribe(
+      res => {
+        this.toastr.success('Notification settings updated!');
+      },
+      (error => {
+        console.log(error);
+        this.toastr.error('Update failed');
+      })
+    );
+  }
 }

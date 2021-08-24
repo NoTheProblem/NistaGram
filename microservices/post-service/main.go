@@ -52,6 +52,10 @@ func handleFunc(handler *handler.PostHandler) {
 	router.HandleFunc("/homeFeed", handler.GetHomeFeed).Methods("GET")
 	router.HandleFunc("/{username}", handler.GetPostsByUsername).Methods("GET")
 	router.HandleFunc("/delete", handler.Delete).Methods("POST")
+	router.HandleFunc("/getPost/{id}", handler.GetPost).Methods("GET")
+	router.HandleFunc("/commentPost", handler.CommentPost).Methods("PUT")
+	router.HandleFunc("/likePost", handler.LikePost).Methods("PUT")
+	router.HandleFunc("/disLikePost", handler.DislikePost).Methods("PUT")
 
 	c := SetupCors()
 

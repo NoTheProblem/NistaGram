@@ -1,11 +1,12 @@
 package model
 
 import (
+	"github.com/google/uuid"
 	"time"
 )
 
 type Post struct {
-
+	Id uuid.UUID `json:"id"`
 	Description string `json:"description"`
 	NumberOfLikes int `json:"NumberOfLikes"`
 	NumberOfDislikes int `json:"NumberOfDislikes"`

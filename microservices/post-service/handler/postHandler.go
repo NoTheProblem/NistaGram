@@ -133,6 +133,85 @@ func (handler *PostHandler) GetPostsByUsername(writer http.ResponseWriter, reque
 
 }
 
+func (handler *PostHandler) GetPost(writer http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	id := vars["id"]
+	publicPosts :=handler.PostService.GetPostByID(id)
+	writer.Header().Set("Content-Type", "application/json")
+	publicPostsJson, err := json.Marshal(publicPosts)
+	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
+	} else {
+		writer.WriteHeader(http.StatusOK)
+		_, _ = writer.Write(publicPostsJson)
+	}
+}
+
+func (handler *PostHandler) CommentPost(writer http.ResponseWriter, request *http.Request) {
+	fmt.Println("CommentHandler")
+	var commentDTO dto.CommentDTO
+	err := json.NewDecoder(request.Body).Decode(&commentDTO)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	username := getUsernameFromToken(request)
+	err = handler.PostService.CommentPost(commentDTO, username)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	writer.WriteHeader(http.StatusOK)
+}
+
+func (handler *PostHandler) LikePost(writer http.ResponseWriter, request *http.Request) {
+	fmt.Println("LikeHandler")
+	var commentId dto.IdDTO
+	err := json.NewDecoder(request.Body).Decode(&commentId)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	username := getUsernameFromToken(request)
+	if username == "" {
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	err = handler.PostService.LikePost(commentId.Id)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	writer.WriteHeader(http.StatusOK)
+}
+
+func (handler *PostHandler) DislikePost(writer http.ResponseWriter, request *http.Request) {
+	fmt.Println("DisLikeHandler")
+	var commentId dto.IdDTO
+	err := json.NewDecoder(request.Body).Decode(&commentId)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	username := getUsernameFromToken(request)
+	if username == "" {
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	err = handler.PostService.DisLikePost(commentId.Id)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	writer.WriteHeader(http.StatusOK)
+}
+
 func getUsernameFromToken(r *http.Request) string {
 	client := &http.Client{}
 	requestUrl := fmt.Sprintf("http://%s:%s/authorize", os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))

@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"io/ioutil"
 	"os"
@@ -78,6 +79,87 @@ func (service *PostService) GetProfilePosts(username string) interface{} {
 	return  publicPosts
 }
 
+func (service *PostService) GetPostByID(id string) interface{} {
+	uid, err := uuid.Parse(id)
+	if err != nil {
+		print(err)
+		return nil
+	}
+	postDocument := service.PostRepository.GetPost(uid)
+	var post model.Post
+	bsonBytes, _ := bson.Marshal(postDocument)
+	_ = bson.Unmarshal(bsonBytes, &post)
+	for j, _ := range post.Path {
+		b, err := ioutil.ReadFile(post.Path[j])
+		if err != nil {
+			fmt.Print(err)
+		}
+		var image model.PostImages
+		image.Image = b
+		post.Images = append(post.Images, image)
+	}
+	return  post
+}
+
+func (service *PostService) CommentPost(commentDTO dto.CommentDTO, username string) error {
+	fmt.Println("CommentService")
+	uid, err := uuid.Parse(commentDTO.PostId)
+	if err != nil {
+		return err
+	}
+	postDocument := service.PostRepository.GetPost(uid)
+	var post model.Post
+	bsonBytes, _ := bson.Marshal(postDocument)
+	_ = bson.Unmarshal(bsonBytes, &post)
+	var comment model.Comment
+	comment.CommentText = commentDTO.CommentText
+	comment.CommentDate = commentDTO.CommentDate
+	comment.CommentOwnerUsername = username
+	post.PostComments = append(post.PostComments, comment)
+
+	errR := service.PostRepository.AddComment(&post)
+	if errR != nil{
+		return errR
+	}
+	return  nil
+}
+
+func (service *PostService) LikePost(id string) error {
+	fmt.Println("LikeService")
+	uid, err := uuid.Parse(id)
+	if err != nil {
+		return err
+	}
+	postDocument := service.PostRepository.GetPost(uid)
+	var post model.Post
+	bsonBytes, _ := bson.Marshal(postDocument)
+	_ = bson.Unmarshal(bsonBytes, &post)
+	post.NumberOfLikes = post.NumberOfLikes + 1
+	errR := service.PostRepository.UpdateLikes(&post)
+	if errR != nil{
+		return errR
+	}
+	return  nil
+}
+
+func (service *PostService) DisLikePost(id string) error {
+	fmt.Println("DislikeService")
+	uid, err := uuid.Parse(id)
+	if err != nil {
+		return err
+	}
+	postDocument := service.PostRepository.GetPost(uid)
+	var post model.Post
+	bsonBytes, _ := bson.Marshal(postDocument)
+	_ = bson.Unmarshal(bsonBytes, &post)
+	post.NumberOfLikes = post.NumberOfLikes - 1
+	errR := service.PostRepository.UpdateLikes(&post)
+	if errR != nil{
+		return errR
+	}
+	return  nil
+}
+
 func CreatePostsFromDocuments(PostsDocuments []bson.D) []model.Post {
 	var publicPosts []model.Post
 	for i := 0; i < len(PostsDocuments); i++ {
@@ -91,6 +173,7 @@ func CreatePostsFromDocuments(PostsDocuments []bson.D) []model.Post {
 
 func mapPostDtoTOPost(postDTO *dto.PostDTO, username string, paths []string) (*model.Post, error) {
 	var post model.Post
+	post.Id, _ = uuid.NewUUID()
 	post.Tags = postDTO.Tags
 	post.Description = postDTO.Description
 	post.Location = postDTO.Location

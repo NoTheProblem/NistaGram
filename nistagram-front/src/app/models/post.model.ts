@@ -1,4 +1,5 @@
 export interface PostModel {
+  id: string;
   numberOfComments: number;
   date: Date;
   description: string;
@@ -7,7 +8,7 @@ export interface PostModel {
   isAdd: boolean;
   isAlbum: boolean;
   NumberOfReaches: boolean;
-  comments: object[];
+  comments: Comment[];
   isPublic: boolean;
   location: string;
   tags: string[];
@@ -18,4 +19,11 @@ export interface PostModel {
 
 interface PostImages{
   Image: string;
+}
+
+
+interface Comment{
+  text: string;
+  date: Date;
+  commentOwnerUsername: string;
 }

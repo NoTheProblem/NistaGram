@@ -3,9 +3,11 @@ package repository
 import (
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+
 	"log"
 	"post-service/model"
 )
@@ -88,4 +90,48 @@ func (repository *PostRepository) GetProfilePosts(username string) []bson.D {
 	return postsFiltered
 }
 
+
+func (repository *PostRepository) GetPost(id uuid.UUID) bson.D {
+
+	postsCollection := repository.Database.Collection("posts")
+	var post bson.D
+	err := postsCollection.FindOne(context.TODO(), bson.M{"id": id}).Decode(&post)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return post
+}
+
+func (repository *PostRepository) AddComment(post *model.Post)  error {
+	posts := repository.Database.Collection("posts")
+	result, err := posts.UpdateOne(
+		context.TODO(),
+		bson.M{"id": post.Id},
+		bson.D{
+			{"$set", bson.D{{"postComments", post.PostComments}}},
+		},
+	)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Updated %v Documents!\n", result.ModifiedCount)
+	return  nil
+}
+
+func (repository *PostRepository) UpdateLikes(post *model.Post)  error {
+	posts := repository.Database.Collection("posts")
+	result, err := posts.UpdateOne(
+		context.TODO(),
+		bson.M{"id": post.Id},
+		bson.D{
+			{"$set", bson.D{{"numberOfLikes", post.NumberOfLikes}}},
+		},
+	)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Updated %v Documents!\n", result.ModifiedCount)
+	return  nil
+}
 
