@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {PostModel} from '../../models/post.model';
 import {PostService} from '../../services/post.service';
+import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
+
 
 @Component({
   selector: 'app-home',
@@ -9,10 +11,11 @@ import {PostService} from '../../services/post.service';
 })
 export class HomeComponent implements OnInit {
   public posts: Array<PostModel> = new Array<PostModel>();
+  closeResult = '';
 
 
 
-  constructor(private postService: PostService) { }
+  constructor(private postService: PostService, private modalService: NgbModal) { }
 
   ngOnInit(): void {
     this.initPosts();
@@ -23,6 +26,8 @@ export class HomeComponent implements OnInit {
         this.posts = postsList;
       });
   }
+
+
 }
 
 

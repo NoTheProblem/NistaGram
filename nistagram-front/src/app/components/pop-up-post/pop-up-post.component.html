@@ -1,0 +1,62 @@
+<div class="box">
+  <div style="width: 80%;">
+    <img [src]="image" width="95%" />
+
+  </div>
+
+  <div>
+    <br><br>
+    <div  style="font-size: 20px;">
+      <a routerLink="/{{post.owner}}"  class="d-inline-block text-muted ">
+        <b>{{post.owner}}</b>
+      </a>
+    </div>
+    <br>
+    {{post.location}}
+    <hr>
+    {{post.description}}
+    <hr>
+    <ul *ngFor="let comment of post.comments">
+      <li> <b> {{comment.commentOwnerUsername}} : </b> {{comment.text}}  </li>
+    </ul>
+    <hr>
+    <a href="javascript:void(0)" class="d-inline-block text-muted" *ngIf="!isLiked" (click)="likePost()">
+      <mat-icon>favorite_border</mat-icon>
+    </a>
+    <a href="javascript:void(0)" class="d-inline-block text-muted" *ngIf="isLiked" (click)="unLikePost()">
+      <mat-icon>favorite</mat-icon>
+    </a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="javascript:void(0)" class="d-inline-block text-muted" >
+      <mat-icon>send</mat-icon>
+    </a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="javascript:void(0)" class="d-inline-block text-muted" >
+      <mat-icon>report</mat-icon>
+    </a>
+    <hr>
+    <div *ngIf="post?.isAlbum"  style="">
+      <a href="javascript:void(0)" class="d-inline-block text-muted ">
+        <mat-icon (click)="albumLeft()">
+          arrow_back_ios
+        </mat-icon>
+      </a>
+      <a   class="d-inline-block text-muted" style="position: absolute; left: auto; right: 15px;">
+        <mat-icon (click)="albumRight()" >
+          arrow_forward_ios
+        </mat-icon>
+      </a>
+    </div>
+    <hr>
+    <div >
+      <input name="phone" [(ngModel)] = "commentInput" placeholder="insert comment" type="text"  (keyup.enter)="addComment()">
+    </div>
+  </div>
+
+</div>
+
+
+
+
+
+
+
+

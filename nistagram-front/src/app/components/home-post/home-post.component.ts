@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import {PostModel} from '../../models/post.model';
 import {PostService} from '../../services/post.service';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-home-post',
@@ -16,7 +17,7 @@ export class HomePostComponent implements OnInit {
   isCommentInput = false;
   showComments = false;
 
-  constructor(private postService: PostService) { }
+  constructor(private postService: PostService, private modalService: NgbModal) { }
 
   ngOnInit(): void {
     this.isLiked = false;
@@ -47,7 +48,6 @@ export class HomePostComponent implements OnInit {
         this.image = 'data:image/jpg;base64,' + this.post.images[this.imageAlbumNumber].Image;
       }
     }
-
   }
 
   likePost(): void {
@@ -72,5 +72,10 @@ export class HomePostComponent implements OnInit {
   reportPost(): void {
     alert('Post reported');
     // TODO poziv backa
+  }
+
+  open(content): void {
+    this.modalService.open(content,
+      {centered: true, scrollable: true, size: 'xl'});
   }
 }

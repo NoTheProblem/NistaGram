@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {PostModel} from '../../models/post.model';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-profile-post',
@@ -9,7 +10,7 @@ import {PostModel} from '../../models/post.model';
 export class ProfilePostComponent implements OnInit {
   @Input() post: PostModel;
   image: any;
-  constructor() { }
+  constructor(private modalService: NgbModal) { }
 
   ngOnInit(): void {
     if (this.post.comments?.length === undefined){
@@ -18,7 +19,11 @@ export class ProfilePostComponent implements OnInit {
       this.post.numberOfComments = this.post.comments.length;
     }
     this.image = 'data:image/jpg;base64,' + this.post.images[0].Image;
-    // TODO album !!!
+  }
+
+  open(content): void {
+    this.modalService.open(content,
+      {centered: true, scrollable: true, size: 'xl'});
   }
 
 }

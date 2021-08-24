@@ -32,11 +32,11 @@ export class PostService {
     console.log(form);
     this.http.put('http://localhost:8080/api/post/likePost', form).subscribe(
       res => {
-        this.toastr.success('Notification settings updated!');
+        this.toastr.success('Post liked!');
       },
       (error => {
         console.log(error);
-        this.toastr.error('Update failed');
+        this.toastr.error('Post not liked!');
       })
     );
   }
@@ -45,11 +45,9 @@ export class PostService {
     console.log(form);
     this.http.put('http://localhost:8080/api/post/disLikePost', form).subscribe(
       res => {
-        this.toastr.success('Notification settings updated!');
       },
       (error => {
         console.log(error);
-        this.toastr.error('Update failed');
       })
     );
   }
@@ -58,11 +56,11 @@ export class PostService {
     console.log(form);
     this.http.put('http://localhost:8080/api/post/commentPost', form).subscribe(
       res => {
-        this.toastr.success('Notification settings updated!');
+        this.toastr.success('Comment posted!');
       },
       (error => {
         console.log(error);
-        this.toastr.error('Update failed');
+        this.toastr.error('Failed to post comment!');
       })
     );
   }

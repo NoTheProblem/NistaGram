@@ -14,14 +14,14 @@
       <p>
         {{post?.location}}
       </p>
-      <a href="javascript:void(0)" class="ui-rect ui-bg-cover" style="background-image: url({{image}});"></a>
+      <a href="javascript:void(0)" (click)="open(content)" class="ui-rect ui-bg-cover" style="background-image: url({{image}});"></a>
       <div *ngIf="post?.isAlbum">
         <a href="javascript:void(0)" class="d-inline-block text-muted ">
         <mat-icon (click)="albumLeft()">
           arrow_back_ios
         </mat-icon>
         </a>
-        <a href="javascript:void(0)" class="d-inline-block text-muted" style="position: absolute; left: auto; right: 15px;">
+        <a   class="d-inline-block text-muted" style="position: absolute; left: auto; right: 15px;">
         <mat-icon (click)="albumRight()" >
           arrow_forward_ios
         </mat-icon>
@@ -63,3 +63,9 @@
 
   </div>
 </div>
+
+
+<ng-template #content let-modal>
+  <app-pop-up-post [post]="post"></app-pop-up-post>
+</ng-template>
+

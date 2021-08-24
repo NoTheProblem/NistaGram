@@ -35,6 +35,7 @@ import { PrivacySettingsComponent } from './components/privacy-settings/privacy-
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { VerificationComponent } from './components/verification/verification.component';
 import { ProfilePostComponent } from './components/profile-post/profile-post.component';
+import { PopUpPostComponent } from './components/pop-up-post/pop-up-post.component';
 
 
 @NgModule({
@@ -53,7 +54,8 @@ import { ProfilePostComponent } from './components/profile-post/profile-post.com
     PrivacySettingsComponent,
     ResetPasswordComponent,
     VerificationComponent,
-    ProfilePostComponent
+    ProfilePostComponent,
+    PopUpPostComponent
   ],
   imports: [
     BrowserModule,
