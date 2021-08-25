@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"github.com/google/uuid"
 	"user-service/dto"
 	"user-service/model"
@@ -49,19 +48,13 @@ func (service *UserService) UpdateProfileInfo(profileDTO dto.UserEditDTO, userna
 }
 
 func (service *UserService) UpdateUserPrivacy(privacyDTO dto.UserPrivacyDTO, username string) error {
-	fmt.Println("Update User Privacy")
-	fmt.Println(privacyDTO)
 	user, err := service.UserRepository.FindUserByUsername(username)
 	if err != nil {
 		return err
 	}
-	fmt.Println("before")
-	fmt.Println(user.ProfilePrivacy)
 	user.ProfilePrivacy = &privacyDTO.ProfilePrivacy
 	user.ReceiveMessages = &privacyDTO.ReceiveMessages
 	user.Taggable = &privacyDTO.Taggable
-	fmt.Println("after")
-	fmt.Println(user.ProfilePrivacy)
 	err = service.UserRepository.UpdateUserProfileInfo(user)
 	if err != nil {
 		return err
@@ -150,7 +143,6 @@ func (service *UserService) GetUserProfile(username string, requester string) (*
 			return nil, errors.New("private profile, log in to send request")
 		}
 	}
-	fmt.Println("Izlaz getUserProfile service")
 
 	return user, nil
 }

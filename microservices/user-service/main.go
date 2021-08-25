@@ -49,6 +49,7 @@ func handleFunc(handler *handler.UserHandler) {
 	router.HandleFunc("/updatePrivacySettings", handler.UpdatePrivacySettings).Methods("POST")
 	router.HandleFunc("/loadMyProfile", handler.LoadMyProfile).Methods("GET")
 	router.HandleFunc("/username/{username}", handler.GetUserProfile).Methods("GET")
+	router.HandleFunc("/verify/{username}", handler.VerifyProfile).Methods("PUT")
 
 	c := SetupCors()
 

@@ -36,6 +36,8 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
 import { VerificationComponent } from './components/verification/verification.component';
 import { ProfilePostComponent } from './components/profile-post/profile-post.component';
 import { PopUpPostComponent } from './components/pop-up-post/pop-up-post.component';
+import { VerificationAdminComponent } from './components/verification-admin/verification-admin.component';
+import { VerificationListComponent } from './components/verification-list/verification-list.component';
 
 
 @NgModule({
@@ -55,7 +57,9 @@ import { PopUpPostComponent } from './components/pop-up-post/pop-up-post.compone
     ResetPasswordComponent,
     VerificationComponent,
     ProfilePostComponent,
-    PopUpPostComponent
+    PopUpPostComponent,
+    VerificationAdminComponent,
+    VerificationListComponent
   ],
   imports: [
     BrowserModule,

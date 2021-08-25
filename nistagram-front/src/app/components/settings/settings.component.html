@@ -31,7 +31,7 @@
           <app-notification-settings [userProfile]="user" ></app-notification-settings>
         </div>
         <div *ngIf="openVerification">
-          <app-verification></app-verification>
+          <app-verification [isVerified]="user.verified"></app-verification>
         </div>
       </div>
     </mat-card>

@@ -1,5 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {SettingsService} from '../../services/settings.service';
+import {UserModel} from '../../models/user.model';
 @Component({
   selector: 'app-verification',
   templateUrl: './verification.component.html',
@@ -7,6 +8,7 @@ import {SettingsService} from '../../services/settings.service';
 })
 export class VerificationComponent implements OnInit {
 
+  @Input() isVerified: boolean;
   selectedFile: File = null;
   isUploaded = false;
   fileName = '';

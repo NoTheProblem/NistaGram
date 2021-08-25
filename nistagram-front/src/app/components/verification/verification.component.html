@@ -1,23 +1,28 @@
-<div class="login-container" >
+  <div class="login-container" >
   <div class="login_card">
     <mat-card class="login_card_content">
       <mat-card-content class="login_card_form">
-        <form #form="ngForm"  class="register-form">
-          <label> Real first name:</label>&nbsp;
-          <input name="firstName" [(ngModel)] = "firstName" placeholder="First name" type="text"> &nbsp;&nbsp;
-          <label> Real last name:</label>&nbsp;
-          <input name="lastName" [(ngModel)]= "lastName" placeholder="Last name" type="text">
-          <hr>
-          <label> Application category: </label>&nbsp;
-          <input name="email" [(ngModel)] = "category" placeholder="Category" type="text">&nbsp;&nbsp;
-          <hr>
-          <input type = "file" style="display: none" (change)="onFileSelected($event)" #fileInput>
-          <button class="login-button" (click)="fileInput.click()">Upload official document</button>
-          <p *ngIf="isUploaded" style="text-align: center;">{{fileName}} uploaded! </p>
-          <hr>
-          <button (click)="SendVerificationRequest()">Send Request
-          </button>
-        </form>
+        <div *ngIf="isVerified" style="text-align: center;">
+          Your profile is already verified!
+        </div>
+        <div *ngIf="!isVerified">
+          <form #form="ngForm"  class="register-form">
+            <label> Real first name:</label>&nbsp;
+            <input name="firstName" [(ngModel)] = "firstName" placeholder="First name" type="text"> &nbsp;&nbsp;
+            <label> Real last name:</label>&nbsp;
+            <input name="lastName" [(ngModel)]= "lastName" placeholder="Last name" type="text">
+            <hr>
+            <label> Application category: </label>&nbsp;
+            <input name="email" [(ngModel)] = "category" placeholder="Category" type="text">&nbsp;&nbsp;
+            <hr>
+            <input type = "file" style="display: none" (change)="onFileSelected($event)" #fileInput>
+            <button class="login-button" (click)="fileInput.click()">Upload official document</button>
+            <p *ngIf="isUploaded" style="text-align: center;">{{fileName}} uploaded! </p>
+            <hr>
+            <button (click)="SendVerificationRequest()">Send Request
+            </button>
+          </form>
+        </div>
       </mat-card-content>
     </mat-card>
   </div>

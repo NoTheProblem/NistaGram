@@ -46,6 +46,8 @@ func handleFunc(handler *handler.VerificationHandler) {
 
 
 	router.HandleFunc("/user", handler.CreateNewUserRequest).Methods("POST")
+	router.HandleFunc("/answer", handler.AnswerRequest).Methods("PUT")
+	router.HandleFunc("/getUnAnswered", handler.GetAllUnAnswered).Methods("GET")
 
 	c := SetupCors()
 

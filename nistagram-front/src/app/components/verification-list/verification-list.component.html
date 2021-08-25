@@ -1,0 +1,22 @@
+<div class="login-container" >
+  <br><br><br><br>
+  <div class="login_card">
+    <mat-card class="login_card_content">
+      <mat-card-content class="login_card_form">
+       <p> List of verification requests:
+        <div *ngIf="verificationRequests.length===0" style="text-align: center;">
+          No requests at this moment
+        </div>
+        <ul *ngFor="let request of verificationRequests; let i = index">
+          <li (click)="open(content,i)"> <b> {{request?.username}} : </b> {{request?.category}} {{request?.dateSubmitted | date:'longDate'}}  </li>
+        </ul>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+
+
+<ng-template #content let-modal>
+  <app-verification-admin [request]="verificationRequests[i]"></app-verification-admin>
+</ng-template>

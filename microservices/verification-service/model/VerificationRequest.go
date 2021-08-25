@@ -16,5 +16,6 @@ type VerificationRequest struct {
 	DateAnswered time.Time `json:"dateAnswered"`
 	Answer string `json:"answer"`
 	IsAnswered bool `json:"isAnswered"`
-
+	Image []byte `json:"image"`
+	VerificationAnswer bool `json:"VerificationAnswer"`
 }

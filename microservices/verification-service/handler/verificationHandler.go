@@ -1,12 +1,14 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"verification-service/dto"
 	"verification-service/model"
 	"verification-service/service"
 )
@@ -86,6 +88,42 @@ func (handler *VerificationHandler) CreateNewUserRequest(writer http.ResponseWri
 		return
 	}
 	writer.WriteHeader(http.StatusOK)
+
+}
+
+func (handler *VerificationHandler) AnswerRequest(writer http.ResponseWriter, request *http.Request) {
+	// TODO check token user role
+
+	var verificationAnswer dto.VerificationAnswerDTO
+	err := json.NewDecoder(request.Body).Decode(&verificationAnswer)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	err = handler.VerificationService.AnswerRequest(&verificationAnswer,request.Header.Get("Authorization"))
+	if err != nil{
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	writer.WriteHeader(http.StatusOK)
+	
+}
+
+func (handler *VerificationHandler) GetAllUnAnswered(writer http.ResponseWriter, request *http.Request) {
+	// TODO check token user role
+
+	unAnsweredRequests, _ :=handler.VerificationService.GetAllUnAnsweredRequests()
+
+	writer.Header().Set("Content-Type", "application/json")
+	publicPostsJson, err := json.Marshal(unAnsweredRequests)
+	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
+	} else {
+		writer.WriteHeader(http.StatusOK)
+		_, _ = writer.Write(publicPostsJson)
+	}
 
 }
 

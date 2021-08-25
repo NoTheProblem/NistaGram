@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"verification-service/model"
 )
@@ -29,11 +30,31 @@ func (repository *VerificationRepository) UpdateUserProfileInfo(user *model.Veri
 	return nil
 }
 
-func (repository *VerificationRepository) FindUserByUsername(username string) (*model.VerificationRequest, error){
+func (repository *VerificationRepository) GetAllUnAnsweredRequests() ([]model.VerificationRequest, error) {
+	var requests []model.VerificationRequest
+	err := repository.Database.Table("verification_requests").Find(&requests, "is_answered is false").Error
+	if  err != nil {
+		return nil, err
+	}
+	return requests, nil
+
+}
+
+func (repository *VerificationRepository) GetVerificationRequestById(uid uuid.UUID) (*model.VerificationRequest, error) {
 	request := &model.VerificationRequest{}
-	err := repository.Database.Table("verification_requests").First(&request, "username = ?", username).Error
+	err := repository.Database.Table("verification_requests").First(&request, "id = ?", uid).Error
 	if  err != nil {
 		return nil, err
 	}
 	return request, nil
+
 }
+
+func (repository *VerificationRepository) UpdateVerificationRequest(request *model.VerificationRequest) error{
+	result := repository.Database.Updates(request)
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("user did not update")
+	}
+	return nil
+}
+

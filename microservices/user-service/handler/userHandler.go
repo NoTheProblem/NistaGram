@@ -125,7 +125,6 @@ func (handler *UserHandler) LoadMyProfile(writer http.ResponseWriter, request *h
 }
 
 func (handler *UserHandler) GetUserProfile(writer http.ResponseWriter, request *http.Request) {
-
 	requester, errLogged := getUsernameFromToken(request)
 	if errLogged != nil{
 		requester = ""
@@ -148,13 +147,28 @@ func (handler *UserHandler) GetUserProfile(writer http.ResponseWriter, request *
 	}
 }
 
+func (handler *UserHandler) VerifyProfile(writer http.ResponseWriter, request *http.Request) {
+	// TODO check role from token
+
+	vars := mux.Vars(request)
+	username := vars["username"]
+	err := handler.UserService.VerifyProfile(username)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	writer.WriteHeader(http.StatusOK)
+
+}
+
 
 func getUsernameFromToken(r *http.Request) (string, error) {
 	client := &http.Client{}
 	requestUrl := fmt.Sprintf("http://%s:%s/authorize", os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
 	req, _ := http.NewRequest("GET", requestUrl, nil)
 	req.Header.Set("Host", "http://user-service:8080")
-	fmt.Println( r.Header.Get("Authorization"))
+	fmt.Println(r.Header.Get("Authorization"))
 	if  r.Header.Get("Authorization") == ""{
 		fmt.Println("nema autorizacije")
 		return "", errors.New("no logged user")

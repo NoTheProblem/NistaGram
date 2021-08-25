@@ -1,0 +1,36 @@
+<div class="box">
+  <div style="width: 80%;">
+    <img [src]="image" width="95%" />
+
+  </div>
+
+  <div>
+    <hr>
+    Username: <b>{{request.username}} </b>
+    <hr>
+    First name: <b>{{request.firstName}}</b>
+    <hr>
+    Last name:<b> {{request.lastName}}</b>
+    <hr>
+    Category: <b>{{request.category}}</b>
+    <hr>
+    Date submitted: <b>{{request?.dateSubmitted | date:'longDate'}}</b>
+    <hr>
+    <button (click)="openDeclineInput = !openDeclineInput"> Decline request </button>
+    <button (click)="acceptRequest()"> Accept request </button>
+    <hr>
+    <div *ngIf="openDeclineInput">
+      <input [(ngModel)]="declineInput" placeholder="insert reason for decline">
+      <button (click)="declineRequest()"> Confirm request denial </button>
+    </div>
+  </div>
+
+</div>
+
+
+
+
+
+
+
+
