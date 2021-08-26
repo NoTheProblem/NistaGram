@@ -66,4 +66,7 @@ export class FollowService {
     return this.http.get<boolean>('http://localhost:8080/api/followers/isFollowing/' + username);
   }
 
+  getRecommendedUsers(): Observable<string[]> {
+    return this.http.get<string[]>('http://localhost:8080/api/followers/recommendedProfiles');
+  }
 }
