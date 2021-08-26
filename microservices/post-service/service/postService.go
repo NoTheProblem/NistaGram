@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
@@ -62,10 +63,17 @@ func (service *PostService) GetHomeFeed(username string) interface{}{
 
 }
 
-func (service *PostService) GetProfilePosts(username string) interface{} {
+func (service *PostService) GetProfilePosts(username string, token string) interface{} {
 	publicPostsDocuments := service.PostRepository.GetProfilePosts(username)
 
 	publicPosts := CreatePostsFromDocuments(publicPostsDocuments)
+
+	if !publicPosts[0].IsPublic {
+		if !isFollowing(username, token) {
+			return model.Post{}
+		}
+	}
+
 	for i, s:= range publicPosts{
 		for j, _ := range s.Path {
 			b, err := ioutil.ReadFile(s.Path[j])
@@ -292,6 +300,11 @@ func (service *PostService) SearchTag(tag string) interface{} {
 	// TODO limit? pagable?
 }
 
+func (service *PostService) UpdatePostsPrivacy(username string, privacy bool)  {
+	service.PostRepository.UpdatePostsPrivacyByOwner(username, privacy)
+}
+
+
 
 
 func CreatePostsFromDocuments(PostsDocuments []bson.D) []model.Post {
@@ -380,4 +393,26 @@ func removeStringFromSLice(s string,l []string) []string {
 		}
 	}
 	return l
+}
+
+
+func isFollowing(username string, token string) bool {
+	client := &http.Client{}
+	requestUrl := fmt.Sprintf("http://%s:%s/isFollowing/" + username, os.Getenv("FOLLOWERS_SERVICE_DOMAIN"), os.Getenv("FOLLOWERS_SERVICE_PORT"))
+	req, _ := http.NewRequest("GET", requestUrl, nil)
+	req.Header.Set("Host", "http://user-service:8080")
+	if  token == ""{
+		return false
+	}
+	req.Header.Set("Authorization", token)
+	res, err2 := client.Do(req)
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+	var isFollowing bool
+	fmt.Println(res)
+	fmt.Println(res.Body)
+	_ = json.NewDecoder(res.Body).Decode(&isFollowing)
+	fmt.Println(isFollowing)
+	return isFollowing
 }

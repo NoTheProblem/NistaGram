@@ -17,9 +17,11 @@ export class ProfileComponent implements OnInit {
   public username: string;
   public error = '';
   public isMe = false;
-  isLocked = false;
+  isError = false;
   isLogged = false;
   isFollowing = false;
+  showFollowButton = true;
+  isBlocked = false;
 
   constructor(private route: ActivatedRoute, private userService: UserService, private followService: FollowService,
               private tokenStorageService: TokenStorageService) { }
@@ -32,37 +34,55 @@ export class ProfileComponent implements OnInit {
         this.profile = profile;
       },
         (error => {
+          this.isError = true;
+          console.log(error.error);
           this.error = error.error.slice(0, -5);
           if (this.error === 'record not found'){
+            this.showFollowButton = false;
             this.error = 'User with that username does not exist!';
           }
         })
       );
+
     this.userService.loadProfilePosts(this.username)
       .subscribe((postsList: Array<PostModel>) => {
           this.posts = postsList;
         },
         (error => {
+          this.isError = true;
+          console.log(error.error);
           this.error = this.error + error.error;
         })
       );
+
     this.isLogged = this.tokenStorageService.isLoggedIn();
+    if (this.isLogged){
+      this.followService.isFollowing(this.username).subscribe((is: boolean) => {
+        this.isFollowing = is;
+      },
+        (error => {
+          this.isError = true;
+          console.log(error.error);
+          this.error = this.error + error.error;
+        })
+      );
+    }
   }
 
   followUser(): void {
-    this.followService.followUser(this.profile.username);
+    this.followService.followUser(this.username);
   }
 
   unFollowUser(): void {
-    this.followService.unFollowUser(this.profile.username);
+    this.followService.unFollowUser(this.username);
   }
 
   blockUser(): void {
-    this.followService.blockUser(this.profile.username);
+    this.followService.blockUser(this.username);
   }
 
   unBlockUser(): void {
-    this.followService.unBlockUser(this.profile.username);
+    this.followService.unBlockUser(this.username);
   }
 
 

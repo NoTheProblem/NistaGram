@@ -1,8 +1,13 @@
 package service
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/google/uuid"
+	"net/http"
+	"os"
 	"user-service/dto"
 	"user-service/model"
 	"user-service/repository"
@@ -47,10 +52,18 @@ func (service *UserService) UpdateProfileInfo(profileDTO dto.UserEditDTO, userna
 	return nil
 }
 
-func (service *UserService) UpdateUserPrivacy(privacyDTO dto.UserPrivacyDTO, username string) error {
+func (service *UserService) UpdateUserPrivacy(privacyDTO dto.UserPrivacyDTO, username string, token string) error {
 	user, err := service.UserRepository.FindUserByUsername(username)
 	if err != nil {
 		return err
+	}
+	if user.ProfilePrivacy != &privacyDTO.ProfilePrivacy{
+		var userF dto.UserFollowerDTO
+		userF.Username = user.Username
+		userF.IsPrivate = privacyDTO.ProfilePrivacy
+		userF.IsNotifications = *user.ReceivePostNotifications
+		updateUserFollower(userF, token)
+		updatePosts(privacyDTO.ProfilePrivacy,token)
 	}
 	user.ProfilePrivacy = &privacyDTO.ProfilePrivacy
 	user.ReceiveMessages = &privacyDTO.ReceiveMessages
@@ -62,10 +75,19 @@ func (service *UserService) UpdateUserPrivacy(privacyDTO dto.UserPrivacyDTO, use
 	return nil
 }
 
-func (service *UserService) UpdateProfileNotification(notificationDTO dto.UserNotificationDTO, username string) error {
+
+func (service *UserService) UpdateProfileNotification(notificationDTO dto.UserNotificationDTO, username string, token string) error {
 	user, err := service.UserRepository.FindUserByUsername(username)
 	if err != nil {
 		return err
+	}
+
+	if user.ReceivePostNotifications != &notificationDTO.ReceivePostNotifications{
+		var userF dto.UserFollowerDTO
+		userF.Username = user.Username
+		userF.IsPrivate = *user.ProfilePrivacy
+		userF.IsNotifications = notificationDTO.ReceivePostNotifications
+		updateUserFollower(userF, token)
 	}
 	user.ReceiveCommentNotifications = &notificationDTO.ReceiveCommentNotifications
 	user.ReceiveMessagesNotifications = &notificationDTO.ReceiveMessagesNotifications
@@ -130,14 +152,16 @@ func (service *UserService) AddPost(username string) error {
 	return nil
 }
 
-func (service *UserService) GetUserProfile(username string, requester string) (*model.User, error) {
+func (service *UserService) GetUserProfile(username string, requester string, token string) (*model.User, error) {
 	user, err := service.UserRepository.FindUserByUsername(username)
 	if err != nil {
 		return nil, err
 	}
 	if !*user.ProfilePrivacy {
 		if requester != "" {
-			//TODO videti da li se prate
+			if isFollowing(username, token){
+				return user, nil
+			}
 			return nil, errors.New("private profile, send request to follow")
 		}else {
 			return nil, errors.New("private profile, log in to send request")
@@ -156,4 +180,52 @@ func (service *UserService) SearchPublicUsers(username string) interface{} {
 	publicUsers, _:= service.UserRepository.GetPublicUsersByUsername(username)
 	return publicUsers
 	// TODO pagable?
+}
+
+
+func isFollowing(username string, token string) bool {
+	client := &http.Client{}
+	requestUrl := fmt.Sprintf("http://%s:%s/isFollowing/" + username, os.Getenv("FOLLOWERS_SERVICE_DOMAIN"), os.Getenv("FOLLOWERS_SERVICE_PORT"))
+	req, _ := http.NewRequest("GET", requestUrl, nil)
+	req.Header.Set("Host", "http://user-service:8080")
+	if  token == ""{
+		return false
+	}
+	req.Header.Set("Authorization", token)
+	res, err2 := client.Do(req)
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+	var isFollowing bool
+	fmt.Println(res)
+	fmt.Println(res.Body)
+	_ = json.NewDecoder(res.Body).Decode(&isFollowing)
+	fmt.Println(isFollowing)
+	return isFollowing
+}
+
+
+func updateUserFollower(user dto.UserFollowerDTO, token string)  {
+	client := &http.Client{}
+	requestUrl := fmt.Sprintf("http://%s:%s/updateUser", os.Getenv("FOLLOWERS_SERVICE_DOMAIN"), os.Getenv("FOLLOWERS_SERVICE_PORT"))
+	usrJson, _  := json.Marshal(user)
+	req, _ := http.NewRequest("PUT", requestUrl, bytes.NewBuffer(usrJson))
+	req.Header.Set("Host", "http://user-service:8080")
+	req.Header.Set("Authorization", token)
+	client.Do(req)
+}
+
+func updatePosts(privacy bool, token string) {
+	type BoolDTO struct{
+		Privacy bool `json:"privacy"`
+	}
+	var privacyDTO BoolDTO
+	privacyDTO.Privacy = privacy
+	privacyJson, _  := json.Marshal(privacyDTO)
+	client := &http.Client{}
+	requestUrl := fmt.Sprintf("http://%s:%s/updatePostPrivacy", os.Getenv("POST_SERVICE_DOMAIN"), os.Getenv("POST_SERVICE_PORT"))
+	req, _ := http.NewRequest("PUT", requestUrl, bytes.NewBuffer(privacyJson))
+	req.Header.Set("Host", "http://user-service:8080")
+	req.Header.Set("Authorization", token)
+	client.Do(req)
 }

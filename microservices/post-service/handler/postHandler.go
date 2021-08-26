@@ -114,10 +114,9 @@ func (handler *PostHandler) GetHomeFeed(writer http.ResponseWriter, request *htt
 }
 
 func (handler *PostHandler) GetPostsByUsername(writer http.ResponseWriter, request *http.Request) {
-	// TODO private?
 	vars := mux.Vars(request)
 	username := vars["username"]
-	publicPosts :=handler.PostService.GetProfilePosts(username)
+	publicPosts :=handler.PostService.GetProfilePosts(username, request.Header.Get("Authorization"))
 	writer.Header().Set("Content-Type", "application/json")
 	publicPostsJson, err := json.Marshal(publicPosts)
 	if err != nil {
@@ -303,8 +302,6 @@ func (handler *PostHandler) SearchTag(writer http.ResponseWriter, request *http.
 func (handler *PostHandler) SearchLocation(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	location := vars["location"]
-	fmt.Println("location")
-	fmt.Println(location)
 	publicPosts :=handler.PostService.SearchLocation(location)
 	writer.Header().Set("Content-Type", "application/json")
 	publicPostsJson, err := json.Marshal(publicPosts)
@@ -314,6 +311,22 @@ func (handler *PostHandler) SearchLocation(writer http.ResponseWriter, request *
 		writer.WriteHeader(http.StatusOK)
 		_, _ = writer.Write(publicPostsJson)
 	}
+}
+
+func (handler *PostHandler) UpdatePostsPrivacy(writer http.ResponseWriter, request *http.Request) {
+	user , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	type BoolDTO struct{
+		Privacy bool `json:"privacy"`
+	}
+	var privacy BoolDTO
+	err = json.NewDecoder(request.Body).Decode(&privacy)
+	handler.PostService.UpdatePostsPrivacy(user.Username, privacy.Privacy)
+	writer.WriteHeader(http.StatusOK)
+
 }
 
 func getUserFromToken(r *http.Request) (model.Auth, error) {

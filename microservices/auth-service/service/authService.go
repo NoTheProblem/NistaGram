@@ -18,14 +18,14 @@ type AuthService struct {
 	AuthRepository *repository.AuthRepository
 }
 
-func (service *AuthService) RegisterUser (dto dto.RegisterDTO) error {
-	hashPw, _ := HashPassword(dto.Password)
-	user := model.User{ Email: dto.Email, UserRole: 0, Password: hashPw, Username: dto.Username}
+func (service *AuthService) RegisterUser (userDTO dto.RegisterDTO) error {
+	hashPw, _ := HashPassword(userDTO.Password)
+	user := model.User{ Email: userDTO.Email, UserRole: 0, Password: hashPw, Username: userDTO.Username}
 	err := service.AuthRepository.RegisterUser(&user)
 	if err != nil {
 		return err
 	}
-	requsetBody , jerr := json.Marshal(dto)
+	requsetBody , jerr := json.Marshal(userDTO)
 	if jerr != nil{
 		return jerr
 	}
@@ -44,7 +44,25 @@ func (service *AuthService) RegisterUser (dto dto.RegisterDTO) error {
 	//Convert the body to type string
 	sb := string(body)
 	fmt.Println(sb)
-
+	requestUrl = fmt.Sprintf("http://%s:%s/addUser", os.Getenv("FOLLOWERS_SERVICE_DOMAIN"), os.Getenv("FOLLOWERS_SERVICE_PORT"))
+	var userFollowers dto.UserFollowersDTO
+	userFollowers.Username = userDTO.Username
+	userFollowers.IsPrivate = false
+	userFollowers.IsNotifications = false
+	usrJson, _  := json.Marshal(userFollowers)
+	req, _ = http.NewRequest("POST", requestUrl, bytes.NewBuffer(usrJson))
+	res, err2 = client.Do(req)
+	if err2 != nil {
+		fmt.Println(err2)
+		return nil
+	}
+	body, err5 = ioutil.ReadAll(res.Body)
+	if err5 != nil {
+		log.Fatalln(err5)
+	}
+	//Convert the body to type string
+	sb = string(body)
+	fmt.Println(sb)
 	return nil
 }
 

@@ -29,6 +29,8 @@ services:
       PSQL_PORT: ${PSQL_PORT}
       USER_SERVICE_DOMAIN: ${USER_SERVICE_DOMAIN}
       USER_SERVICE_PORT: ${USER_SERVICE_PORT}
+      FOLLOWERS_SERVICE_PORT: ${FOLLOWERS_SERVICE_PORT}
+      FOLLOWERS_SERVICE_DOMAIN: ${FOLLOWERS_SERVICE_DOMAIN}
     depends_on:
       - postgres
 
@@ -51,6 +53,8 @@ services:
       AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
       USER_SERVICE_DOMAIN: ${USER_SERVICE_DOMAIN}
       USER_SERVICE_PORT: ${USER_SERVICE_PORT}
+      FOLLOWERS_SERVICE_PORT: ${FOLLOWERS_SERVICE_PORT}
+      FOLLOWERS_SERVICE_DOMAIN: ${FOLLOWERS_SERVICE_DOMAIN}
     depends_on:
       - mongo-db
 
@@ -85,6 +89,8 @@ services:
       PSQL_PORT: ${PSQL_PORT}
       AUTH_SERVICE_DOMAIN: ${AUTH_SERVICE_DOMAIN}
       AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
+      FOLLOWERS_SERVICE_PORT: ${FOLLOWERS_SERVICE_PORT}
+      FOLLOWERS_SERVICE_DOMAIN: ${FOLLOWERS_SERVICE_DOMAIN}
     depends_on:
       - postgres
 
@@ -136,7 +142,6 @@ services:
       - /data/db:/data/db
     networks:
       - backend
-
 
   neo4j:
     image: neo4j:latest

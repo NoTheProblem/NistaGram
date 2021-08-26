@@ -67,7 +67,7 @@ func (handler *UserHandler) UpdateNotificationSettings(writer http.ResponseWrite
 		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	err = handler.UserService.UpdateProfileNotification(userNotificationDTO, user.Username)
+	err = handler.UserService.UpdateProfileNotification(userNotificationDTO, user.Username, request.Header.Get("Authorization"))
 	if err != nil {
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -90,7 +90,7 @@ func (handler *UserHandler) UpdatePrivacySettings(writer http.ResponseWriter, re
 		return
 	}
 	fmt.Println(err)
-	err = handler.UserService.UpdateUserPrivacy(userPrivacyDTO, user.Username)
+	err = handler.UserService.UpdateUserPrivacy(userPrivacyDTO, user.Username, request.Header.Get("Authorization"))
 	if err != nil {
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -129,7 +129,7 @@ func (handler *UserHandler) GetUserProfile(writer http.ResponseWriter, request *
 	username := vars["username"]
 	writer.Header().Set("Content-Type", "application/json")
 
-	user, userErr := handler.UserService.GetUserProfile(username, requester.Username)
+	user, userErr := handler.UserService.GetUserProfile(username, requester.Username, request.Header.Get("Authorization"))
 	if userErr != nil{
 		writer.WriteHeader(http.StatusBadRequest)
 		http.Error(writer,userErr.Error(),400)

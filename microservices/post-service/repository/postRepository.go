@@ -233,3 +233,15 @@ func (repository *PostRepository) GetPublicPosts() []bson.D {
 	}
 	return postsFiltered
 }
+
+func (repository *PostRepository) UpdatePostsPrivacyByOwner(username string, privacy bool)  {
+	posts := repository.Database.Collection("posts")
+	result, _ := posts.UpdateMany(
+		context.TODO(),
+		bson.M{"owner": username},
+		bson.D{
+			{"$set", bson.D{{"ispublic", privacy}}},
+		},
+	)
+	fmt.Printf("Updated %v Documents!\n", result.ModifiedCount)
+}

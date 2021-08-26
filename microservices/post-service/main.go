@@ -59,6 +59,8 @@ func handleFunc(handler *handler.PostHandler) {
 	router.HandleFunc("/answerReport", handler.AnswerReport).Methods("PUT")
 	router.HandleFunc("/searchTag/{tag}", handler.SearchTag).Methods("GET")
 	router.HandleFunc("/searchLocation/{location}", handler.SearchLocation).Methods("GET")
+	router.HandleFunc("/updatePostPrivacy", handler.UpdatePostsPrivacy).Methods("PUT")
+
 
 	c := SetupCors()
 
