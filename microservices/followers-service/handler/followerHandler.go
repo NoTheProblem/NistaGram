@@ -69,7 +69,7 @@ func (handler *FollowHandler) FindAllFollowing(writer http.ResponseWriter, reque
 		return
 	}*/
 	for _, optUsername := range following {
-		fmt.Println(optUsername);
+		fmt.Println(optUsername)
 	}
 	writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(writer).Encode(following)
@@ -84,7 +84,7 @@ func (handler *FollowHandler) FindAllFollowers(writer http.ResponseWriter, reque
 	}
 	followers:= handler.FollowService.FindAllFollowers(user.Username)
 	for _, optUsername := range followers {
-		fmt.Println(optUsername);
+		fmt.Println(optUsername)
 	}
 	writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(writer).Encode(followers)
@@ -117,6 +117,56 @@ func (handler *FollowHandler) FindAllFollowersWithNotificationTurnOn(writer http
 	}
 	writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(writer).Encode(followingNotOn)
+}
+
+func (handler *FollowHandler) AddUser(writer http.ResponseWriter, request *http.Request) {
+	var userDTO DTO.UserDTO
+	err := json.NewDecoder(request.Body).Decode(&userDTO)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// TODO call add node service userDTO
+}
+
+func (handler *FollowHandler) UpdateUser(writer http.ResponseWriter, request *http.Request) {
+	user , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	var userDTO DTO.UserDTO
+	err = json.NewDecoder(request.Body).Decode(&userDTO)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if user.Username != userDTO.Username {
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	// TODO call update service userDTO
+}
+
+
+
+func (handler *FollowHandler) DeleteUser(writer http.ResponseWriter, request *http.Request) {
+	user , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	if model.Role(user.Role) != model.Administrator{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	vars := mux.Vars(request)
+	username := vars["username"]
+	fmt.Println(username) // samo da ne izbacuje error dok ga ne iskoristis
+	// TODO call service delete username
 }
 
 

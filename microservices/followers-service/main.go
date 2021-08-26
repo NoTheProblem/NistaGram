@@ -29,6 +29,9 @@ func initFollowHandler(service *service.FollowService) *handler.FollowHandler {
 func handleFunc(handler *handler.FollowHandler) {
 	router := mux.NewRouter().StrictSlash(true)
 
+	router.HandleFunc("/addUser", handler.AddUser).Methods("POST")
+	router.HandleFunc("/updateUser", handler.UpdateUser).Methods("PUT")
+	router.HandleFunc("/deleteUser/{username}", handler.DeleteUser).Methods("DELETE")
 	router.HandleFunc("/follow", handler.Follow).Methods("POST")
 	router.HandleFunc("/unfollow/{following}", handler.RemoveFollower).Methods("PUT")
 	router.HandleFunc("/block/{user}", handler.Block).Methods("POST")
