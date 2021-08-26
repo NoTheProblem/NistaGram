@@ -2,11 +2,14 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"followers-service/DTO"
+	"followers-service/model"
 	"followers-service/service"
 	"github.com/gorilla/mux"
 	"net/http"
+	"os"
 )
 
 type FollowHandler struct {
@@ -15,7 +18,6 @@ type FollowHandler struct {
 
 
 func (handler *FollowHandler) Follow(writer http.ResponseWriter, request *http.Request) {
-	fmt.Fprint(writer, "Hello from controller!")
 	var followRequest DTO.FollowRequestDTO
 	err := json.NewDecoder(request.Body).Decode(&followRequest)
 	if err != nil {
@@ -27,7 +29,6 @@ func (handler *FollowHandler) Follow(writer http.ResponseWriter, request *http.R
 }
 
 func (handler *FollowHandler) RemoveFollower(writer http.ResponseWriter, request *http.Request) {
-	fmt.Fprint(writer, "Hello from controller!")
 	vars := mux.Vars(request)
 	following := vars["following"]
 	var res = handler.FollowService.RemoveFollower(following)
@@ -35,23 +36,20 @@ func (handler *FollowHandler) RemoveFollower(writer http.ResponseWriter, request
 }
 
 func (handler *FollowHandler) Block(writer http.ResponseWriter, request *http.Request) {
-	fmt.Fprint(writer, "Hello from controller!")
 	vars := mux.Vars(request)
-	following := vars["following"]
+	following := vars["user"]
 	var res = handler.FollowService.Block(following)
 	fmt.Println(res)
 }
 
 func (handler *FollowHandler) Unblock(writer http.ResponseWriter, request *http.Request) {
-	fmt.Fprint(writer, "Hello from controller!")
 	vars := mux.Vars(request)
-	following := vars["following"]
+	following := vars["user"]
 	var res = handler.FollowService.Unblock(following)
 	fmt.Println(res)
 }
 
 func (handler *FollowHandler) AcceptRequest(writer http.ResponseWriter, request *http.Request) {
-	fmt.Fprint(writer, "Hello from controller!")
 	vars := mux.Vars(request)
 	follower := vars["follower"]
 	var res = handler.FollowService.AcceptRequest(follower)
@@ -59,9 +57,13 @@ func (handler *FollowHandler) AcceptRequest(writer http.ResponseWriter, request 
 }
 
 func (handler *FollowHandler) FindAllFollowing(writer http.ResponseWriter, request *http.Request) {
-	// TODO token username + isPrivate
-	var follower = "Public";
-	following := handler.FollowService.FindAllFollowing(follower)
+	// TODO  isPrivate
+	user , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	following := handler.FollowService.FindAllFollowing(user.Username)
 	/*if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -74,9 +76,13 @@ func (handler *FollowHandler) FindAllFollowing(writer http.ResponseWriter, reque
 }
 
 func (handler *FollowHandler) FindAllFollowers(writer http.ResponseWriter, request *http.Request) {
-	// TODO token username + isPrivate
-	var follower = "Public";
-	followers:= handler.FollowService.FindAllFollowers(follower)
+	// TODO  + isPrivate
+	user , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	followers:= handler.FollowService.FindAllFollowers(user.Username)
 	for _, optUsername := range followers {
 		fmt.Println(optUsername);
 	}
@@ -99,16 +105,47 @@ func (handler *FollowHandler) TurnNotificationsForUserOff(writer http.ResponseWr
 }
 
 func (handler *FollowHandler) FindAllFollowersWithNotificationTurnOn(writer http.ResponseWriter, request *http.Request) {
-	// TODO token username + isPrivate
-	var follower = "Public";
-	followingNotOn := handler.FollowService.FindAllFollowersWithNotificationTurnOn(follower)
+	// TODO isPrivate
+	user , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	followingNotOn := handler.FollowService.FindAllFollowersWithNotificationTurnOn(user.Username)
 	for _, optUsername := range followingNotOn {
-		fmt.Println(optUsername);
+		fmt.Println(optUsername)
 	}
 	writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(writer).Encode(followingNotOn)
 }
 
 
+
+func getUserFromToken(r *http.Request) (model.Auth, error) {
+	client := &http.Client{}
+	requestUrl := fmt.Sprintf("http://%s:%s/authorize", os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
+	req, _ := http.NewRequest("GET", requestUrl, nil)
+	req.Header.Set("Host", "http://post-service:8080")
+	fmt.Println(r.Header.Get("Authorization"))
+	if  r.Header.Get("Authorization") == ""{
+		return model.Auth{}, errors.New("no logged user")
+	}
+	req.Header.Set("Authorization", r.Header.Get("Authorization"))
+	res, err2 := client.Do(req)
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+
+	var user model.Auth
+	err := json.NewDecoder(res.Body).Decode(&user)
+	if err != nil {
+		return model.Auth{}, err
+	}
+
+	if user.Username == ""{
+		return model.Auth{}, errors.New("no such user")
+	}
+	return user, nil
+}
 
 

@@ -119,6 +119,8 @@ services:
     environment:
       PORT: ${FOLLOWERS_SERVICE_PORT}
       FOLLOWERS_SERVICE_DOMAIN: ${FOLLOWERS_SERVICE_DOMAIN}
+      AUTH_SERVICE_DOMAIN: ${AUTH_SERVICE_DOMAIN}
+      AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
     networks:
       - backend
     depends_on:

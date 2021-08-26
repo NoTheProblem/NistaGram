@@ -7,6 +7,7 @@ import (
 	"followers-service/service"
 	"github.com/gorilla/mux"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
 	"os"
@@ -30,17 +31,23 @@ func handleFunc(handler *handler.FollowHandler) {
 
 	router.HandleFunc("/follow", handler.Follow).Methods("POST")
 	router.HandleFunc("/unfollow/{following}", handler.RemoveFollower).Methods("PUT")
-	router.HandleFunc("/block/{following}", handler.Block).Methods("POST")
-	router.HandleFunc("/unblock/{following}", handler.Unblock).Methods("PUT")
+	router.HandleFunc("/block/{user}", handler.Block).Methods("POST")
+	router.HandleFunc("/unblock/{user}", handler.Unblock).Methods("PUT")
 	router.HandleFunc("/acceptRequest/{follower}", handler.AcceptRequest).Methods("PUT")
 	router.HandleFunc("/following", handler.FindAllFollowing).Methods("GET")
 	router.HandleFunc("/followers", handler.FindAllFollowers).Methods("GET")
-	router.HandleFunc("/turnNotification/{username}", handler.TurnNotificationsForUserOn).Methods("PUT")
+	router.HandleFunc("/turnOnNotification/{username}", handler.TurnNotificationsForUserOn).Methods("PUT")
 	router.HandleFunc("/turnOffNotification/{username}", handler.TurnNotificationsForUserOff).Methods("PUT")
-	router.HandleFunc("/followersNot", handler.FindAllFollowersWithNotificationTurnOn).Methods("GET")
+	router.HandleFunc("/followersWithNotification", handler.FindAllFollowersWithNotificationTurnOn).Methods("GET")
 
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
+	c := SetupCors()
+
+	http.Handle("/", c.Handler(router))
+	err := http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), c.Handler(router))
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func initDatabase() (neo4j.Session, error) {
@@ -73,6 +80,15 @@ func initDatabase() (neo4j.Session, error) {
 	}
 	return session, nil
 
+}
+
+func SetupCors() *cors.Cors {
+	return cors.New(cors.Options{
+		AllowedOrigins: []string{"*"}, // All origins, for now
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
+		AllowedHeaders: []string{"*"},
+		AllowCredentials: true,
+	})
 }
 
 func main() {
