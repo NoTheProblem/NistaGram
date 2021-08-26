@@ -18,46 +18,74 @@ type FollowHandler struct {
 
 
 func (handler *FollowHandler) Follow(writer http.ResponseWriter, request *http.Request) {
-	var followRequest DTO.FollowRequestDTO
-	err := json.NewDecoder(request.Body).Decode(&followRequest)
-	if err != nil {
-		writer.WriteHeader(http.StatusBadRequest)
+
+	user , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	var res = handler.FollowService.FollowRequest(followRequest)
+
+	vars := mux.Vars(request)
+	followRequest := vars["following"]
+	var res = handler.FollowService.FollowRequest(followRequest, user.Username)
 	fmt.Println(res)
 }
 
 func (handler *FollowHandler) RemoveFollower(writer http.ResponseWriter, request *http.Request) {
+
+	user , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 	vars := mux.Vars(request)
 	following := vars["following"]
-	var res = handler.FollowService.RemoveFollower(following)
+	var res = handler.FollowService.RemoveFollower(following, user.Username)
 	fmt.Println(res)
 }
 
 func (handler *FollowHandler) Block(writer http.ResponseWriter, request *http.Request) {
+
+	user , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	vars := mux.Vars(request)
 	following := vars["user"]
-	var res = handler.FollowService.Block(following)
+	var res = handler.FollowService.Block(following, user.Username)
 	fmt.Println(res)
 }
 
 func (handler *FollowHandler) Unblock(writer http.ResponseWriter, request *http.Request) {
+	user , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	vars := mux.Vars(request)
 	following := vars["user"]
-	var res = handler.FollowService.Unblock(following)
+	var res = handler.FollowService.Unblock(following, user.Username)
 	fmt.Println(res)
 }
 
 func (handler *FollowHandler) AcceptRequest(writer http.ResponseWriter, request *http.Request) {
+
+	user , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	vars := mux.Vars(request)
 	follower := vars["follower"]
-	var res = handler.FollowService.AcceptRequest(follower)
+	var res = handler.FollowService.AcceptRequest(follower, user.Username)
 	fmt.Println(res)
 }
 
 func (handler *FollowHandler) FindAllFollowing(writer http.ResponseWriter, request *http.Request) {
-	// TODO  isPrivate
 	user , err := getUserFromToken(request)
 	if err != nil{
 		writer.WriteHeader(http.StatusUnauthorized)
@@ -76,7 +104,7 @@ func (handler *FollowHandler) FindAllFollowing(writer http.ResponseWriter, reque
 }
 
 func (handler *FollowHandler) FindAllFollowers(writer http.ResponseWriter, request *http.Request) {
-	// TODO  + isPrivate
+
 	user , err := getUserFromToken(request)
 	if err != nil{
 		writer.WriteHeader(http.StatusUnauthorized)
@@ -91,16 +119,24 @@ func (handler *FollowHandler) FindAllFollowers(writer http.ResponseWriter, reque
 }
 
 func (handler *FollowHandler) TurnNotificationsForUserOn(writer http.ResponseWriter, request *http.Request) {
-	vars := mux.Vars(request)
-	username := vars["username"]
-	userNotificationsTurnedOn := handler.FollowService.TurnNotificationsForUserOn(username)
+
+	user , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	userNotificationsTurnedOn := handler.FollowService.TurnNotificationsForUserOn(user.Username)
 	fmt.Println(userNotificationsTurnedOn)
 }
 
 func (handler *FollowHandler) TurnNotificationsForUserOff(writer http.ResponseWriter, request *http.Request) {
-	vars := mux.Vars(request)
-	username := vars["username"]
-	userNotificationsTurnedOff := handler.FollowService.TurnNotificationsForUserOff(username)
+	user , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	userNotificationsTurnedOff := handler.FollowService.TurnNotificationsForUserOff(user.Username)
 	fmt.Println(userNotificationsTurnedOff)
 }
 
@@ -128,7 +164,12 @@ func (handler *FollowHandler) AddUser(writer http.ResponseWriter, request *http.
 		return
 	}
 
-	// TODO call add node service userDTO
+	err = handler.FollowService.AddUser(userDTO)
+	if err != nil{
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	writer.WriteHeader(http.StatusCreated)
 }
 
 func (handler *FollowHandler) UpdateUser(writer http.ResponseWriter, request *http.Request) {
@@ -148,7 +189,12 @@ func (handler *FollowHandler) UpdateUser(writer http.ResponseWriter, request *ht
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	// TODO call update service userDTO
+	err = handler.FollowService.UpdateUser(userDTO)
+	if err != nil{
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	writer.WriteHeader(http.StatusCreated)
 }
 
 
@@ -165,8 +211,12 @@ func (handler *FollowHandler) DeleteUser(writer http.ResponseWriter, request *ht
 	}
 	vars := mux.Vars(request)
 	username := vars["username"]
-	fmt.Println(username) // samo da ne izbacuje error dok ga ne iskoristis
-	// TODO call service delete username
+	err = handler.FollowService.DeleteUser(username)
+	if err != nil{
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	writer.WriteHeader(http.StatusOK)
 }
 
 

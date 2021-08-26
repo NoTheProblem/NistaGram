@@ -2,6 +2,7 @@ package model
 
 type User struct {
 	Username string `json:"username"`
-	isPrivate string `json:"isPrivate"`
+	IsPrivate string `json:"isPrivate"`
+	IsNotifications string `json:"isNotification"`
 
 }
