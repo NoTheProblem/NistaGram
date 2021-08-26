@@ -7,6 +7,7 @@ import (
 	"auth-service/util"
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"net/http"
 )
 
@@ -47,8 +48,6 @@ func(handler *AuthHandler) Login(res http.ResponseWriter, req *http.Request){
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	match := service.CheckPasswordHash(logInDTO.Password, user.Password)
-	fmt.Println("Match:   ", match)
 	if !service.CheckPasswordHash(logInDTO.Password, user.Password){
 		res.WriteHeader(http.StatusUnauthorized)
 		return
@@ -68,9 +67,6 @@ func(handler *AuthHandler) Login(res http.ResponseWriter, req *http.Request){
 	res.Header().Set("Content-Type", "application/json")
 }
 
-func (handler *AuthHandler) Hello(writer http.ResponseWriter, request *http.Request) {
-	fmt.Printf("Pozdrav iz kontorolera")
-}
 
 func (handler *AuthHandler) PasswordChange(res http.ResponseWriter, req *http.Request) {
 	var passwordChangerDTO dto.PasswordChangerDTO
@@ -80,7 +76,6 @@ func (handler *AuthHandler) PasswordChange(res http.ResponseWriter, req *http.Re
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	fmt.Println(err)
 	_, err = handler.AuthService.ChangePassword(username,passwordChangerDTO)
 	if err != nil {
 		fmt.Println(err)
@@ -91,15 +86,23 @@ func (handler *AuthHandler) PasswordChange(res http.ResponseWriter, req *http.Re
 }
 
 func (handler *AuthHandler) Authorize(writer http.ResponseWriter, request *http.Request) {
-	fmt.Println(request)
 	username := util.GetUsernameFromToken(request)
-	_, er := handler.AuthService.Authenticate(username)
+	role := util.GetRoleFromToken(request)
+	roleDB, er := handler.AuthService.Authenticate(username)
 	if er != nil{
 		fmt.Println(er)
 		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	responseJSON, err := json.Marshal(username)
+	if role != int(roleDB){
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	auth := dto.AuthDTO{
+		Username: username,
+		Role:     role,
+	}
+	responseJSON, err := json.Marshal(auth)
 	if err != nil {
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -109,5 +112,17 @@ func (handler *AuthHandler) Authorize(writer http.ResponseWriter, request *http.
 	writer.Write(responseJSON)
 	writer.Header().Set("Content-Type", "application/json")
 
+}
+
+func (handler *AuthHandler) DeleteUser(writer http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	username := vars["username"]
+	role := util.GetRoleFromToken(request)
+	if model.Role(role) != model.Administrator {
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	handler.AuthService.DeleteUser(username)
+	writer.WriteHeader(http.StatusAccepted)
 }
 

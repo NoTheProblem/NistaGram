@@ -81,9 +81,13 @@ func (service *AuthService) ChangePassword(username string, passwords dto.Passwo
 func (service *AuthService) Authenticate(username string) (model.Role, error){
 	user, err := service.AuthRepository.FindUserByUsername(username)
 	if err != nil {
-		return model.Role(0), err
+		return -1, err
 	}
 	return user.UserRole, nil
 
+}
+
+func (service *AuthService) DeleteUser(username string)  {
+	service.AuthRepository.Delete(username)
 }
 

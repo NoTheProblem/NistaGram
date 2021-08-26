@@ -39,3 +39,8 @@ func (repository *UserRepository) FindUserByUsername(username string) (*model.Us
 	}
 	return user, nil
 }
+
+func (repository *UserRepository) Delete(username string) {
+	repository.Database.Table("users").Where("username = ?", username).Delete(&model.User{})
+
+}

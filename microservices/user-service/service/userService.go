@@ -146,3 +146,8 @@ func (service *UserService) GetUserProfile(username string, requester string) (*
 
 	return user, nil
 }
+
+func (service *UserService) DeleteUser(username string) {
+	service.UserRepository.Delete(username)
+
+}

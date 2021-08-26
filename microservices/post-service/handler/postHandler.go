@@ -2,14 +2,15 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"post-service/dto"
+	"post-service/model"
 	"post-service/service"
 	"strconv"
 )
@@ -20,8 +21,12 @@ type PostHandler struct {
 
 func (handler *PostHandler) CreateNewPost(w http.ResponseWriter, r *http.Request) {
 
-	username := getUsernameFromToken(r)
-	makeDirectoryIfNotExists(username)
+	user , err := getUserFromToken(r)
+	if err != nil{
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	makeDirectoryIfNotExists(user.Username)
 
 	r.ParseMultipartForm(10 << 20)
 	var location = r.FormValue("location")
@@ -49,7 +54,7 @@ func (handler *PostHandler) CreateNewPost(w http.ResponseWriter, r *http.Request
 		fmt.Printf("MIME Header: %+v\n", fileHandler.Header)
 		pictureType := filepath.Ext(fileHandler.Filename)
 		fileName := fmt.Sprintf("*"+pictureType)
-		tempFile, err := ioutil.TempFile(username, fileName)
+		tempFile, err := ioutil.TempFile(user.Username, fileName)
 		if err != nil {
 			fmt.Println(err)
 			fmt.Fprintf(w, err.Error())
@@ -77,7 +82,7 @@ func (handler *PostHandler) CreateNewPost(w http.ResponseWriter, r *http.Request
 	json.Unmarshal([]byte(tags), &post.Tags)
 
 	post.Description = description
-	handler.PostService.AddPost(post,username,fileNames)
+	handler.PostService.AddPost(post,user.Username,fileNames)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -107,7 +112,7 @@ func (handler *PostHandler) GetHomeFeed(writer http.ResponseWriter, request *htt
 }
 
 func (handler *PostHandler) GetPostsByUsername(writer http.ResponseWriter, request *http.Request) {
-	//username := getUsernameFromToken(request)
+	// TODO private?
 	vars := mux.Vars(request)
 	username := vars["username"]
 	publicPosts :=handler.PostService.GetProfilePosts(username)
@@ -138,16 +143,20 @@ func (handler *PostHandler) GetPost(writer http.ResponseWriter, request *http.Re
 }
 
 func (handler *PostHandler) CommentPost(writer http.ResponseWriter, request *http.Request) {
+	user , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 	fmt.Println("CommentHandler")
 	var commentDTO dto.CommentDTO
-	err := json.NewDecoder(request.Body).Decode(&commentDTO)
+	err = json.NewDecoder(request.Body).Decode(&commentDTO)
 	if err != nil {
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	username := getUsernameFromToken(request)
-	err = handler.PostService.CommentPost(commentDTO, username)
+	err = handler.PostService.CommentPost(commentDTO, user.Username)
 	if err != nil {
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -157,17 +166,17 @@ func (handler *PostHandler) CommentPost(writer http.ResponseWriter, request *htt
 }
 
 func (handler *PostHandler) LikePost(writer http.ResponseWriter, request *http.Request) {
+	_ , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 	fmt.Println("LikeHandler")
 	var commentId dto.IdDTO
-	err := json.NewDecoder(request.Body).Decode(&commentId)
+	err = json.NewDecoder(request.Body).Decode(&commentId)
 	if err != nil {
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	username := getUsernameFromToken(request)
-	if username == "" {
-		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 	err = handler.PostService.LikePost(commentId.Id)
@@ -180,17 +189,18 @@ func (handler *PostHandler) LikePost(writer http.ResponseWriter, request *http.R
 }
 
 func (handler *PostHandler) DislikePost(writer http.ResponseWriter, request *http.Request) {
+	_ , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	// TODO Rework
 	fmt.Println("DisLikeHandler")
 	var commentId dto.IdDTO
-	err := json.NewDecoder(request.Body).Decode(&commentId)
+	err = json.NewDecoder(request.Body).Decode(&commentId)
 	if err != nil {
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	username := getUsernameFromToken(request)
-	if username == "" {
-		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 	err = handler.PostService.DisLikePost(commentId.Id)
@@ -203,15 +213,13 @@ func (handler *PostHandler) DislikePost(writer http.ResponseWriter, request *htt
 }
 
 func (handler *PostHandler) ReportPost(writer http.ResponseWriter, request *http.Request) {
-	/*
-	username := getUsernameFromToken(request)
-	if username == "" {
+	_ , err := getUserFromToken(request)
+	if err != nil{
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	*/
 	var postId dto.IdDTO
-	err := json.NewDecoder(request.Body).Decode(&postId)
+	err = json.NewDecoder(request.Body).Decode(&postId)
 	if err != nil {
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -228,13 +236,15 @@ func (handler *PostHandler) ReportPost(writer http.ResponseWriter, request *http
 }
 
 func (handler *PostHandler) GetAllUnansweredReports(writer http.ResponseWriter, request *http.Request) {
-	/*
-	username := getUsernameFromToken(request)
-	if username == "" {
+	user , err := getUserFromToken(request)
+	if err != nil{
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	 */
+	if model.Role(user.Role) != model.Administrator {
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 	reports :=handler.PostService.GetAllUnansweredReports()
 	writer.Header().Set("Content-Type", "application/json")
 	reportsJson, err := json.Marshal(reports)
@@ -248,15 +258,19 @@ func (handler *PostHandler) GetAllUnansweredReports(writer http.ResponseWriter, 
 }
 
 func (handler *PostHandler) AnswerReport(writer http.ResponseWriter, request *http.Request) {
-	// TODO check role from token
-	username := getUsernameFromToken(request)
-	if username == "" {
+	user , err := getUserFromToken(request)
+	if err != nil{
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
+	if model.Role(user.Role) != model.Administrator {
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	fmt.Println("answerHandler")
 	var reportDTO dto.ReportDTO
-	err := json.NewDecoder(request.Body).Decode(&reportDTO)
+	err = json.NewDecoder(request.Body).Decode(&reportDTO)
 	if err != nil {
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -272,25 +286,32 @@ func (handler *PostHandler) AnswerReport(writer http.ResponseWriter, request *ht
 
 }
 
-func getUsernameFromToken(r *http.Request) string {
+func getUserFromToken(r *http.Request) (model.Auth, error) {
 	client := &http.Client{}
 	requestUrl := fmt.Sprintf("http://%s:%s/authorize", os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
 	req, _ := http.NewRequest("GET", requestUrl, nil)
 	req.Header.Set("Host", "http://user-service:8080")
+	fmt.Println(r.Header.Get("Authorization"))
+	if  r.Header.Get("Authorization") == ""{
+		return model.Auth{}, errors.New("no logged user")
+	}
 	req.Header.Set("Authorization", r.Header.Get("Authorization"))
 	res, err2 := client.Do(req)
 	if err2 != nil {
 		fmt.Println(err2)
 	}
-	fmt.Println(res)
-	body, err5 := ioutil.ReadAll(res.Body)
-	if err5 != nil {
-		log.Fatalln(err5)
+
+	var user model.Auth
+	err := json.NewDecoder(res.Body).Decode(&user)
+	if err != nil {
+		return model.Auth{}, err
 	}
-	//Convert the body to type string
-	sb := string(body)
-	username := sb[1:len(sb)-1]
-	return username
+
+	if user.Username == ""{
+		return model.Auth{}, errors.New("no such user")
+	}
+
+	return user, nil
 }
 
 

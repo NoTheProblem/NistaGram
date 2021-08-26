@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -92,7 +93,11 @@ func (handler *VerificationHandler) CreateNewUserRequest(writer http.ResponseWri
 }
 
 func (handler *VerificationHandler) AnswerRequest(writer http.ResponseWriter, request *http.Request) {
-	// TODO check token user role
+	user , _ := getUserFromToken(request)
+	if model.Role(user.Role) != model.Administrator {
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
 	var verificationAnswer dto.VerificationAnswerDTO
 	err := json.NewDecoder(request.Body).Decode(&verificationAnswer)
@@ -112,7 +117,11 @@ func (handler *VerificationHandler) AnswerRequest(writer http.ResponseWriter, re
 }
 
 func (handler *VerificationHandler) GetAllUnAnswered(writer http.ResponseWriter, request *http.Request) {
-	// TODO check token user role
+	user , _ := getUserFromToken(request)
+	if model.Role(user.Role) != model.Administrator {
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
 	unAnsweredRequests, _ :=handler.VerificationService.GetAllUnAnsweredRequests()
 
@@ -132,4 +141,32 @@ func makeDirectoryIfNotExists(path string) error {
 		return os.Mkdir(path, os.ModeDir|0755)
 	}
 	return nil
+}
+
+func getUserFromToken(r *http.Request) (model.Auth, error) {
+	client := &http.Client{}
+	requestUrl := fmt.Sprintf("http://%s:%s/authorize", os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
+	req, _ := http.NewRequest("GET", requestUrl, nil)
+	req.Header.Set("Host", "http://user-service:8080")
+	fmt.Println(r.Header.Get("Authorization"))
+	if  r.Header.Get("Authorization") == ""{
+		return model.Auth{}, errors.New("no logged user")
+	}
+	req.Header.Set("Authorization", r.Header.Get("Authorization"))
+	res, err2 := client.Do(req)
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+
+	var user model.Auth
+	err := json.NewDecoder(res.Body).Decode(&user)
+	if err != nil {
+		return model.Auth{}, err
+	}
+
+	if user.Username == ""{
+		return model.Auth{}, errors.New("no such user")
+	}
+
+	return user, nil
 }

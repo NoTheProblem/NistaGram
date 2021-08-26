@@ -5,11 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"user-service/dto"
+	"user-service/model"
 	"user-service/service"
 )
 
@@ -37,7 +36,7 @@ func (handler *UserHandler) RegisterUser (res http.ResponseWriter, req *http.Req
 
 func (handler *UserHandler) UpdateProfileInfo(writer http.ResponseWriter, request *http.Request) {
 	var userProfileDTO dto.UserEditDTO
-	username, errLogged := getUsernameFromToken(request)
+	user, errLogged := getUserFromToken(request)
 	if errLogged != nil{
 		http.Error(writer,errLogged.Error(),http.StatusUnauthorized)
 		return
@@ -47,8 +46,7 @@ func (handler *UserHandler) UpdateProfileInfo(writer http.ResponseWriter, reques
 		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	fmt.Println(err)
-	err = handler.UserService.UpdateProfileInfo(userProfileDTO, username)
+	err = handler.UserService.UpdateProfileInfo(userProfileDTO, user.Username)
 	if err != nil {
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -59,9 +57,9 @@ func (handler *UserHandler) UpdateProfileInfo(writer http.ResponseWriter, reques
 
 func (handler *UserHandler) UpdateNotificationSettings(writer http.ResponseWriter, request *http.Request) {
 	var userNotificationDTO dto.UserNotificationDTO
-	username, errLoged := getUsernameFromToken(request)
-	if errLoged != nil{
-		http.Error(writer,errLoged.Error(),http.StatusUnauthorized)
+	user, errLogged := getUserFromToken(request)
+	if errLogged != nil{
+		http.Error(writer,errLogged.Error(),http.StatusUnauthorized)
 		return
 	}
 	err := json.NewDecoder(request.Body).Decode(&userNotificationDTO)
@@ -69,8 +67,7 @@ func (handler *UserHandler) UpdateNotificationSettings(writer http.ResponseWrite
 		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	fmt.Println(err)
-	err = handler.UserService.UpdateProfileNotification(userNotificationDTO, username)
+	err = handler.UserService.UpdateProfileNotification(userNotificationDTO, user.Username)
 	if err != nil {
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -81,9 +78,9 @@ func (handler *UserHandler) UpdateNotificationSettings(writer http.ResponseWrite
 
 func (handler *UserHandler) UpdatePrivacySettings(writer http.ResponseWriter, request *http.Request) {
 	var userPrivacyDTO dto.UserPrivacyDTO
-	username, errLoged := getUsernameFromToken(request)
-	if errLoged != nil{
-		http.Error(writer,errLoged.Error(),http.StatusUnauthorized)
+	user, errLogged := getUserFromToken(request)
+	if errLogged != nil{
+		http.Error(writer,errLogged.Error(),http.StatusUnauthorized)
 		return
 	}
 
@@ -93,7 +90,7 @@ func (handler *UserHandler) UpdatePrivacySettings(writer http.ResponseWriter, re
 		return
 	}
 	fmt.Println(err)
-	err = handler.UserService.UpdateUserPrivacy(userPrivacyDTO, username)
+	err = handler.UserService.UpdateUserPrivacy(userPrivacyDTO, user.Username)
 	if err != nil {
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -103,15 +100,14 @@ func (handler *UserHandler) UpdatePrivacySettings(writer http.ResponseWriter, re
 }
 
 func (handler *UserHandler) LoadMyProfile(writer http.ResponseWriter, request *http.Request) {
-	username, errLoged := getUsernameFromToken(request)
-	if errLoged != nil{
-		http.Error(writer,errLoged.Error(),http.StatusUnauthorized)
+	authUser, errLogged := getUserFromToken(request)
+	if errLogged != nil{
+		http.Error(writer,errLogged.Error(),http.StatusUnauthorized)
 		return
 	}
 	writer.Header().Set("Content-Type", "application/json")
 
-
-	user, userErr := handler.UserService.UserRepository.FindUserByUsername(username)
+	user, userErr := handler.UserService.UserRepository.FindUserByUsername(authUser.Username)
 	if userErr != nil{
 		writer.WriteHeader(http.StatusBadRequest)
 	}
@@ -125,15 +121,15 @@ func (handler *UserHandler) LoadMyProfile(writer http.ResponseWriter, request *h
 }
 
 func (handler *UserHandler) GetUserProfile(writer http.ResponseWriter, request *http.Request) {
-	requester, errLogged := getUsernameFromToken(request)
+	requester, errLogged := getUserFromToken(request)
 	if errLogged != nil{
-		requester = ""
+		requester.Username = ""
 	}
 	vars := mux.Vars(request)
 	username := vars["username"]
 	writer.Header().Set("Content-Type", "application/json")
 
-	user, userErr := handler.UserService.GetUserProfile(username, requester)
+	user, userErr := handler.UserService.GetUserProfile(username, requester.Username)
 	if userErr != nil{
 		writer.WriteHeader(http.StatusBadRequest)
 		http.Error(writer,userErr.Error(),400)
@@ -148,8 +144,11 @@ func (handler *UserHandler) GetUserProfile(writer http.ResponseWriter, request *
 }
 
 func (handler *UserHandler) VerifyProfile(writer http.ResponseWriter, request *http.Request) {
-	// TODO check role from token
-
+	user , _ := getUserFromToken(request)
+	if model.Role(user.Role) != model.Administrator {
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 	vars := mux.Vars(request)
 	username := vars["username"]
 	err := handler.UserService.VerifyProfile(username)
@@ -162,33 +161,47 @@ func (handler *UserHandler) VerifyProfile(writer http.ResponseWriter, request *h
 
 }
 
+func (handler *UserHandler) DeleteUser(writer http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	username := vars["username"]
+	userRequester , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	if model.Role(userRequester.Role) != model.Administrator {
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	handler.UserService.DeleteUser(username)
+	writer.WriteHeader(http.StatusAccepted)
+}
 
-func getUsernameFromToken(r *http.Request) (string, error) {
+
+func getUserFromToken(r *http.Request) (model.Auth, error) {
 	client := &http.Client{}
 	requestUrl := fmt.Sprintf("http://%s:%s/authorize", os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
 	req, _ := http.NewRequest("GET", requestUrl, nil)
 	req.Header.Set("Host", "http://user-service:8080")
 	fmt.Println(r.Header.Get("Authorization"))
 	if  r.Header.Get("Authorization") == ""{
-		fmt.Println("nema autorizacije")
-		return "", errors.New("no logged user")
+		return model.Auth{}, errors.New("no logged user")
 	}
 	req.Header.Set("Authorization", r.Header.Get("Authorization"))
 	res, err2 := client.Do(req)
 	if err2 != nil {
 		fmt.Println(err2)
 	}
-	fmt.Println(res)
-	body, err5 := ioutil.ReadAll(res.Body)
-	if err5 != nil {
-		log.Fatalln(err5)
-	}
-	//Convert the body to type string
-	sb := string(body)
-	username := sb[1:len(sb)-1]
-	if username == ""{
-		return "", errors.New("no such user")
+
+	var user model.Auth
+	err := json.NewDecoder(res.Body).Decode(&user)
+	if err != nil {
+		return model.Auth{}, err
 	}
 
-	return username, nil
+	if user.Username == ""{
+		return model.Auth{}, errors.New("no such user")
+	}
+
+	return user, nil
 }

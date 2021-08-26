@@ -43,11 +43,11 @@ func initHandler(service *service.AuthService) *handler.AuthHandler {
 }
 func handleFunc(handler *handler.AuthHandler) {
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", handler.Hello).Methods("GET")
 	router.HandleFunc("/register", handler.RegisterUser).Methods("POST")
 	router.HandleFunc("/login", handler.Login).Methods("POST")
 	router.HandleFunc("/passwordChange", handler.PasswordChange).Methods("POST")
 	router.HandleFunc("/authorize", handler.Authorize).Methods("GET")
+	router.HandleFunc("/deleteUser/{username}", handler.DeleteUser).Methods("DELETE")
 
 	c := SetupCors()
 

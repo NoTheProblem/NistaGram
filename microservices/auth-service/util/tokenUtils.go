@@ -54,3 +54,17 @@ func GetUsernameFromToken(r *http.Request) string{
 		return ""
 	}
 }
+
+
+func GetRoleFromToken(r *http.Request) int{
+	tokenString := GetJWT(r.Header)
+	token, err := jwt.ParseWithClaims(tokenString, &TokenClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secret), nil
+	})
+	if claims, ok := token.Claims.(*TokenClaims); ok && token.Valid {
+		return int(claims.Role)
+	} else {
+		fmt.Println(err)
+		return -1
+	}
+}
