@@ -1,0 +1,21 @@
+<div style="text-align: center;">
+  <hr>
+  Reported user: <b>{{reportedPost.post.owner}}</b>
+  <hr>
+  Post description: {{reportedPost.post.description}}
+  <hr>
+  Date reported: {{reportedPost.date | date : 'longDate'}}
+  <hr>
+  <button (click)="open(content)"> Show Post</button>
+  <hr>
+  <button (click)="deletePost()">Delete Post</button> &nbsp;&nbsp;
+  <button (click)="deleteAccount()">Delete Account</button> &nbsp;&nbsp;
+  <button (click)="declineReport()">Decline Report</button>
+  <hr>
+
+</div>
+
+
+<ng-template #content let-modal>
+  <app-pop-up-post [post]="reportedPost.post"></app-pop-up-post>
+</ng-template>

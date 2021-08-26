@@ -16,6 +16,12 @@
     <hr>
     {{post.description}}
     <hr>
+    <span>
+        <span  *ngFor="let tag of post.tags" >
+          <a href="javascript:void(0)">#{{tag}}</a> &nbsp;
+        </span>
+      </span>
+    <hr>
     <ul *ngFor="let comment of post.comments">
       <li> <b> {{comment.commentOwnerUsername}} : </b> {{comment.text}}  </li>
     </ul>
@@ -30,7 +36,7 @@
       <mat-icon>send</mat-icon>
     </a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <a href="javascript:void(0)" class="d-inline-block text-muted" >
-      <mat-icon>report</mat-icon>
+      <mat-icon (click)="reportPost()" >report</mat-icon>
     </a>
     <hr>
     <div *ngIf="post?.isAlbum"  style="">

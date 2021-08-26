@@ -104,16 +104,6 @@ func (handler *PostHandler) GetHomeFeed(writer http.ResponseWriter, request *htt
 		writer.WriteHeader(http.StatusOK)
 		_, _ = writer.Write(publicPostsJson)
 	}
-
-
-}
-
-
-
-func (handler *PostHandler) Delete(writer http.ResponseWriter, request *http.Request) {
-	handler.PostService.PostRepository.Delete()
-	writer.WriteHeader(http.StatusOK)
-
 }
 
 func (handler *PostHandler) GetPostsByUsername(writer http.ResponseWriter, request *http.Request) {
@@ -210,6 +200,76 @@ func (handler *PostHandler) DislikePost(writer http.ResponseWriter, request *htt
 		return
 	}
 	writer.WriteHeader(http.StatusOK)
+}
+
+func (handler *PostHandler) ReportPost(writer http.ResponseWriter, request *http.Request) {
+	/*
+	username := getUsernameFromToken(request)
+	if username == "" {
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	*/
+	var postId dto.IdDTO
+	err := json.NewDecoder(request.Body).Decode(&postId)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	err = handler.PostService.ReportPost(postId.Id)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	writer.WriteHeader(http.StatusOK)
+
+}
+
+func (handler *PostHandler) GetAllUnansweredReports(writer http.ResponseWriter, request *http.Request) {
+	/*
+	username := getUsernameFromToken(request)
+	if username == "" {
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	 */
+	reports :=handler.PostService.GetAllUnansweredReports()
+	writer.Header().Set("Content-Type", "application/json")
+	reportsJson, err := json.Marshal(reports)
+	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
+	} else {
+		writer.WriteHeader(http.StatusOK)
+		_, _ = writer.Write(reportsJson)
+	}
+
+}
+
+func (handler *PostHandler) AnswerReport(writer http.ResponseWriter, request *http.Request) {
+	// TODO check role from token
+	username := getUsernameFromToken(request)
+	if username == "" {
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	fmt.Println("answerHandler")
+	var reportDTO dto.ReportDTO
+	err := json.NewDecoder(request.Body).Decode(&reportDTO)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	err = handler.PostService.AnswerReport(reportDTO)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	writer.WriteHeader(http.StatusOK)
+
 }
 
 func getUsernameFromToken(r *http.Request) string {

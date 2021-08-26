@@ -44,8 +44,7 @@ export class PopUpPostComponent implements OnInit {
   }
 
   reportPost(): void {
-    alert('Post reported');
-    // TODO poziv backa
+    this.postService.reportPost(this.post.id);
   }
 
   albumLeft(): void {

@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import {Observable} from 'rxjs';
 import {PostModel} from '../models/post.model';
+import {VerificationRequestModel} from '../models/verification-request.model';
+import {ReportModel} from '../models/report.model';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +31,6 @@ export class PostService {
   }
 
   likePost(form: any): void{
-    console.log(form);
     this.http.put('http://localhost:8080/api/post/likePost', form).subscribe(
       res => {
         this.toastr.success('Post liked!');
@@ -42,7 +43,6 @@ export class PostService {
   }
 
   disLikePost(form: any): void{
-    console.log(form);
     this.http.put('http://localhost:8080/api/post/disLikePost', form).subscribe(
       res => {
       },
@@ -53,7 +53,6 @@ export class PostService {
   }
 
   commentPost(form: any): void{
-    console.log(form);
     this.http.put('http://localhost:8080/api/post/commentPost', form).subscribe(
       res => {
         this.toastr.success('Comment posted!');
@@ -63,5 +62,37 @@ export class PostService {
         this.toastr.error('Failed to post comment!');
       })
     );
+  }
+
+  reportPost(postId: string): void {
+    this.http.post('http://localhost:8080/api/post/reportPost', {
+      id: postId
+    }).subscribe(
+        res => {
+          this.toastr.success('Post reported!');
+        },
+        (error => {
+          console.log(error);
+          this.toastr.error('Failed to report post!');
+        })
+      );
+  }
+
+  public getUnAnsweredReports(): Observable<Array<ReportModel>> {
+    return this.http.get<Array<ReportModel>>('http://localhost:8080/api/post/getUnAnsweredReports') ;
+  }
+
+  answerReport(body: any): void {
+    console.log(body);
+    this.http.put('http://localhost:8080/api/post/answerReport', body).subscribe(
+      res => {
+        this.toastr.success('Report answered!');
+      },
+      (error => {
+        console.log(error);
+        this.toastr.error('Failed to answer to report!');
+      })
+    );
+
   }
 }

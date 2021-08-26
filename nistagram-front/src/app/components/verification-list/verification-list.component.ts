@@ -26,7 +26,6 @@ export class VerificationListComponent implements OnInit {
     this.requestService.getUnAnsweredVerificationRequests()
       .subscribe((requestList: Array<VerificationRequestModel>) => {
         this.verificationRequests = requestList;
-        console.log(requestList);
       });
   }
 

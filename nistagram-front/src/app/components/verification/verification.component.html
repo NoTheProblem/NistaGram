@@ -16,6 +16,7 @@
             <input name="email" [(ngModel)] = "category" placeholder="Category" type="text">&nbsp;&nbsp;
             <hr>
             <input type = "file" style="display: none" (change)="onFileSelected($event)" #fileInput>
+            <p>You need to attach official document (drivers licence, passport etc.)</p>
             <button class="login-button" (click)="fileInput.click()">Upload official document</button>
             <p *ngIf="isUploaded" style="text-align: center;">{{fileName}} uploaded! </p>
             <hr>

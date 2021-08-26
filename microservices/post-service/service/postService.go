@@ -79,12 +79,8 @@ func (service *PostService) GetProfilePosts(username string) interface{} {
 	return  publicPosts
 }
 
-func (service *PostService) GetPostByID(id string) interface{} {
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		print(err)
-		return nil
-	}
+func (service *PostService) GetPostByID(id string) model.Post {
+	uid, _ := uuid.Parse(id)
 	postDocument := service.PostRepository.GetPost(uid)
 	var post model.Post
 	bsonBytes, _ := bson.Marshal(postDocument)
@@ -92,6 +88,7 @@ func (service *PostService) GetPostByID(id string) interface{} {
 	for j, _ := range post.Path {
 		b, err := ioutil.ReadFile(post.Path[j])
 		if err != nil {
+			fmt.Println("1")
 			fmt.Print(err)
 		}
 		var image model.PostImages
@@ -102,7 +99,6 @@ func (service *PostService) GetPostByID(id string) interface{} {
 }
 
 func (service *PostService) CommentPost(commentDTO dto.CommentDTO, username string) error {
-	fmt.Println("CommentService")
 	uid, err := uuid.Parse(commentDTO.PostId)
 	if err != nil {
 		return err
@@ -160,6 +156,64 @@ func (service *PostService) DisLikePost(id string) error {
 	return  nil
 }
 
+func (service *PostService) ReportPost(id string) error {
+	uid, err := uuid.Parse(id)
+	if err != nil {
+		return err
+	}
+	var report model.Report
+	report.Id, _ = uuid.NewUUID()
+	report.PostId = uid
+	report.DateReported = time.Now()
+	report.IsAnswered = false
+	id, err = service.PostRepository.AddReport(&report)
+	if err != nil{
+		return err
+	}
+	return nil
+}
+
+func (service *PostService) GetAllUnansweredReports() interface{} {
+	reportsDocuments := service.PostRepository.GetUnAnsweredReports()
+	reports := CreateReportsFromDocuments(reportsDocuments)
+	for i, s:= range reports{
+		fmt.Println(s)
+		post := service.GetPostByID(s.PostId.String())
+		reports[i].Post = post
+	}
+	return  reports
+}
+
+func (service *PostService) AnswerReport(reportDTO dto.ReportDTO) error {
+	uid, err := uuid.Parse(reportDTO.Id)
+	if err != nil {
+		return err
+	}
+	err = service.PostRepository.AnswerReport(uid, reportDTO.Penalty)
+	if err != nil{
+		return err
+	}
+	reportDocument := service.PostRepository.GetReportById(uid)
+	var report model.Report
+	bsonBytes, _ := bson.Marshal(reportDocument)
+	_ = bson.Unmarshal(bsonBytes, &report)
+
+	if reportDTO.Penalty == 0 { //model.RemoveContent
+		err = service.PostRepository.DeletePost(report.PostId)
+		if err != nil {
+			return err
+		}
+	}
+	if reportDTO.Penalty == 1 { //model.DeleteProfile
+		postDocument := service.GetPostByID(report.PostId.String())
+		var post model.Post
+		bsonBytes, _ := bson.Marshal(postDocument)
+		_ = bson.Unmarshal(bsonBytes, &post)
+		//TODO delete profile
+	}
+	return nil
+}
+
 func CreatePostsFromDocuments(PostsDocuments []bson.D) []model.Post {
 	var publicPosts []model.Post
 	for i := 0; i < len(PostsDocuments); i++ {
@@ -169,6 +223,17 @@ func CreatePostsFromDocuments(PostsDocuments []bson.D) []model.Post {
 		publicPosts = append(publicPosts, post)
 	}
 	return publicPosts
+}
+
+func CreateReportsFromDocuments(ReportsDocuments []bson.D) []model.Report {
+	var reports []model.Report
+	for i := 0; i < len(ReportsDocuments); i++ {
+		var report model.Report
+		bsonBytes, _ := bson.Marshal(ReportsDocuments[i])
+		_ = bson.Unmarshal(bsonBytes, &report)
+		reports = append(reports, report)
+	}
+	return reports
 }
 
 func mapPostDtoTOPost(postDTO *dto.PostDTO, username string, paths []string) (*model.Post, error) {

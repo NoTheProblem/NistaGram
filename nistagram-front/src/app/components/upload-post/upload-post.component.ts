@@ -20,7 +20,6 @@ export class UploadPostComponent implements OnInit {
   constructor(private postService: PostService) { }
 
   ngOnInit(): void {
-    console.log('cao');
     this.addedTagsShow = [];
     this.addedTags  = [];
     this.numberOfImages = 0;
@@ -48,16 +47,11 @@ export class UploadPostComponent implements OnInit {
     fd.append('numberOfImages', JSON.stringify(this.numberOfImages));
     for (let i = 0; i < this.numberOfImages ; i++){
        fd.append('myFile' + String(i), this.selectedFiles[i], this.selectedFiles[i].name);
-       console.log('myFile' + String(i));
     }
     fd.append('description', this.description);
     fd.append('location', this.location);
     fd.append('tags',  JSON.stringify(this.addedTags));
     this.postService.uploadPost(fd);
-    this.description = null;
-    this.addedTags = null;
-    this.addedTagsShow = null;
-    this.location = null;
   }
 
 

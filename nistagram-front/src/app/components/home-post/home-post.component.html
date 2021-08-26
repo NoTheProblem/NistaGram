@@ -30,6 +30,11 @@
       <p>
         {{post?.description}}
       </p>
+      <span>
+        <span  *ngFor="let tag of post.tags" >
+          <a href="javascript:void(0)">#{{tag}}</a> &nbsp;
+        </span>
+      </span>
     </div>
     <div class="card-footer">
       <a href="javascript:void(0)" class="d-inline-block text-muted" *ngIf="!isLiked" (click)="likePost()">
@@ -59,6 +64,7 @@
           <p> <b>{{comment?.commentOwnerUsername}}</b> : {{comment?.text}}</p>
         </div>
       </div>
+
     </div>
 
   </div>

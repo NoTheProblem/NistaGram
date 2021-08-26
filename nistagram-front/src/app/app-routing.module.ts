@@ -7,6 +7,7 @@ import {ProfileComponent} from './components/profile/profile.component';
 import {UploadPostComponent} from './components/upload-post/upload-post.component';
 import {SettingsComponent} from './components/settings/settings.component';
 import {VerificationListComponent} from './components/verification-list/verification-list.component';
+import {ReportListComponent} from './components/report-list/report-list.component';
 
 const routes: Routes = [
 
@@ -16,6 +17,8 @@ const routes: Routes = [
   {path: 'upload-post', component: UploadPostComponent},
   {path: 'settings', component: SettingsComponent},
   {path: 'verification-list', component: VerificationListComponent},
+  {path: 'report-list', component: ReportListComponent},
+
   // Ovaj mora da bude poslednji za sada
   {path: ':username', component: ProfileComponent},
   {path: '', redirectTo: 'home', pathMatch: 'full'}

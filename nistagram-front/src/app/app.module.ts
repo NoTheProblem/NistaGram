@@ -38,6 +38,8 @@ import { ProfilePostComponent } from './components/profile-post/profile-post.com
 import { PopUpPostComponent } from './components/pop-up-post/pop-up-post.component';
 import { VerificationAdminComponent } from './components/verification-admin/verification-admin.component';
 import { VerificationListComponent } from './components/verification-list/verification-list.component';
+import { ReportListComponent } from './components/report-list/report-list.component';
+import { ReportAdminComponent } from './components/report-admin/report-admin.component';
 
 
 @NgModule({
@@ -59,7 +61,9 @@ import { VerificationListComponent } from './components/verification-list/verifi
     ProfilePostComponent,
     PopUpPostComponent,
     VerificationAdminComponent,
-    VerificationListComponent
+    VerificationListComponent,
+    ReportListComponent,
+    ReportAdminComponent
   ],
   imports: [
     BrowserModule,

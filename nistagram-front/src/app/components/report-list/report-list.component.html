@@ -1,0 +1,22 @@
+<div class="login-container" >
+  <br><br><br><br>
+  <div class="login_card">
+    <mat-card class="login_card_content">
+      <mat-card-content class="login_card_form">
+        <p> List of reports:
+        <div *ngIf="reports.length===0" style="text-align: center;">
+          No requests at this moment
+        </div>
+        <ul *ngFor="let report of reports; let i = index">
+          <li (click)="open(content,i)"> Reported user:<b> {{report?.post.owner}} : </b> Date reported: {{report?.date | date:'longDate'}}  </li>
+        </ul>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+
+
+<ng-template #content let-modal>
+  <app-report-admin [reportedPost]="reports[i]"></app-report-admin>
+</ng-template>

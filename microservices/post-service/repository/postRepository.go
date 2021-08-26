@@ -25,12 +25,6 @@ func (repository *PostRepository) AddPost(post *model.Post) (string, error) {
 	return res.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-
-func (repository *PostRepository) Delete()  {
-	posts := repository.Database.Collection("posts")
-	var _, _ = posts.DeleteMany(context.TODO(), bson.D{})
-}
-
 func (repository *PostRepository) GetAll() []bson.D{
 	postsCollection := repository.Database.Collection("posts")
 	filterCursor, err := postsCollection.Find(context.TODO(), bson.D{})
@@ -92,14 +86,12 @@ func (repository *PostRepository) GetProfilePosts(username string) []bson.D {
 
 
 func (repository *PostRepository) GetPost(id uuid.UUID) bson.D {
-
 	postsCollection := repository.Database.Collection("posts")
 	var post bson.D
 	err := postsCollection.FindOne(context.TODO(), bson.M{"id": id}).Decode(&post)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	return post
 }
 
@@ -135,3 +127,64 @@ func (repository *PostRepository) UpdateLikes(post *model.Post)  error {
 	return  nil
 }
 
+func (repository *PostRepository) AddReport(report *model.Report) (string, error) {
+	reports := repository.Database.Collection("reports")
+	res, err := reports.InsertOne(context.TODO(), &report)
+	if err != nil {
+		return "", fmt.Errorf("report is not created")
+	}
+	return res.InsertedID.(primitive.ObjectID).Hex(), nil
+}
+
+func (repository *PostRepository) GetReportById(id uuid.UUID) bson.D {
+	reportsCollection := repository.Database.Collection("reports")
+	var report bson.D
+	err := reportsCollection.FindOne(context.TODO(), bson.M{"id": id}).Decode(&report)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return report
+}
+
+func (repository *PostRepository) AnswerReport(id uuid.UUID,  penalty int)  error {
+	reportsCollection := repository.Database.Collection("reports")
+	result, err := reportsCollection.UpdateOne(
+		context.TODO(),
+		bson.M{"id": id},
+		bson.D{
+			{"$set", bson.D{{"isanswered", true}}},
+			{"$set", bson.D{{"penalty", penalty}}},
+		},
+	)
+	if err != nil {
+		fmt.Println("failed to update")
+		return err
+	}
+	fmt.Printf("Updated %v Documents!\n", result.ModifiedCount)
+	return  nil
+}
+
+func (repository *PostRepository) GetUnAnsweredReports() []bson.D {
+
+	reportsCollection := repository.Database.Collection("reports")
+	filterCursor, err := reportsCollection.Find(context.TODO(), bson.M{"isanswered": false})
+	fmt.Println(filterCursor)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var reportsFiltered []bson.D
+	if err = filterCursor.All(context.TODO(), &reportsFiltered); err != nil {
+		log.Fatal(err)
+	}
+	return reportsFiltered
+}
+
+func (repository *PostRepository) DeletePost(id uuid.UUID) error{
+
+	posts := repository.Database.Collection("posts")
+	_, err := posts.DeleteOne(context.TODO(), bson.M{"id": id})
+	if err != nil {
+		return err
+	}
+	return nil
+}
