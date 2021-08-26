@@ -4,6 +4,7 @@ import {PostModel} from '../../models/post.model';
 import {UserModel} from '../../models/user.model';
 import {UserService} from '../../services/user.service';
 import {TokenStorageService} from '../../_services/token-storage.service';
+import {FollowService} from '../../services/follow.service';
 
 @Component({
   selector: 'app-profile',
@@ -13,30 +14,19 @@ import {TokenStorageService} from '../../_services/token-storage.service';
 export class ProfileComponent implements OnInit {
   public profile: UserModel;
   public posts: Array<PostModel> = new Array<PostModel>();
-  isLocked: boolean;
-  isLogged: boolean;
-  isFollowed: boolean;
   public username: string;
-  public error: string;
-  public isMe: boolean;
+  public error = '';
+  public isMe = false;
+  isLocked = false;
+  isLogged = false;
+  isFollowing = false;
 
-  constructor(private route: ActivatedRoute, private userService: UserService, private tokenStorageService: TokenStorageService) { }
+  constructor(private route: ActivatedRoute, private userService: UserService, private followService: FollowService,
+              private tokenStorageService: TokenStorageService) { }
 
   ngOnInit(): void {
-    this.isFollowed = true;
-    this.error = '';
-    this.isLogged = false;
-    this.isMe = false;
-    this.isLocked = false;
     const routeParam = this.route.snapshot.paramMap;
     this.username = routeParam.get('username');
-    if (this.tokenStorageService.isLoggedIn()){
-      this.isLogged = true;
-      if (this.tokenStorageService.getUsername() === this.username){
-        this.isMe = true;
-        this.isFollowed = true;
-      }
-    }
     this.userService.loadProfile(this.username)
       .subscribe((profile: UserModel) => {
         this.profile = profile;
@@ -46,20 +36,36 @@ export class ProfileComponent implements OnInit {
           if (this.error === 'record not found'){
             this.error = 'User with that username does not exist!';
           }
-          this.isLocked = true;
         })
       );
-
-    // TODO call followers to see if he is followed if its locked
-
     this.userService.loadProfilePosts(this.username)
       .subscribe((postsList: Array<PostModel>) => {
           this.posts = postsList;
         },
         (error => {
-          console.log(error);
+          this.error = this.error + error.error;
         })
       );
+    this.isLogged = this.tokenStorageService.isLoggedIn();
   }
+
+  followUser(): void {
+    this.followService.followUser(this.profile.username);
+  }
+
+  unFollowUser(): void {
+    this.followService.unFollowUser(this.profile.username);
+  }
+
+  blockUser(): void {
+    this.followService.blockUser(this.profile.username);
+  }
+
+  unBlockUser(): void {
+    this.followService.unBlockUser(this.profile.username);
+  }
+
+
+
 }
 

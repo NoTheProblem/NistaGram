@@ -26,8 +26,8 @@ func (handler *FollowHandler) Follow(writer http.ResponseWriter, request *http.R
 	}
 
 	vars := mux.Vars(request)
-	followRequest := vars["following"]
-	var res = handler.FollowService.FollowRequest(followRequest, user.Username)
+	username := vars["username"]
+	var res = handler.FollowService.FollowRequest(username, user.Username)
 	fmt.Println(res)
 }
 
@@ -39,8 +39,8 @@ func (handler *FollowHandler) RemoveFollower(writer http.ResponseWriter, request
 		return
 	}
 	vars := mux.Vars(request)
-	following := vars["following"]
-	var res = handler.FollowService.RemoveFollower(following, user.Username)
+	username := vars["username"]
+	var res = handler.FollowService.RemoveFollower(username, user.Username)
 	fmt.Println(res)
 }
 
@@ -217,6 +217,18 @@ func (handler *FollowHandler) DeleteUser(writer http.ResponseWriter, request *ht
 		return
 	}
 	writer.WriteHeader(http.StatusOK)
+}
+
+func (handler *FollowHandler) IsFollowing(writer http.ResponseWriter, request *http.Request) {
+	user , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	vars := mux.Vars(request)
+	username := vars["username"]
+	fmt.Println(username + user.Username)// DA ne puca error obrisi kad napravis
+	// TODO ISFOLLOWING [user.Username] da li prati [username]  moze neki bool da se vrati
 }
 
 

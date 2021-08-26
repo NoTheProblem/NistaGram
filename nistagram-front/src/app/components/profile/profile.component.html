@@ -1,8 +1,8 @@
 <br><Br><Br>
 <div class="container">
   <div class="profile">
-    <div class="profile-image" *ngIf="!isLocked">
-      <!-- TODO get profile pitcure -->
+    <div class="profile-image" *ngIf="!isLocked || isMe || isFollowing">
+      <!-- TODO get profile picture -->
       <img src="https://images.unsplash.com/photo-1513721032312-6a18a42c8763?w=152&h=152&fit=crop&crop=faces" alt="">
     </div>
     <div class="profile-user-settings">
@@ -10,12 +10,12 @@
       <mat-icon routerLink="upload-post" *ngIf="profile?.verified">verified</mat-icon>
 
       <div *ngIf="isLogged && !isMe" >
-        <div *ngIf="!isFollowed">
-          <button class="btn profile-settings-btn" aria-label="profile settings">Follow</button> &nbsp; &nbsp;&nbsp;
-          <button *ngIf="profile.receiveMessages" class="btn profile-settings-btn" aria-label="profile settings">Message</button>
+        <div *ngIf="!isFollowing">
+          <button class="btn profile-settings-btn" aria-label="profile settings" (click)="followUser()">Follow</button> &nbsp; &nbsp;&nbsp;
+          <button *ngIf="profile?.receiveMessages" class="btn profile-settings-btn" aria-label="profile settings">Message</button>
         </div>
-        <div *ngIf="isFollowed">
-          <button class="btn profile-settings-btn" aria-label="profile settings">UnFollow</button> &nbsp; &nbsp;&nbsp;
+        <div *ngIf="isFollowing">
+          <button class="btn profile-settings-btn" aria-label="profile settings" (click)="unFollowUser()">UnFollow</button> &nbsp; &nbsp;&nbsp;
           <button class="btn profile-settings-btn" aria-label="profile settings">Message</button>
         </div>
       </div>
@@ -29,7 +29,7 @@
       </ul>
     </div>
     <div class="profile-bio">
-      <div *ngIf="isLocked">
+      <div *ngIf="(isLocked && !isMe) || (isLocked && !isFollowing)">
         <p>{{error}}</p>
       </div>
       <p><span class="profile-real-name">{{profile?.name}} {{profile?.surname}}</span> </p>
@@ -40,7 +40,7 @@
 </div>
 
 
-<main>
+<main *ngIf="!isLocked">
   <div class="container">
     <div class="gallery" >
       <div class="gallery-item" tabindex="0" *ngFor="let p of posts">
