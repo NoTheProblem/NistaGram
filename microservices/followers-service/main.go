@@ -42,7 +42,7 @@ func handleFunc(handler *handler.FollowHandler) {
 	router.HandleFunc("/turnOnNotification/{username}", handler.TurnNotificationsForUserOn).Methods("PUT")
 	router.HandleFunc("/turnOffNotification/{username}", handler.TurnNotificationsForUserOff).Methods("PUT")
 	router.HandleFunc("/followersWithNotification", handler.FindAllFollowersWithNotificationTurnOn).Methods("GET")
-
+	router.HandleFunc("/recommendedProfiles", handler.GetRecommendedProfiles).Methods("GET")
 
 	c := SetupCors()
 

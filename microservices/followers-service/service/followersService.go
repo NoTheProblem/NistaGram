@@ -88,3 +88,9 @@ func (service *FollowService) DeleteUser(username string) error {
 	return service.FollowRepository.DeleteUser(username)
 
 }
+
+func (service *FollowService) GetRecommendedProfiles(username string) ([]string) {
+	recommendUsernames := service.FollowRepository.GetRecommendedProfiles(username)
+	return recommendUsernames
+
+}

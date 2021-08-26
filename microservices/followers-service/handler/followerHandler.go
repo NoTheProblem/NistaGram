@@ -197,8 +197,6 @@ func (handler *FollowHandler) UpdateUser(writer http.ResponseWriter, request *ht
 	writer.WriteHeader(http.StatusCreated)
 }
 
-
-
 func (handler *FollowHandler) DeleteUser(writer http.ResponseWriter, request *http.Request) {
 	user , err := getUserFromToken(request)
 	if err != nil{
@@ -218,8 +216,6 @@ func (handler *FollowHandler) DeleteUser(writer http.ResponseWriter, request *ht
 	}
 	writer.WriteHeader(http.StatusOK)
 }
-
-
 
 func getUserFromToken(r *http.Request) (model.Auth, error) {
 	client := &http.Client{}
@@ -246,6 +242,21 @@ func getUserFromToken(r *http.Request) (model.Auth, error) {
 		return model.Auth{}, errors.New("no such user")
 	}
 	return user, nil
+}
+
+func (handler *FollowHandler) GetRecommendedProfiles(writer http.ResponseWriter, request *http.Request) {
+	/*user , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	recommend:= handler.FollowService.GetRecommendedProfiles(user.Username)*/
+	recommend:= handler.FollowService.GetRecommendedProfiles("slav")
+	for _, optUsername := range recommend {
+		fmt.Println(optUsername)
+	}
+	writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(writer).Encode(recommend)
 }
 
 
