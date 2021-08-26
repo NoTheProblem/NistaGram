@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"followers-service/DTO"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
+	"sort"
 )
 
 type FollowRepository struct {
 	DatabaseSession *neo4j.Session
 }
+
+
 
 
 func (u *FollowRepository) Follow(followRequest string, follower string) error  {
@@ -401,6 +404,103 @@ func (u *FollowRepository) DeleteUser(username string) error {
 	}
 	return nil
 
+}
+
+func (u *FollowRepository) GetRecommendedProfiles(username string)   ([]string) {
+	var followingsUsernames []string
+
+	username = "slav"
+	followingsUsernames = u.FindAllFollowingsUsername(username);
+
+	var followingsFollowingsUsernames []string
+	var optRecommendationMyFollowingsFollowings []string
+
+	for _, optUsername := range followingsUsernames {
+		optRecommendationMyFollowingsFollowings = u.FindAllFollowingsUsername(optUsername);
+		for _, optUsername2 := range optRecommendationMyFollowingsFollowings {
+			if optUsername2!=username{
+				var k = true
+				for _, item := range followingsUsernames {
+					if item == optUsername2 {
+						k = false
+					}
+				}
+				if k {
+					followingsFollowingsUsernames=append(followingsFollowingsUsernames, optUsername2)
+				}
+			}
+		}
+	}
+	fmt.Println(followingsFollowingsUsernames)
+
+	keys := make(map[string]bool)
+	list := []string{}
+	for _, entry := range followingsFollowingsUsernames {
+		if _, value := keys[entry]; !value {
+			keys[entry] = true
+			list = append(list, entry)
+		}
+	}
+
+	fmt.Println("Jedinstveni")
+	fmt.Println(list)
+
+	type recommendStruct struct {
+		username      string
+		score        int
+	}
+
+
+	var optRecommendation []string
+	var sameUsers []string
+	var recommendations []recommendStruct
+	var recommend recommendStruct
+
+	for _, optUsername := range list {
+		optRecommendation = u.FindAllFollowingsUsername(optUsername);
+		for _, firstList := range followingsUsernames {
+			for _, secondList := range optRecommendation {
+				if secondList == firstList {
+					sameUsers = append(sameUsers, firstList)
+				}
+			}
+		}
+		fmt.Println(optRecommendation)
+		fmt.Println(followingsUsernames)
+		fmt.Println("Zajednicki pratioci")
+		fmt.Println(sameUsers)
+
+
+
+		var numberOfSameFollowing = len(sameUsers)
+		sameUsers = nil
+		recommend.username = optUsername
+		recommend.score = numberOfSameFollowing;
+
+		recommendations = append(recommendations,recommend)
+
+		fmt.Println(numberOfSameFollowing)
+		fmt.Println(recommendations)
+
+
+
+	}
+
+	sort.Slice(recommendations, func(i, j int) bool {
+		return recommendations[i].score > recommendations[j].score
+	})
+
+	fmt.Println(recommendations)
+
+	recommendations = recommendations[0:5]
+	var winners []string
+
+	for _, winner := range recommendations {
+		winners = append(winners, winner.username)
+	}
+
+	fmt.Println(winners)
+	return winners
 }
 
 

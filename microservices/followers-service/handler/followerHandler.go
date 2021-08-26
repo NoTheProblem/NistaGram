@@ -197,8 +197,6 @@ func (handler *FollowHandler) UpdateUser(writer http.ResponseWriter, request *ht
 	writer.WriteHeader(http.StatusCreated)
 }
 
-
-
 func (handler *FollowHandler) DeleteUser(writer http.ResponseWriter, request *http.Request) {
 	user , err := getUserFromToken(request)
 	if err != nil{
@@ -219,6 +217,7 @@ func (handler *FollowHandler) DeleteUser(writer http.ResponseWriter, request *ht
 	writer.WriteHeader(http.StatusOK)
 }
 
+
 func (handler *FollowHandler) IsFollowing(writer http.ResponseWriter, request *http.Request) {
 	user , err := getUserFromToken(request)
 	if err != nil{
@@ -230,7 +229,6 @@ func (handler *FollowHandler) IsFollowing(writer http.ResponseWriter, request *h
 	fmt.Println(username + user.Username)// DA ne puca error obrisi kad napravis
 	// TODO ISFOLLOWING [user.Username] da li prati [username]  moze neki bool da se vrati
 }
-
 
 
 func getUserFromToken(r *http.Request) (model.Auth, error) {
@@ -258,6 +256,21 @@ func getUserFromToken(r *http.Request) (model.Auth, error) {
 		return model.Auth{}, errors.New("no such user")
 	}
 	return user, nil
+}
+
+func (handler *FollowHandler) GetRecommendedProfiles(writer http.ResponseWriter, request *http.Request) {
+	/*user , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	recommend:= handler.FollowService.GetRecommendedProfiles(user.Username)*/
+	recommend:= handler.FollowService.GetRecommendedProfiles("slav")
+	for _, optUsername := range recommend {
+		fmt.Println(optUsername)
+	}
+	writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(writer).Encode(recommend)
 }
 
 
