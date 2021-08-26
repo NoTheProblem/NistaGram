@@ -51,6 +51,8 @@ export class UploadPostComponent implements OnInit {
     fd.append('description', this.description);
     fd.append('location', this.location);
     fd.append('tags',  JSON.stringify(this.addedTags));
+    // TODO hardkodirano true za post MOVE to followers service?
+    fd.append('isPublic', JSON.stringify(true));
     this.postService.uploadPost(fd);
   }
 

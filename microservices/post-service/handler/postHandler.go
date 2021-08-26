@@ -287,6 +287,8 @@ func (handler *PostHandler) AnswerReport(writer http.ResponseWriter, request *ht
 func (handler *PostHandler) SearchTag(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	tag := vars["tag"]
+	fmt.Println("tag")
+	fmt.Println(tag)
 	publicPosts :=handler.PostService.SearchTag(tag)
 	writer.Header().Set("Content-Type", "application/json")
 	publicPostsJson, err := json.Marshal(publicPosts)
@@ -301,6 +303,8 @@ func (handler *PostHandler) SearchTag(writer http.ResponseWriter, request *http.
 func (handler *PostHandler) SearchLocation(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	location := vars["location"]
+	fmt.Println("location")
+	fmt.Println(location)
 	publicPosts :=handler.PostService.SearchLocation(location)
 	writer.Header().Set("Content-Type", "application/json")
 	publicPostsJson, err := json.Marshal(publicPosts)

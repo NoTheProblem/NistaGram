@@ -13,9 +13,10 @@ export class NavigationComponent implements OnInit {
   username: string;
   role: number;
   search: '';
-  searchParam: string;
 
-  constructor(private tokenStorageService: TokenStorageService, private router: Router) { }
+  constructor(private tokenStorageService: TokenStorageService, private router: Router) {
+
+  }
 
   ngOnInit(): void {
     this.isLoggedIn = this.tokenStorageService.isLoggedIn();
@@ -31,21 +32,7 @@ export class NavigationComponent implements OnInit {
   }
 
   searchQuery(): void {
-    switch (this.search[0]){
-      case '@':
-        this.searchParam = 'SearchAddress';
-        console.log('SearchAddress');
-        break;
-      case '#':
-        this.searchParam = 'SearchTag';
-        console.log('SearchTag');
-        break;
-      default:
-        this.searchParam = 'SearchUser';
-        console.log('SearchUser');
-    }
-    this.router.navigate(['search']);
-    console.log(this.search);
+    this.router.navigate(['search'], { state: { searchQuery: this.search }});
   }
 
 }

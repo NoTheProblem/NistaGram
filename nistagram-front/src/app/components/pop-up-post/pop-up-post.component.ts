@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {PostModel} from '../../models/post.model';
 import {PostService} from '../../services/post.service';
 import {TokenStorageService} from '../../_services/token-storage.service';
+import {Router} from '@angular/router';
 @Component({
   selector: 'app-pop-up-post',
   templateUrl: './pop-up-post.component.html',
@@ -18,7 +19,8 @@ export class PopUpPostComponent implements OnInit {
   showComments = false;
 
 
-  constructor(private postService: PostService, private tokenStorageService: TokenStorageService) { }
+  constructor(private postService: PostService, private tokenStorageService: TokenStorageService,
+              private router: Router) { }
 
   ngOnInit(): void {
     if (this.tokenStorageService.isLoggedIn()){
@@ -92,5 +94,7 @@ export class PopUpPostComponent implements OnInit {
     }
   }
 
-
+  search(s: string): void {
+    this.router.navigate(['search'], { state: { searchQuery: s }});
+  }
 }

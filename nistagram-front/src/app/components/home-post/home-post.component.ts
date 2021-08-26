@@ -3,6 +3,7 @@ import {PostModel} from '../../models/post.model';
 import {PostService} from '../../services/post.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {TokenStorageService} from '../../_services/token-storage.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-home-post',
@@ -20,7 +21,7 @@ export class HomePostComponent implements OnInit {
   showComments = false;
 
   constructor(private postService: PostService, private modalService: NgbModal,
-              private tokenStorageService: TokenStorageService) { }
+              private tokenStorageService: TokenStorageService, private router: Router) { }
 
   ngOnInit(): void {
     if (this.tokenStorageService.isLoggedIn()){
@@ -102,5 +103,9 @@ export class HomePostComponent implements OnInit {
     this.isDisLiked = false;
     this.post.NumberOfDislikes = this.post.NumberOfDislikes - 1;
     this.postService.disLikePost({id: this.post.id});
+  }
+
+  search(s: string): void {
+    this.router.navigate(['search'], { state: { searchQuery: s }});
   }
 }

@@ -12,7 +12,7 @@
       </div>
 
       <p>
-        {{post?.location}}
+        <a href="javascript:void(0)" (click)="search('@'+post?.location)">{{post?.location}}</a>
       </p>
       <a href="javascript:void(0)" (click)="open(content)" class="ui-rect ui-bg-cover" style="background-image: url({{image}});"></a>
       <div *ngIf="post?.isAlbum">
@@ -32,7 +32,7 @@
       </p>
       <span>
         <span  *ngFor="let tag of post.tags" >
-          <a href="javascript:void(0)">#{{tag}}</a> &nbsp;
+          <a href="javascript:void(0)" (click)="search('#'+ tag)">#{{tag}}</a> &nbsp;
         </span>
       </span>
     </div>

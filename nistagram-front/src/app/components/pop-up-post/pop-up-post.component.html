@@ -12,13 +12,13 @@
       </a>
     </div>
     <br>
-    {{post.location}}
+    <a href="javascript:void(0)" (click)="search('#'+ post?.location)">{{post?.location}}</a>
     <hr>
     {{post.description}}
     <hr>
     <span>
         <span  *ngFor="let tag of post.tags" >
-          <a href="javascript:void(0)">#{{tag}}</a> &nbsp;
+          <a href="javascript:void(0)" (click)="search('#'+tag)">#{{tag}}</a> &nbsp;
         </span>
       </span>
     <hr>

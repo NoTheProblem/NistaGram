@@ -240,8 +240,10 @@ func (service *PostService) SearchLocation(location string) interface{} {
 	var locationPosts []model.Post
 
 	for _, p := range publicPosts{
+		fmt.Println(p.Owner)
 		if strings.Contains(strings.ToLower(p.Location), strings.ToLower(location)){
 			locationPosts = append(locationPosts, p)
+			fmt.Println(p.Location)
 		}
 	}
 

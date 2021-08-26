@@ -1,1 +1,22 @@
-<p>search-list works!</p>
+<br>
+<br>
+<br>
+<br>
+<div style="text-align: center;">
+  <p>Use @Search for location | #Search for tags | Search for users</p>
+  <input placeholder="search" [(ngModel)]="searchInput" (keyup.enter)="executeQuery()"/>
+</div>
+
+<div *ngIf="isPosts">
+  <div  *ngFor="let post of posts">
+    <app-home-post [post]="post"></app-home-post>
+  </div>
+</div>
+
+<div *ngIf="isUsers">
+  <ul  *ngFor="let user of users">
+    <li routerLink="/{{user.username}}">
+      {{user?.username}}
+    </li>
+  </ul>
+</div>
