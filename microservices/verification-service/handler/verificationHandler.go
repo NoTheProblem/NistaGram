@@ -147,7 +147,7 @@ func getUserFromToken(r *http.Request) (model.Auth, error) {
 	client := &http.Client{}
 	requestUrl := fmt.Sprintf("http://%s:%s/authorize", os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
 	req, _ := http.NewRequest("GET", requestUrl, nil)
-	req.Header.Set("Host", "http://user-service:8080")
+	req.Header.Set("Host", "http://verification-service:8080")
 	fmt.Println(r.Header.Get("Authorization"))
 	if  r.Header.Get("Authorization") == ""{
 		return model.Auth{}, errors.New("no logged user")

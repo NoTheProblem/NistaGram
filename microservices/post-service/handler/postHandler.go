@@ -276,7 +276,7 @@ func (handler *PostHandler) AnswerReport(writer http.ResponseWriter, request *ht
 		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	err = handler.PostService.AnswerReport(reportDTO)
+	err = handler.PostService.AnswerReport(reportDTO, request.Header.Get("Authorization"))
 	if err != nil {
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -290,7 +290,7 @@ func getUserFromToken(r *http.Request) (model.Auth, error) {
 	client := &http.Client{}
 	requestUrl := fmt.Sprintf("http://%s:%s/authorize", os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
 	req, _ := http.NewRequest("GET", requestUrl, nil)
-	req.Header.Set("Host", "http://user-service:8080")
+	req.Header.Set("Host", "http://post-service:8080")
 	fmt.Println(r.Header.Get("Authorization"))
 	if  r.Header.Get("Authorization") == ""{
 		return model.Auth{}, errors.New("no logged user")
@@ -310,7 +310,6 @@ func getUserFromToken(r *http.Request) (model.Auth, error) {
 	if user.Username == ""{
 		return model.Auth{}, errors.New("no such user")
 	}
-
 	return user, nil
 }
 

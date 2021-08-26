@@ -188,3 +188,14 @@ func (repository *PostRepository) DeletePost(id uuid.UUID) error{
 	}
 	return nil
 }
+
+
+func (repository *PostRepository) DeleteUserPosts(username string) error{
+
+	posts := repository.Database.Collection("posts")
+	_, err := posts.DeleteMany(context.TODO(), bson.M{"owner": username})
+	if err != nil {
+		return err
+	}
+	return nil
+}

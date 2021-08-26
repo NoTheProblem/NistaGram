@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"post-service/dto"
 	"post-service/model"
@@ -184,7 +185,7 @@ func (service *PostService) GetAllUnansweredReports() interface{} {
 	return  reports
 }
 
-func (service *PostService) AnswerReport(reportDTO dto.ReportDTO) error {
+func (service *PostService) AnswerReport(reportDTO dto.ReportDTO, token string) error {
 	uid, err := uuid.Parse(reportDTO.Id)
 	if err != nil {
 		return err
@@ -198,21 +199,26 @@ func (service *PostService) AnswerReport(reportDTO dto.ReportDTO) error {
 	bsonBytes, _ := bson.Marshal(reportDocument)
 	_ = bson.Unmarshal(bsonBytes, &report)
 
-	if reportDTO.Penalty == 0 { //model.RemoveContent
+	if model.Penalty(reportDTO.Penalty) == model.RemoveContent {
 		err = service.PostRepository.DeletePost(report.PostId)
 		if err != nil {
 			return err
 		}
 	}
-	if reportDTO.Penalty == 1 { //model.DeleteProfile
+	if model.Penalty(reportDTO.Penalty) == model.DeleteProfile {
 		postDocument := service.GetPostByID(report.PostId.String())
 		var post model.Post
 		bsonBytes, _ := bson.Marshal(postDocument)
 		_ = bson.Unmarshal(bsonBytes, &post)
-		//TODO delete profile
+		service.PostRepository.DeleteUserPosts(post.Owner)
+		sendDeleteRequests(post.Owner, token)
+		// TODO send to auth and user service
+
 	}
 	return nil
 }
+
+
 
 func CreatePostsFromDocuments(PostsDocuments []bson.D) []model.Post {
 	var publicPosts []model.Post
@@ -262,3 +268,25 @@ func makeDirectoryIfNotExists(path string) error {
 	}
 	return nil
 }
+
+func sendDeleteRequests(username string, token string)  {
+	client := &http.Client{}
+
+	// AUTH
+	requestUrl := fmt.Sprintf("http://%s:%s/deleteUser" + username, os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
+	req, _ := http.NewRequest(http.MethodDelete, requestUrl, nil)
+	req.Header.Set("Host", "http://post-service:8080")
+	req.Header.Set("Authorization", token)
+	client.Do(req)
+
+	//USER
+	requestUrl = fmt.Sprintf("http://%s:%s/deleteUser" + username, os.Getenv("USER_SERVICE_DOMAIN"), os.Getenv("USER_SERVICE_PORT"))
+	req, _ = http.NewRequest(http.MethodDelete, requestUrl, nil)
+	req.Header.Set("Host", "http://post-service:8080")
+	req.Header.Set("Authorization", token)
+	client.Do(req)
+}
+
+
+
+
