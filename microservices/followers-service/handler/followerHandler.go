@@ -226,8 +226,10 @@ func (handler *FollowHandler) IsFollowing(writer http.ResponseWriter, request *h
 	}
 	vars := mux.Vars(request)
 	username := vars["username"]
-	fmt.Println(username + user.Username)// DA ne puca error obrisi kad napravis
-	// TODO ISFOLLOWING [user.Username] da li prati [username]  moze neki bool da se vrati
+
+	isFollowing := handler.FollowService.FollowRepository.IsFollowing(user.Username, username)
+	writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(writer).Encode(isFollowing)
 }
 
 
@@ -259,18 +261,30 @@ func getUserFromToken(r *http.Request) (model.Auth, error) {
 }
 
 func (handler *FollowHandler) GetRecommendedProfiles(writer http.ResponseWriter, request *http.Request) {
-	/*user , err := getUserFromToken(request)
+	user , err := getUserFromToken(request)
 	if err != nil{
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	recommend:= handler.FollowService.GetRecommendedProfiles(user.Username)*/
-	recommend:= handler.FollowService.GetRecommendedProfiles("slav")
+	recommend:= handler.FollowService.GetRecommendedProfiles(user.Username)
 	for _, optUsername := range recommend {
 		fmt.Println(optUsername)
 	}
 	writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(writer).Encode(recommend)
+}
+
+func (handler *FollowHandler) GetUser(writer http.ResponseWriter, request *http.Request) {
+	user , err := getUserFromToken(request)
+	if err != nil{
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	var userDTO DTO.UserDTO
+	userDTO = handler.FollowService.FollowRepository.GetUser(user.Username)
+	writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(writer).Encode(userDTO)
+
 }
 
 

@@ -30,6 +30,7 @@ func handleFunc(handler *handler.FollowHandler) {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/addUser", handler.AddUser).Methods("POST")
+	router.HandleFunc("/getUser", handler.GetUser).Methods("GET")
 	router.HandleFunc("/updateUser", handler.UpdateUser).Methods("PUT")
 	router.HandleFunc("/deleteUser/{username}", handler.DeleteUser).Methods("DELETE")
 	router.HandleFunc("/follow/{username}", handler.Follow).Methods("POST")

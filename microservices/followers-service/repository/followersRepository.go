@@ -408,8 +408,6 @@ func (u *FollowRepository) DeleteUser(username string) error {
 
 func (u *FollowRepository) GetRecommendedProfiles(username string)   ([]string) {
 	var followingsUsernames []string
-
-	username = "slav"
 	followingsUsernames = u.FindAllFollowingsUsername(username);
 
 	var followingsFollowingsUsernames []string
@@ -501,6 +499,39 @@ func (u *FollowRepository) GetRecommendedProfiles(username string)   ([]string) 
 
 	fmt.Println(winners)
 	return winners
+}
+
+func (u *FollowRepository) IsFollowing(username string, username2 string) bool {
+
+	session := *u.DatabaseSession
+
+	result, _ := session.Run("match (u1:User{Username:$followerUsername})-[f:follow]->(u2:User{Username:$followingUsername}) return f; ",
+	map[string]interface{}{"followerUsername":username,"followingUsername":username2})
+
+	if result.Next() {
+		return true
+	}
+	return false
+
+
+
+}
+
+func (u *FollowRepository) GetUser(username string) DTO.UserDTO {
+	session := *u.DatabaseSession
+
+	result, _ := session.Run("MATCH (n:User {Username: 'b'}) RETURN n",
+		map[string]interface{}{"Username":username})
+
+	var user DTO.UserDTO
+	fmt.Println(result.Record().GetByIndex(0))
+	if result.Next() {
+		userRecord, _ := result.Record().GetByIndex(0).(DTO.UserDTO)
+		user = userRecord
+	}
+	fmt.Println(user)
+	return user
+
 }
 
 
