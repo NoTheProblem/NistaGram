@@ -40,6 +40,7 @@ import { VerificationAdminComponent } from './components/verification-admin/veri
 import { VerificationListComponent } from './components/verification-list/verification-list.component';
 import { ReportListComponent } from './components/report-list/report-list.component';
 import { ReportAdminComponent } from './components/report-admin/report-admin.component';
+import { SearchListComponent } from './components/search-list/search-list.component';
 
 
 @NgModule({
@@ -63,7 +64,8 @@ import { ReportAdminComponent } from './components/report-admin/report-admin.com
     VerificationAdminComponent,
     VerificationListComponent,
     ReportListComponent,
-    ReportAdminComponent
+    ReportAdminComponent,
+    SearchListComponent
   ],
   imports: [
     BrowserModule,

@@ -217,3 +217,19 @@ func (repository *PostRepository) DeleteUserPosts(username string) error{
 	}
 	return nil
 }
+
+func (repository *PostRepository) GetPublicPosts() []bson.D {
+	postsCollection := repository.Database.Collection("posts")
+	filterCursor, err := postsCollection.Find(context.TODO(), bson.M{"isPublic": true})
+	if err != nil {
+		fmt.Println("other error")
+		log.Fatal(err)
+	}
+
+	var postsFiltered []bson.D
+	if err = filterCursor.All(context.TODO(), &postsFiltered); err != nil {
+		fmt.Println("some error")
+		log.Fatal(err)
+	}
+	return postsFiltered
+}

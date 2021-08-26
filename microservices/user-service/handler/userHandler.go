@@ -177,6 +177,21 @@ func (handler *UserHandler) DeleteUser(writer http.ResponseWriter, request *http
 	writer.WriteHeader(http.StatusAccepted)
 }
 
+func (handler *UserHandler) SearchPublicUsers(writer http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	username := vars["username"]
+	publicUsers :=handler.UserService.SearchPublicUsers(username)
+	writer.Header().Set("Content-Type", "application/json")
+	publicUsersJson, err := json.Marshal(publicUsers)
+	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
+	} else {
+		writer.WriteHeader(http.StatusOK)
+		_, _ = writer.Write(publicUsersJson)
+	}
+
+}
+
 
 func getUserFromToken(r *http.Request) (model.Auth, error) {
 	client := &http.Client{}

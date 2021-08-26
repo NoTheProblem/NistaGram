@@ -51,6 +51,7 @@ func handleFunc(handler *handler.UserHandler) {
 	router.HandleFunc("/username/{username}", handler.GetUserProfile).Methods("GET")
 	router.HandleFunc("/verify/{username}", handler.VerifyProfile).Methods("PUT")
 	router.HandleFunc("/deleteUser/{username}", handler.DeleteUser).Methods("DELETE")
+	router.HandleFunc("/search/{username}", handler.SearchPublicUsers).Methods("GET")
 
 	c := SetupCors()
 

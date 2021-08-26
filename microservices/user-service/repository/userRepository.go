@@ -44,3 +44,12 @@ func (repository *UserRepository) Delete(username string) {
 	repository.Database.Table("users").Where("username = ?", username).Delete(&model.User{})
 
 }
+
+func (repository *UserRepository) GetPublicUsersByUsername(username string) ([]model.User, error) {
+	var users []model.User
+	err := repository.Database.Table("users").Find(&users, "username like ?", "%" +username + "%").Error
+	if  err != nil {
+		return nil, err
+	}
+	return users, nil
+}

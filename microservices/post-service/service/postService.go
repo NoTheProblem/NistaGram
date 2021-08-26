@@ -10,6 +10,7 @@ import (
 	"post-service/dto"
 	"post-service/model"
 	"post-service/repository"
+	"strings"
 	"time"
 )
 
@@ -231,6 +232,62 @@ func (service *PostService) AnswerReport(reportDTO dto.ReportDTO, token string) 
 
 	}
 	return nil
+}
+
+func (service *PostService) SearchLocation(location string) interface{} {
+	publicPostsDocuments := service.PostRepository.GetPublicPosts()
+	publicPosts := CreatePostsFromDocuments(publicPostsDocuments)
+	var locationPosts []model.Post
+
+	for _, p := range publicPosts{
+		if strings.Contains(strings.ToLower(p.Location), strings.ToLower(location)){
+			locationPosts = append(locationPosts, p)
+		}
+	}
+
+	for i, s:= range locationPosts{
+		for j, _ := range s.Path {
+			b, err := ioutil.ReadFile(s.Path[j])
+			if err != nil {
+				fmt.Print(err)
+			}
+			var image model.PostImages
+			image.Image = b
+			locationPosts[i].Images = append(locationPosts[i].Images, image)
+		}
+	}
+
+	return  locationPosts
+	// TODO limit? pagable?
+}
+
+func (service *PostService) SearchTag(tag string) interface{} {
+	publicPostsDocuments := service.PostRepository.GetPublicPosts()
+	publicPosts := CreatePostsFromDocuments(publicPostsDocuments)
+	var tagPosts []model.Post
+
+	for _, p := range publicPosts{
+		for _,t := range p.Tags{
+			if strings.Contains(strings.ToLower(t), strings.ToLower(tag)){
+				tagPosts = append(tagPosts, p)
+			}
+		}
+	}
+
+	for i, s:= range tagPosts{
+		for j, _ := range s.Path {
+			b, err := ioutil.ReadFile(s.Path[j])
+			if err != nil {
+				fmt.Print(err)
+			}
+			var image model.PostImages
+			image.Image = b
+			tagPosts[i].Images = append(tagPosts[i].Images, image)
+		}
+	}
+
+	return  tagPosts
+	// TODO limit? pagable?
 }
 
 

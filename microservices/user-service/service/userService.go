@@ -151,3 +151,9 @@ func (service *UserService) DeleteUser(username string) {
 	service.UserRepository.Delete(username)
 
 }
+
+func (service *UserService) SearchPublicUsers(username string) interface{} {
+	publicUsers, _:= service.UserRepository.GetPublicUsersByUsername(username)
+	return publicUsers
+	// TODO pagable?
+}

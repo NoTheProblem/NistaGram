@@ -267,7 +267,6 @@ func (handler *PostHandler) AnswerReport(writer http.ResponseWriter, request *ht
 		return
 	}
 
-	fmt.Println("answerHandler")
 	var reportDTO dto.ReportDTO
 	err = json.NewDecoder(request.Body).Decode(&reportDTO)
 	if err != nil {
@@ -283,6 +282,34 @@ func (handler *PostHandler) AnswerReport(writer http.ResponseWriter, request *ht
 	}
 	writer.WriteHeader(http.StatusOK)
 
+}
+
+func (handler *PostHandler) SearchTag(writer http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	tag := vars["tag"]
+	publicPosts :=handler.PostService.SearchTag(tag)
+	writer.Header().Set("Content-Type", "application/json")
+	publicPostsJson, err := json.Marshal(publicPosts)
+	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
+	} else {
+		writer.WriteHeader(http.StatusOK)
+		_, _ = writer.Write(publicPostsJson)
+	}
+}
+
+func (handler *PostHandler) SearchLocation(writer http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	location := vars["location"]
+	publicPosts :=handler.PostService.SearchLocation(location)
+	writer.Header().Set("Content-Type", "application/json")
+	publicPostsJson, err := json.Marshal(publicPosts)
+	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
+	} else {
+		writer.WriteHeader(http.StatusOK)
+		_, _ = writer.Write(publicPostsJson)
+	}
 }
 
 func getUserFromToken(r *http.Request) (model.Auth, error) {
