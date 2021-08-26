@@ -37,18 +37,27 @@
       </span>
     </div>
     <div class="card-footer">
-      <a href="javascript:void(0)" class="d-inline-block text-muted" *ngIf="!isLiked" (click)="likePost()">
-        <mat-icon>favorite_border</mat-icon>
+      <a href="javascript:void(0)" class="d-inline-block text-muted ml-3" *ngIf="!isLiked" (click)="likePost()">
+        <mat-icon>thumb_up_off_alt</mat-icon>
       </a>
-      <a href="javascript:void(0)" class="d-inline-block text-muted" *ngIf="isLiked" (click)="unLikePost()">
-        <mat-icon>favorite</mat-icon>
+      <a href="javascript:void(0)" class="d-inline-block text-muted ml-3" *ngIf="isLiked" (click)="unLikePost()">
+        <mat-icon>thumb_up</mat-icon>
       </a>
-      <a href="javascript:void(0)" class="d-inline-block text-muted" (click)="isCommentInput = !isCommentInput">
+      <a href="javascript:void(0)" class="d-inline-block text-muted ml-3" *ngIf="!isDisLiked" (click)="disLikePost()">
+        <mat-icon>thumb_down_off_alt</mat-icon>
+      </a>
+      <a href="javascript:void(0)" class="d-inline-block text-muted ml-3" *ngIf="isDisLiked" (click)="unDisLikePost()">
+        <mat-icon>thumb_down</mat-icon>
+      </a>
+      <a href="javascript:void(0)" class="d-inline-block text-muted ml-3" (click)="isCommentInput = !isCommentInput">
       <mat-icon>comment</mat-icon>
       </a>
       <br>
-      <a href="javascript:void(0)" class="d-inline-block text-muted">
-        <strong>{{post?.NumberOfLikes}}</strong> <small>Likes</small>
+      <a href="javascript:void(0)" class="d-inline-block text-muted ml-3">
+        <strong>{{post?.NumberOfLikes}}</strong> <small> Likes</small>
+      </a>
+      <a href="javascript:void(0)" class="d-inline-block text-muted ml-3">
+        <strong>{{post?.NumberOfDislikes}}</strong> <small> DisLikes</small>
       </a>
       <a href="javascript:void(0)" class="d-inline-block text-muted ml-3" (click)="showComments = !showComments">
         <strong>{{post?.numberOfComments}}</strong><small> Comments</small>

@@ -168,20 +168,19 @@ func (handler *PostHandler) CommentPost(writer http.ResponseWriter, request *htt
 }
 
 func (handler *PostHandler) LikePost(writer http.ResponseWriter, request *http.Request) {
-	_ , err := getUserFromToken(request)
+	user , err := getUserFromToken(request)
 	if err != nil{
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	fmt.Println("LikeHandler")
-	var commentId dto.IdDTO
-	err = json.NewDecoder(request.Body).Decode(&commentId)
+	var postId dto.IdDTO
+	err = json.NewDecoder(request.Body).Decode(&postId)
 	if err != nil {
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	err = handler.PostService.LikePost(commentId.Id)
+	err = handler.PostService.LikePost(postId.Id, user.Username)
 	if err != nil {
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -191,21 +190,19 @@ func (handler *PostHandler) LikePost(writer http.ResponseWriter, request *http.R
 }
 
 func (handler *PostHandler) DislikePost(writer http.ResponseWriter, request *http.Request) {
-	_ , err := getUserFromToken(request)
+	user , err := getUserFromToken(request)
 	if err != nil{
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	// TODO Rework
-	fmt.Println("DisLikeHandler")
-	var commentId dto.IdDTO
-	err = json.NewDecoder(request.Body).Decode(&commentId)
+	var postId dto.IdDTO
+	err = json.NewDecoder(request.Body).Decode(&postId)
 	if err != nil {
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	err = handler.PostService.DisLikePost(commentId.Id)
+	err = handler.PostService.DisLikePost(postId.Id, user.Username)
 	if err != nil {
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusBadRequest)

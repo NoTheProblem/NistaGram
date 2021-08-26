@@ -118,6 +118,24 @@ func (repository *PostRepository) UpdateLikes(post *model.Post)  error {
 		bson.M{"id": post.Id},
 		bson.D{
 			{"$set", bson.D{{"numberOfLikes", post.NumberOfLikes}}},
+			{"$set", bson.D{{"usersLiked", post.UsersLiked}}},
+		},
+	)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Updated %v Documents!\n", result.ModifiedCount)
+	return  nil
+}
+
+func (repository *PostRepository) UpdateDisLikes(post *model.Post)  error {
+	posts := repository.Database.Collection("posts")
+	result, err := posts.UpdateOne(
+		context.TODO(),
+		bson.M{"id": post.Id},
+		bson.D{
+			{"$set", bson.D{{"numberOfDislikes", post.NumberOfDislikes}}},
+			{"$set", bson.D{{"usersDisliked", post.UsersDisliked}}},
 		},
 	)
 	if err != nil {

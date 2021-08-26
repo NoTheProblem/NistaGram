@@ -10,6 +10,8 @@ type Post struct {
 	Description string `json:"description"`
 	NumberOfLikes int `json:"NumberOfLikes"`
 	NumberOfDislikes int `json:"NumberOfDislikes"`
+	UsersLiked []string `json:"usersLiked"`
+	UsersDisliked []string `json:"usersDisliked"`
 	IsAdd bool `json:"isAdd"`
 	IsAlbum bool `json:"isAlbum"`
 	NumberOfReaches int `json:"NumberOfReaches"`

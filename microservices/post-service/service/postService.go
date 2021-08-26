@@ -121,8 +121,8 @@ func (service *PostService) CommentPost(commentDTO dto.CommentDTO, username stri
 	return  nil
 }
 
-func (service *PostService) LikePost(id string) error {
-	fmt.Println("LikeService")
+func (service *PostService) LikePost(id string, username string) error {
+	// TODO save to another db? for 2.10
 	uid, err := uuid.Parse(id)
 	if err != nil {
 		return err
@@ -131,7 +131,14 @@ func (service *PostService) LikePost(id string) error {
 	var post model.Post
 	bsonBytes, _ := bson.Marshal(postDocument)
 	_ = bson.Unmarshal(bsonBytes, &post)
-	post.NumberOfLikes = post.NumberOfLikes + 1
+
+	if stringInSlice(username, post.UsersLiked) {
+		post.NumberOfLikes = post.NumberOfLikes - 1
+		post.UsersLiked = removeStringFromSLice(username, post.UsersLiked)
+	}else{
+		post.NumberOfLikes = post.NumberOfLikes + 1
+		post.UsersLiked = append(post.UsersLiked, username)
+	}
 	errR := service.PostRepository.UpdateLikes(&post)
 	if errR != nil{
 		return errR
@@ -139,8 +146,8 @@ func (service *PostService) LikePost(id string) error {
 	return  nil
 }
 
-func (service *PostService) DisLikePost(id string) error {
-	fmt.Println("DislikeService")
+func (service *PostService) DisLikePost(id string, username string) error {
+	// TODO save to another db? for 2.10
 	uid, err := uuid.Parse(id)
 	if err != nil {
 		return err
@@ -149,8 +156,17 @@ func (service *PostService) DisLikePost(id string) error {
 	var post model.Post
 	bsonBytes, _ := bson.Marshal(postDocument)
 	_ = bson.Unmarshal(bsonBytes, &post)
-	post.NumberOfLikes = post.NumberOfLikes - 1
-	errR := service.PostRepository.UpdateLikes(&post)
+
+	if stringInSlice(username, post.UsersDisliked) {
+		post.NumberOfDislikes = post.NumberOfDislikes - 1
+		post.UsersDisliked = removeStringFromSLice(username, post.UsersDisliked)
+
+	}else{
+		post.NumberOfDislikes = post.NumberOfDislikes + 1
+		post.UsersDisliked = append(post.UsersDisliked, username)
+
+	}
+	errR := service.PostRepository.UpdateDisLikes(&post)
 	if errR != nil{
 		return errR
 	}
@@ -212,7 +228,6 @@ func (service *PostService) AnswerReport(reportDTO dto.ReportDTO, token string) 
 		_ = bson.Unmarshal(bsonBytes, &post)
 		service.PostRepository.DeleteUserPosts(post.Owner)
 		sendDeleteRequests(post.Owner, token)
-		// TODO send to auth and user service
 
 	}
 	return nil
@@ -290,3 +305,20 @@ func sendDeleteRequests(username string, token string)  {
 
 
 
+func stringInSlice(s string, list []string) bool {
+	for _, b := range list {
+		if b == s {
+			return true
+		}
+	}
+	return false
+}
+
+func removeStringFromSLice(s string,l []string) []string {
+	for i, v := range l {
+		if v == s {
+			return append(l[:i], l[i+1:]...)
+		}
+	}
+	return l
+}

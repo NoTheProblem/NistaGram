@@ -27,16 +27,29 @@
     </ul>
     <hr>
     <a href="javascript:void(0)" class="d-inline-block text-muted" *ngIf="!isLiked" (click)="likePost()">
-      <mat-icon>favorite_border</mat-icon>
+      <mat-icon>thumb_up_off_alt</mat-icon>
     </a>
     <a href="javascript:void(0)" class="d-inline-block text-muted" *ngIf="isLiked" (click)="unLikePost()">
-      <mat-icon>favorite</mat-icon>
+      <mat-icon>thumb_up</mat-icon>
+    </a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="javascript:void(0)" class="d-inline-block text-muted" *ngIf="!isDisLiked" (click)="disLikePost()">
+      <mat-icon>thumb_down_off_alt</mat-icon>
+    </a>
+    <a href="javascript:void(0)" class="d-inline-block text-muted" *ngIf="isDisLiked" (click)="unDisLikePost()">
+      <mat-icon>thumb_down</mat-icon>
     </a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <a href="javascript:void(0)" class="d-inline-block text-muted" >
       <mat-icon>send</mat-icon>
     </a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <a href="javascript:void(0)" class="d-inline-block text-muted" >
       <mat-icon (click)="reportPost()" >report</mat-icon>
+    </a>
+    <hr>
+    <a href="javascript:void(0)" class="d-inline-block text-muted ml-3">
+      <strong>{{post?.NumberOfLikes}}</strong> <small> Likes</small>
+    </a>
+    <a href="javascript:void(0)" class="d-inline-block text-muted ml-3">
+      <strong>{{post?.NumberOfDislikes}}</strong> <small> DisLikes</small>
     </a>
     <hr>
     <div *ngIf="post?.isAlbum"  style="">

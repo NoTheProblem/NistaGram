@@ -5,6 +5,8 @@ export interface PostModel {
   description: string;
   NumberOfLikes: number;
   NumberOfDislikes: number;
+  usersLiked: string[];
+  usersDisliked: string[];
   isAdd: boolean;
   isAlbum: boolean;
   NumberOfReaches: boolean;

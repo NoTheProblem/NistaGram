@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import {Observable} from 'rxjs';
 import {PostModel} from '../models/post.model';
-import {VerificationRequestModel} from '../models/verification-request.model';
 import {ReportModel} from '../models/report.model';
 
 @Injectable({
@@ -83,7 +82,6 @@ export class PostService {
   }
 
   answerReport(body: any): void {
-    console.log(body);
     this.http.put('http://localhost:8080/api/post/answerReport', body).subscribe(
       res => {
         this.toastr.success('Report answered!');
