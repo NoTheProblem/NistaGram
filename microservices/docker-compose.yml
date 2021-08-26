@@ -121,8 +121,8 @@ services:
       FOLLOWERS_SERVICE_DOMAIN: ${FOLLOWERS_SERVICE_DOMAIN}
     networks:
       - backend
-#    depends_on:
-#      - neo4j
+    depends_on:
+      - neo4j
 
 
   mongo-db:
@@ -136,24 +136,20 @@ services:
       - backend
 
 
-#  neo4j:
-#    image: neo4j:latest
-#    container_name: 'neo4j-db'
-#    volumes:
-#      - '$HOME/neo4j/data:/data'
-#      - '$HOME/neo4j/conf/:/conf/'
-#    environment:
-#      NEO4J_USER: ${NEO4J_USER}
-#      NEO4J_PASS: ${NEO4J_PASS}
-#      NEO4J_DBNAME: ${NEO4J_DBNAME}
-#      NEO4J_PORT: ${NEO4J_PORT}
-#    ports:
-#      - 7474:7474
-#      - 7687:7687
-#    restart: on-failure
-#    networks:
-#      - backend
-#    command: neo4j
+  neo4j:
+    image: neo4j:latest
+    container_name: 'neo4j-db'
+    volumes:
+      - ./neo4j/plugins:/plugins
+    environment:
+      NEO4J_AUTH: ${NEO4J_AUTH}
+    ports:
+      - 7474:7474
+      - 7687:7687
+    restart: on-failure
+    networks:
+      - backend
+    command: neo4j
 
 networks:
   backend:
