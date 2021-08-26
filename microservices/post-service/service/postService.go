@@ -247,6 +247,7 @@ func mapPostDtoTOPost(postDTO *dto.PostDTO, username string, paths []string) (*m
 	post.Id, _ = uuid.NewUUID()
 	post.Tags = postDTO.Tags
 	post.Description = postDTO.Description
+	post.IsPublic = postDTO.IsPublic
 	post.Location = postDTO.Location
 	post.NumberOfDislikes, post.NumberOfLikes, post.NumberOfReaches = 0 , 0 , 0
 	post.IsAdd =  postDTO.IsAdd
@@ -271,16 +272,15 @@ func makeDirectoryIfNotExists(path string) error {
 
 func sendDeleteRequests(username string, token string)  {
 	client := &http.Client{}
-
 	// AUTH
-	requestUrl := fmt.Sprintf("http://%s:%s/deleteUser" + username, os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
+	requestUrl := fmt.Sprintf("http://%s:%s/deleteUser/" + username, os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
 	req, _ := http.NewRequest(http.MethodDelete, requestUrl, nil)
 	req.Header.Set("Host", "http://post-service:8080")
 	req.Header.Set("Authorization", token)
 	client.Do(req)
 
 	//USER
-	requestUrl = fmt.Sprintf("http://%s:%s/deleteUser" + username, os.Getenv("USER_SERVICE_DOMAIN"), os.Getenv("USER_SERVICE_PORT"))
+	requestUrl = fmt.Sprintf("http://%s:%s/deleteUser/" + username, os.Getenv("USER_SERVICE_DOMAIN"), os.Getenv("USER_SERVICE_PORT"))
 	req, _ = http.NewRequest(http.MethodDelete, requestUrl, nil)
 	req.Header.Set("Host", "http://post-service:8080")
 	req.Header.Set("Authorization", token)

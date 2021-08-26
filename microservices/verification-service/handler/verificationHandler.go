@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -19,25 +18,13 @@ type VerificationHandler struct {
 }
 
 func (handler *VerificationHandler) CreateNewUserRequest(writer http.ResponseWriter, request *http.Request) {
-	client := &http.Client{}
-	requestUrl := fmt.Sprintf("http://%s:%s/authorize", os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
-	req, _ := http.NewRequest("GET", requestUrl, nil)
-	req.Header.Set("Host", "http://verification-service:8080")
-	req.Header.Set("Authorization", request.Header.Get("Authorization"))
-	res, err2 := client.Do(req)
-	if err2 != nil {
-		fmt.Println(err2)
+	user , _ := getUserFromToken(request)
+	if model.Role(user.Role) != model.Administrator {
+		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	body, err5 := ioutil.ReadAll(res.Body)
-	if err5 != nil {
-		log.Fatalln(err5)
-	}
-	//Convert the body to type string
-	sb := string(body)
-	username := sb[1:len(sb)-1]
-	fmt.Println(username)
-	makeDirectoryIfNotExists(username)
+	fmt.Println(user.Username)
+	makeDirectoryIfNotExists(user.Username)
 
 	request.ParseMultipartForm(10 << 20)
 
@@ -58,7 +45,7 @@ func (handler *VerificationHandler) CreateNewUserRequest(writer http.ResponseWri
 	fmt.Printf("MIME Header: %+v\n", fileHandler.Header)
 	pictureType := filepath.Ext(fileHandler.Filename)
 	fileName := fmt.Sprintf("*"+pictureType)
-	tempFile, err := ioutil.TempFile(username, fileName)
+	tempFile, err := ioutil.TempFile(user.Username, fileName)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Fprintf(writer, err.Error())
@@ -78,7 +65,7 @@ func (handler *VerificationHandler) CreateNewUserRequest(writer http.ResponseWri
 	tempFile.Write(fileBytes)
 	// return that we have successfully uploaded our file!
 	var verRequest model.VerificationRequest
-	verRequest.Username = username
+	verRequest.Username = user.Username
 	verRequest.FirstName = firstName
 	verRequest.LastName = lastName
 	verRequest.Category = category

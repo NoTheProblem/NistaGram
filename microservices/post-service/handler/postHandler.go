@@ -33,6 +33,7 @@ func (handler *PostHandler) CreateNewPost(w http.ResponseWriter, r *http.Request
 	var tags = r.FormValue("tags")
 	var description = r.FormValue("description")
 	var numberOfImagesStr = r.FormValue("numberOfImages")
+	var isPublic, _ = strconv.ParseBool(r.FormValue("isPublic"))
 	var numberOfImages, _ = strconv.Atoi(numberOfImagesStr)
 	fileNames := make([]string, numberOfImages)
 	fmt.Println(numberOfImages)
@@ -79,6 +80,7 @@ func (handler *PostHandler) CreateNewPost(w http.ResponseWriter, r *http.Request
 	// return that we have successfully uploaded our file!
 	var post dto.PostDTO
 	post.Location = location
+	post.IsPublic = isPublic
 	json.Unmarshal([]byte(tags), &post.Tags)
 
 	post.Description = description

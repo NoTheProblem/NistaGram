@@ -17,7 +17,7 @@ export class UserService {
   }
 
   public loadProfilePosts(username: string): Observable<Array<PostModel>> {
-    return this.http.get<Array<PostModel>>('http://localhost:8080/api/post/' + username);
+    return this.http.get<Array<PostModel>>('http://localhost:8080/api/post/username/' + username);
   }
 
 

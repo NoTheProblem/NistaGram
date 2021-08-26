@@ -7,4 +7,5 @@ type PostDTO struct {
 	Location string `json:"location"`
 	Tags []string `json:"tags"`
 	Image []byte `json:"image"`
+	IsPublic bool `json:"isPublic"`
 }
