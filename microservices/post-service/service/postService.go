@@ -20,8 +20,7 @@ type PostService struct {
 	PostRepository *repository.PostRepository
 }
 
-
-func (service *PostService) AddPost(postDto dto.PostDTO, username string, paths []string ) (string, error) {
+func (service *PostService) AddPost(postDto dto.PostDTO, username string, paths []string) (string, error) {
 	post, err := mapPostDtoTOPost(&postDto, username, paths)
 	if err != nil {
 		return "", err
@@ -29,10 +28,8 @@ func (service *PostService) AddPost(postDto dto.PostDTO, username string, paths 
 
 	postId, err1 := service.PostRepository.AddPost(post)
 	if err1 != nil {
-		fmt.Println(err1)
 		return "", err1
 	}
-	fmt.Println("postId: " + postId)
 	return postId, nil
 }
 
@@ -43,12 +40,11 @@ func (service *PostService) GetAll() interface{} {
 	return publicPosts
 }
 
-
-func (service *PostService) GetHomeFeed(username string) interface{}{
+func (service *PostService) GetHomeFeed(username string) interface{} {
 	publicPostsDocuments := service.PostRepository.GetHomeFeedPublic()
 
 	publicPosts := CreatePostsFromDocuments(publicPostsDocuments)
-	for i, s:= range publicPosts{
+	for i, s := range publicPosts {
 		for j, _ := range s.Path {
 			b, err := ioutil.ReadFile(s.Path[j])
 			if err != nil {
@@ -60,7 +56,7 @@ func (service *PostService) GetHomeFeed(username string) interface{}{
 		}
 	}
 
-	return  publicPosts
+	return publicPosts
 
 }
 
@@ -70,13 +66,12 @@ func (service *PostService) GetProfilePosts(username string, token string) (inte
 	publicPosts := CreatePostsFromDocuments(publicPostsDocuments)
 	var relationType = getRelationType(username, token)
 
-	if relationType.Relation == model.Blocked{
+	if relationType.Relation == model.Blocked {
 		return nil, errors.New("record not found")
 
 	}
 
-
-	if len(publicPosts)>0 {
+	if len(publicPosts) > 0 {
 		if publicPosts[0].IsPrivate {
 			switch relationType.Relation {
 			case model.Blocking:
@@ -91,7 +86,7 @@ func (service *PostService) GetProfilePosts(username string, token string) (inte
 		}
 	}
 
-	for i, s:= range publicPosts{
+	for i, s := range publicPosts {
 		for j, _ := range s.Path {
 			b, err := ioutil.ReadFile(s.Path[j])
 			if err != nil {
@@ -115,14 +110,13 @@ func (service *PostService) GetPostByID(id string) model.Post {
 	for j, _ := range post.Path {
 		b, err := ioutil.ReadFile(post.Path[j])
 		if err != nil {
-			fmt.Println("1")
 			fmt.Print(err)
 		}
 		var image model.PostImages
 		image.Image = b
 		post.Images = append(post.Images, image)
 	}
-	return  post
+	return post
 }
 
 func (service *PostService) CommentPost(commentDTO dto.CommentDTO, username string) error {
@@ -141,10 +135,10 @@ func (service *PostService) CommentPost(commentDTO dto.CommentDTO, username stri
 	post.PostComments = append(post.PostComments, comment)
 
 	errR := service.PostRepository.AddComment(&post)
-	if errR != nil{
+	if errR != nil {
 		return errR
 	}
-	return  nil
+	return nil
 }
 
 func (service *PostService) LikePost(id string, username string) error {
@@ -161,19 +155,20 @@ func (service *PostService) LikePost(id string, username string) error {
 	if stringInSlice(username, post.UsersLiked) {
 		post.NumberOfLikes = post.NumberOfLikes - 1
 		post.UsersLiked = removeStringFromSLice(username, post.UsersLiked)
-	}else{
+		service.updateUserReactions(uid, username, "unLike")
+	} else {
 		post.NumberOfLikes = post.NumberOfLikes + 1
 		post.UsersLiked = append(post.UsersLiked, username)
+		service.updateUserReactions(uid, username, "like")
 	}
 	errR := service.PostRepository.UpdateLikes(&post)
-	if errR != nil{
+	if errR != nil {
 		return errR
 	}
-	return  nil
+	return nil
 }
 
 func (service *PostService) DisLikePost(id string, username string) error {
-	// TODO save to another db? for 2.10
 	uid, err := uuid.Parse(id)
 	if err != nil {
 		return err
@@ -186,17 +181,42 @@ func (service *PostService) DisLikePost(id string, username string) error {
 	if stringInSlice(username, post.UsersDisliked) {
 		post.NumberOfDislikes = post.NumberOfDislikes - 1
 		post.UsersDisliked = removeStringFromSLice(username, post.UsersDisliked)
+		service.updateUserReactions(uid, username, "unDislike")
 
-	}else{
+	} else {
 		post.NumberOfDislikes = post.NumberOfDislikes + 1
 		post.UsersDisliked = append(post.UsersDisliked, username)
+		service.updateUserReactions(uid, username, "dislike")
 
 	}
 	errR := service.PostRepository.UpdateDisLikes(&post)
-	if errR != nil{
+	if errR != nil {
 		return errR
 	}
-	return  nil
+	return nil
+}
+
+func (service *PostService) updateUserReactions(id uuid.UUID, username string, reactionType string) {
+	var userReactions model.UserReaction
+	userReactionsDocument, err := service.PostRepository.GetUserReactions(username)
+	if err != nil {
+		userReactions.Username = username
+		service.PostRepository.CreateUserReaction(userReactions)
+	} else {
+		bsonBytes, _ := bson.Marshal(userReactionsDocument)
+		_ = bson.Unmarshal(bsonBytes, &userReactions)
+	}
+	switch reactionType {
+	case "like":
+		userReactions.LikedPosts = append(userReactions.LikedPosts, id)
+	case "unLike":
+		userReactions.LikedPosts = removeUUIDFromSLice(id, userReactions.LikedPosts)
+	case "dislike":
+		userReactions.DislikedPosts = append(userReactions.DislikedPosts, id)
+	case "unDislike":
+		userReactions.LikedPosts = removeUUIDFromSLice(id, userReactions.LikedPosts)
+	}
+	service.PostRepository.UpdateUserReactions(userReactions)
 }
 
 func (service *PostService) ReportPost(id string) error {
@@ -210,7 +230,7 @@ func (service *PostService) ReportPost(id string) error {
 	report.DateReported = time.Now()
 	report.IsAnswered = false
 	id, err = service.PostRepository.AddReport(&report)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	return nil
@@ -219,12 +239,11 @@ func (service *PostService) ReportPost(id string) error {
 func (service *PostService) GetAllUnansweredReports() interface{} {
 	reportsDocuments := service.PostRepository.GetUnAnsweredReports()
 	reports := CreateReportsFromDocuments(reportsDocuments)
-	for i, s:= range reports{
-		fmt.Println(s)
+	for i, s := range reports {
 		post := service.GetPostByID(s.PostId.String())
 		reports[i].Post = post
 	}
-	return  reports
+	return reports
 }
 
 func (service *PostService) AnswerReport(reportDTO dto.ReportDTO, token string) error {
@@ -233,7 +252,7 @@ func (service *PostService) AnswerReport(reportDTO dto.ReportDTO, token string) 
 		return err
 	}
 	err = service.PostRepository.AnswerReport(uid, reportDTO.Penalty)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	reportDocument := service.PostRepository.GetReportById(uid)
@@ -264,15 +283,14 @@ func (service *PostService) SearchLocation(location string) interface{} {
 	publicPosts := CreatePostsFromDocuments(publicPostsDocuments)
 	var locationPosts []model.Post
 
-	for _, p := range publicPosts{
-		fmt.Println(p.Owner)
-		if strings.Contains(strings.ToLower(p.Location), strings.ToLower(location)){
+	for _, p := range publicPosts {
+		if strings.Contains(strings.ToLower(p.Location), strings.ToLower(location)) {
 			locationPosts = append(locationPosts, p)
 			fmt.Println(p.Location)
 		}
 	}
 
-	for i, s:= range locationPosts{
+	for i, s := range locationPosts {
 		for j, _ := range s.Path {
 			b, err := ioutil.ReadFile(s.Path[j])
 			if err != nil {
@@ -284,7 +302,7 @@ func (service *PostService) SearchLocation(location string) interface{} {
 		}
 	}
 
-	return  locationPosts
+	return locationPosts
 	// TODO limit? pagable?
 }
 
@@ -293,15 +311,15 @@ func (service *PostService) SearchTag(tag string) interface{} {
 	publicPosts := CreatePostsFromDocuments(publicPostsDocuments)
 	var tagPosts []model.Post
 
-	for _, p := range publicPosts{
-		for _,t := range p.Tags{
-			if strings.Contains(strings.ToLower(t), strings.ToLower(tag)){
+	for _, p := range publicPosts {
+		for _, t := range p.Tags {
+			if strings.Contains(strings.ToLower(t), strings.ToLower(tag)) {
 				tagPosts = append(tagPosts, p)
 			}
 		}
 	}
 
-	for i, s:= range tagPosts{
+	for i, s := range tagPosts {
 		for j, _ := range s.Path {
 			b, err := ioutil.ReadFile(s.Path[j])
 			if err != nil {
@@ -312,17 +330,33 @@ func (service *PostService) SearchTag(tag string) interface{} {
 			tagPosts[i].Images = append(tagPosts[i].Images, image)
 		}
 	}
-
-	return  tagPosts
+	return tagPosts
 	// TODO limit? pagable?
 }
 
-func (service *PostService) UpdatePostsPrivacy(username string, privacy bool)  {
+func (service *PostService) UpdatePostsPrivacy(username string, privacy bool) {
 	service.PostRepository.UpdatePostsPrivacyByOwner(username, privacy)
 }
 
+func (service *PostService) GetReactedPosts(username string) interface{} {
+	var userReactions model.UserReaction
+	userReactionsDocument, err := service.PostRepository.GetUserReactions(username)
+	if err != nil {
+		return userReactions
+	}
+	bsonBytes, _ := bson.Marshal(userReactionsDocument)
+	_ = bson.Unmarshal(bsonBytes, &userReactions)
 
+	var reactedPostsDTO dto.UserPostReactionDTO
 
+	for _, s := range userReactions.LikedPosts {
+		reactedPostsDTO.LikedPosts = append(reactedPostsDTO.LikedPosts, service.GetPostByID(s.String()))
+	}
+	for _, s := range userReactions.DislikedPosts {
+		reactedPostsDTO.DislikedPosts = append(reactedPostsDTO.DislikedPosts, service.GetPostByID(s.String()))
+	}
+	return reactedPostsDTO
+}
 
 func CreatePostsFromDocuments(PostsDocuments []bson.D) []model.Post {
 	var publicPosts []model.Post
@@ -353,11 +387,11 @@ func mapPostDtoTOPost(postDTO *dto.PostDTO, username string, paths []string) (*m
 	post.Description = postDTO.Description
 	post.IsPrivate = postDTO.IsPrivate
 	post.Location = postDTO.Location
-	post.NumberOfDislikes, post.NumberOfLikes, post.NumberOfReaches = 0 , 0 , 0
-	post.IsAdd =  postDTO.IsAdd
+	post.NumberOfDislikes, post.NumberOfLikes, post.NumberOfReaches = 0, 0, 0
+	post.IsAdd = postDTO.IsAdd
 	if len(paths) > 1 {
 		post.IsAlbum = true
-	}else {
+	} else {
 		post.IsAlbum = false
 	}
 	post.Owner = username
@@ -366,7 +400,6 @@ func mapPostDtoTOPost(postDTO *dto.PostDTO, username string, paths []string) (*m
 	return &post, nil
 }
 
-
 func makeDirectoryIfNotExists(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return os.Mkdir(path, os.ModeDir|0755)
@@ -374,25 +407,22 @@ func makeDirectoryIfNotExists(path string) error {
 	return nil
 }
 
-func sendDeleteRequests(username string, token string)  {
+func sendDeleteRequests(username string, token string) {
 	client := &http.Client{}
 	// AUTH
-	requestUrl := fmt.Sprintf("http://%s:%s/deleteUser/" + username, os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
+	requestUrl := fmt.Sprintf("http://%s:%s/deleteUser/"+username, os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
 	req, _ := http.NewRequest(http.MethodDelete, requestUrl, nil)
 	req.Header.Set("Host", "http://post-service:8080")
 	req.Header.Set("Authorization", token)
 	client.Do(req)
 
 	//USER
-	requestUrl = fmt.Sprintf("http://%s:%s/deleteUser/" + username, os.Getenv("USER_SERVICE_DOMAIN"), os.Getenv("USER_SERVICE_PORT"))
+	requestUrl = fmt.Sprintf("http://%s:%s/deleteUser/"+username, os.Getenv("USER_SERVICE_DOMAIN"), os.Getenv("USER_SERVICE_PORT"))
 	req, _ = http.NewRequest(http.MethodDelete, requestUrl, nil)
 	req.Header.Set("Host", "http://post-service:8080")
 	req.Header.Set("Authorization", token)
 	client.Do(req)
 }
-
-
-
 
 func stringInSlice(s string, list []string) bool {
 	for _, b := range list {
@@ -403,7 +433,7 @@ func stringInSlice(s string, list []string) bool {
 	return false
 }
 
-func removeStringFromSLice(s string,l []string) []string {
+func removeStringFromSLice(s string, l []string) []string {
 	for i, v := range l {
 		if v == s {
 			return append(l[:i], l[i+1:]...)
@@ -412,13 +442,21 @@ func removeStringFromSLice(s string,l []string) []string {
 	return l
 }
 
+func removeUUIDFromSLice(s uuid.UUID, l []uuid.UUID) []uuid.UUID {
+	for i, v := range l {
+		if v == s {
+			return append(l[:i], l[i+1:]...)
+		}
+	}
+	return l
+}
 
 func getRelationType(username string, token string) model.RelationType {
 	client := &http.Client{}
-	requestUrl := fmt.Sprintf("http://%s:%s/getRelationship/" + username, os.Getenv("FOLLOWERS_SERVICE_DOMAIN"), os.Getenv("FOLLOWERS_SERVICE_PORT"))
+	requestUrl := fmt.Sprintf("http://%s:%s/getRelationship/"+username, os.Getenv("FOLLOWERS_SERVICE_DOMAIN"), os.Getenv("FOLLOWERS_SERVICE_PORT"))
 	req, _ := http.NewRequest("GET", requestUrl, nil)
 	req.Header.Set("Host", "http://user-service:8080")
-	if  token == ""{
+	if token == "" {
 		return model.RelationType{Relation: model.NotFollowing}
 	}
 	req.Header.Set("Authorization", token)

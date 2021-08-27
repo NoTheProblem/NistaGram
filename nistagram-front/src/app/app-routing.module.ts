@@ -9,6 +9,7 @@ import {SettingsComponent} from './components/settings/settings.component';
 import {VerificationListComponent} from './components/verification-list/verification-list.component';
 import {ReportListComponent} from './components/report-list/report-list.component';
 import {SearchListComponent} from './components/search-list/search-list.component';
+import {ReactedPostsListComponent} from './components/reacted-posts-list/reacted-posts-list.component';
 
 const routes: Routes = [
 
@@ -20,6 +21,7 @@ const routes: Routes = [
   {path: 'verification-list', component: VerificationListComponent},
   {path: 'report-list', component: ReportListComponent},
   {path: 'search', component: SearchListComponent},
+  {path: 'reactions', component: ReactedPostsListComponent},
 
   // Ovaj mora da bude poslednji za sada
   {path: ':username', component: ProfileComponent},

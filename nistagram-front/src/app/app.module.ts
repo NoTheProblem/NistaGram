@@ -42,6 +42,7 @@ import { ReportListComponent } from './components/report-list/report-list.compon
 import { ReportAdminComponent } from './components/report-admin/report-admin.component';
 import { SearchListComponent } from './components/search-list/search-list.component';
 import { SuggestedComponent } from './components/suggested/suggested.component';
+import { ReactedPostsListComponent } from './components/reacted-posts-list/reacted-posts-list.component';
 
 
 @NgModule({
@@ -67,7 +68,8 @@ import { SuggestedComponent } from './components/suggested/suggested.component';
     ReportListComponent,
     ReportAdminComponent,
     SearchListComponent,
-    SuggestedComponent
+    SuggestedComponent,
+    ReactedPostsListComponent
   ],
   imports: [
     BrowserModule,

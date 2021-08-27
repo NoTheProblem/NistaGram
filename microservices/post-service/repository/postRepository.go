@@ -245,3 +245,35 @@ func (repository *PostRepository) UpdatePostsPrivacyByOwner(username string, pri
 	)
 	fmt.Printf("Updated %v Documents!\n", result.ModifiedCount)
 }
+
+func (repository *PostRepository) GetUserReactions(username string) (bson.D, error) {
+	reactionsCollection := repository.Database.Collection("reactions")
+	var reactions bson.D
+	err := reactionsCollection.FindOne(context.TODO(), bson.M{"username": username}).Decode(&reactions)
+	if err != nil {
+		return nil, err
+	}
+	return reactions, nil
+}
+
+func (repository *PostRepository) UpdateUserReactions(userReactions model.UserReaction) {
+	posts := repository.Database.Collection("reactions")
+	result, _ := posts.UpdateOne(
+		context.TODO(),
+		bson.M{"username": userReactions.Username},
+		bson.D{
+			{"$set", bson.D{{"dislikedPosts", userReactions.DislikedPosts}}},
+			{"$set", bson.D{{"likedPosts", userReactions.LikedPosts}}},
+		},
+	)
+	fmt.Printf("Updated %v Documents!\n", result.ModifiedCount)
+}
+
+func (repository *PostRepository) CreateUserReaction(reaction model.UserReaction) {
+	reactions := repository.Database.Collection("reactions")
+	_, err := reactions.InsertOne(context.TODO(), &reaction)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+}

@@ -47,7 +47,6 @@ func initHandler(service *service.PostService) *handler.PostHandler {
 func handleFunc(handler *handler.PostHandler) {
 	router := mux.NewRouter().StrictSlash(true)
 
-
 	router.HandleFunc("/uploadPost", handler.CreateNewPost).Methods("POST")
 	router.HandleFunc("/homeFeed", handler.GetHomeFeed).Methods("GET")
 	router.HandleFunc("/username/{username}", handler.GetPostsByUsername).Methods("GET")
@@ -60,7 +59,7 @@ func handleFunc(handler *handler.PostHandler) {
 	router.HandleFunc("/searchTag/{tag}", handler.SearchTag).Methods("GET")
 	router.HandleFunc("/searchLocation/{location}", handler.SearchLocation).Methods("GET")
 	router.HandleFunc("/updatePostPrivacy", handler.UpdatePostsPrivacy).Methods("PUT")
-
+	router.HandleFunc("/getReactedPosts", handler.GetReactedPosts).Methods("GET")
 
 	c := SetupCors()
 
@@ -74,9 +73,9 @@ func handleFunc(handler *handler.PostHandler) {
 
 func SetupCors() *cors.Cors {
 	return cors.New(cors.Options{
-		AllowedOrigins: []string{"*"}, // All origins, for now
-		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
-		AllowedHeaders: []string{"*"},
+		AllowedOrigins:   []string{"*"}, // All origins, for now
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+		AllowedHeaders:   []string{"*"},
 		AllowCredentials: true,
 	})
 }

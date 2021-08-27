@@ -21,8 +21,8 @@ type PostHandler struct {
 
 func (handler *PostHandler) CreateNewPost(w http.ResponseWriter, r *http.Request) {
 
-	user , err := getUserFromToken(r)
-	if err != nil{
+	user, err := getUserFromToken(r)
+	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -55,7 +55,7 @@ func (handler *PostHandler) CreateNewPost(w http.ResponseWriter, r *http.Request
 		fmt.Printf("File Size: %+v\n", fileHandler.Size)
 		fmt.Printf("MIME Header: %+v\n", fileHandler.Header)
 		pictureType := filepath.Ext(fileHandler.Filename)
-		fileName := fmt.Sprintf("*"+pictureType)
+		fileName := fmt.Sprintf("*" + pictureType)
 		tempFile, err := ioutil.TempFile(user.Username, fileName)
 		if err != nil {
 			fmt.Println(err)
@@ -74,7 +74,7 @@ func (handler *PostHandler) CreateNewPost(w http.ResponseWriter, r *http.Request
 		}
 		// write this byte array to our temporary file
 		tempFile.Write(fileBytes)
-		fileNames[i]  = tempFile.Name()
+		fileNames[i] = tempFile.Name()
 	}
 
 	fmt.Println(fileNames)
@@ -85,7 +85,7 @@ func (handler *PostHandler) CreateNewPost(w http.ResponseWriter, r *http.Request
 	json.Unmarshal([]byte(tags), &post.Tags)
 
 	post.Description = description
-	handler.PostService.AddPost(post,user.Username,fileNames)
+	handler.PostService.AddPost(post, user.Username, fileNames)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -103,7 +103,7 @@ func (handler *PostHandler) GetAll(writer http.ResponseWriter, request *http.Req
 
 func (handler *PostHandler) GetHomeFeed(writer http.ResponseWriter, request *http.Request) {
 	//username := getUsernameFromToken(request)
-	publicPosts :=handler.PostService.GetHomeFeed("username")
+	publicPosts := handler.PostService.GetHomeFeed("username")
 	writer.Header().Set("Content-Type", "application/json")
 	publicPostsJson, err := json.Marshal(publicPosts)
 	if err != nil {
@@ -117,11 +117,11 @@ func (handler *PostHandler) GetHomeFeed(writer http.ResponseWriter, request *htt
 func (handler *PostHandler) GetPostsByUsername(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	username := vars["username"]
-	publicPosts, err :=handler.PostService.GetProfilePosts(username, request.Header.Get("Authorization"))
+	publicPosts, err := handler.PostService.GetProfilePosts(username, request.Header.Get("Authorization"))
 	writer.Header().Set("Content-Type", "application/json")
 	if err != nil {
 		writer.WriteHeader(http.StatusBadRequest)
-		http.Error(writer,err.Error(),http.StatusBadRequest)
+		http.Error(writer, err.Error(), http.StatusBadRequest)
 
 	} else {
 
@@ -130,13 +130,12 @@ func (handler *PostHandler) GetPostsByUsername(writer http.ResponseWriter, reque
 		_, _ = writer.Write(publicPostsJson)
 	}
 
-
 }
 
 func (handler *PostHandler) GetPost(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	id := vars["id"]
-	publicPosts :=handler.PostService.GetPostByID(id)
+	publicPosts := handler.PostService.GetPostByID(id)
 	writer.Header().Set("Content-Type", "application/json")
 	publicPostsJson, err := json.Marshal(publicPosts)
 	if err != nil {
@@ -148,8 +147,8 @@ func (handler *PostHandler) GetPost(writer http.ResponseWriter, request *http.Re
 }
 
 func (handler *PostHandler) CommentPost(writer http.ResponseWriter, request *http.Request) {
-	user , err := getUserFromToken(request)
-	if err != nil{
+	user, err := getUserFromToken(request)
+	if err != nil {
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -171,8 +170,8 @@ func (handler *PostHandler) CommentPost(writer http.ResponseWriter, request *htt
 }
 
 func (handler *PostHandler) LikePost(writer http.ResponseWriter, request *http.Request) {
-	user , err := getUserFromToken(request)
-	if err != nil{
+	user, err := getUserFromToken(request)
+	if err != nil {
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -193,8 +192,8 @@ func (handler *PostHandler) LikePost(writer http.ResponseWriter, request *http.R
 }
 
 func (handler *PostHandler) DislikePost(writer http.ResponseWriter, request *http.Request) {
-	user , err := getUserFromToken(request)
-	if err != nil{
+	user, err := getUserFromToken(request)
+	if err != nil {
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -215,8 +214,8 @@ func (handler *PostHandler) DislikePost(writer http.ResponseWriter, request *htt
 }
 
 func (handler *PostHandler) ReportPost(writer http.ResponseWriter, request *http.Request) {
-	_ , err := getUserFromToken(request)
-	if err != nil{
+	_, err := getUserFromToken(request)
+	if err != nil {
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -238,8 +237,8 @@ func (handler *PostHandler) ReportPost(writer http.ResponseWriter, request *http
 }
 
 func (handler *PostHandler) GetAllUnansweredReports(writer http.ResponseWriter, request *http.Request) {
-	user , err := getUserFromToken(request)
-	if err != nil{
+	user, err := getUserFromToken(request)
+	if err != nil {
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -247,7 +246,7 @@ func (handler *PostHandler) GetAllUnansweredReports(writer http.ResponseWriter, 
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	reports :=handler.PostService.GetAllUnansweredReports()
+	reports := handler.PostService.GetAllUnansweredReports()
 	writer.Header().Set("Content-Type", "application/json")
 	reportsJson, err := json.Marshal(reports)
 	if err != nil {
@@ -260,8 +259,8 @@ func (handler *PostHandler) GetAllUnansweredReports(writer http.ResponseWriter, 
 }
 
 func (handler *PostHandler) AnswerReport(writer http.ResponseWriter, request *http.Request) {
-	user , err := getUserFromToken(request)
-	if err != nil{
+	user, err := getUserFromToken(request)
+	if err != nil {
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -292,7 +291,7 @@ func (handler *PostHandler) SearchTag(writer http.ResponseWriter, request *http.
 	tag := vars["tag"]
 	fmt.Println("tag")
 	fmt.Println(tag)
-	publicPosts :=handler.PostService.SearchTag(tag)
+	publicPosts := handler.PostService.SearchTag(tag)
 	writer.Header().Set("Content-Type", "application/json")
 	publicPostsJson, err := json.Marshal(publicPosts)
 	if err != nil {
@@ -306,7 +305,7 @@ func (handler *PostHandler) SearchTag(writer http.ResponseWriter, request *http.
 func (handler *PostHandler) SearchLocation(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	location := vars["location"]
-	publicPosts :=handler.PostService.SearchLocation(location)
+	publicPosts := handler.PostService.SearchLocation(location)
 	writer.Header().Set("Content-Type", "application/json")
 	publicPostsJson, err := json.Marshal(publicPosts)
 	if err != nil {
@@ -318,12 +317,12 @@ func (handler *PostHandler) SearchLocation(writer http.ResponseWriter, request *
 }
 
 func (handler *PostHandler) UpdatePostsPrivacy(writer http.ResponseWriter, request *http.Request) {
-	user , err := getUserFromToken(request)
-	if err != nil{
+	user, err := getUserFromToken(request)
+	if err != nil {
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	type BoolDTO struct{
+	type BoolDTO struct {
 		Privacy bool `json:"privacy"`
 	}
 	var privacy BoolDTO
@@ -333,13 +332,30 @@ func (handler *PostHandler) UpdatePostsPrivacy(writer http.ResponseWriter, reque
 
 }
 
+func (handler *PostHandler) GetReactedPosts(writer http.ResponseWriter, request *http.Request) {
+	user, err := getUserFromToken(request)
+	if err != nil {
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	reactedPosts := handler.PostService.GetReactedPosts(user.Username)
+	writer.Header().Set("Content-Type", "application/json")
+	reactedPostsJson, err := json.Marshal(reactedPosts)
+	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
+	} else {
+		writer.WriteHeader(http.StatusOK)
+		_, _ = writer.Write(reactedPostsJson)
+	}
+}
+
 func getUserFromToken(r *http.Request) (model.Auth, error) {
 	client := &http.Client{}
 	requestUrl := fmt.Sprintf("http://%s:%s/authorize", os.Getenv("AUTH_SERVICE_DOMAIN"), os.Getenv("AUTH_SERVICE_PORT"))
 	req, _ := http.NewRequest("GET", requestUrl, nil)
 	req.Header.Set("Host", "http://post-service:8080")
 	fmt.Println(r.Header.Get("Authorization"))
-	if  r.Header.Get("Authorization") == ""{
+	if r.Header.Get("Authorization") == "" {
 		return model.Auth{}, errors.New("no logged user")
 	}
 	req.Header.Set("Authorization", r.Header.Get("Authorization"))
@@ -354,13 +370,11 @@ func getUserFromToken(r *http.Request) (model.Auth, error) {
 		return model.Auth{}, err
 	}
 
-	if user.Username == ""{
+	if user.Username == "" {
 		return model.Auth{}, errors.New("no such user")
 	}
 	return user, nil
 }
-
-
 
 func makeDirectoryIfNotExists(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {

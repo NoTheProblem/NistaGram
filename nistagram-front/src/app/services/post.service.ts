@@ -4,6 +4,7 @@ import { ToastrService } from 'ngx-toastr';
 import {Observable} from 'rxjs';
 import {PostModel} from '../models/post.model';
 import {ReportModel} from '../models/report.model';
+import {PostReactionsModel} from '../models/post-reactions.model';
 
 @Injectable({
   providedIn: 'root'
@@ -91,6 +92,9 @@ export class PostService {
         this.toastr.error('Failed to answer to report!');
       })
     );
+  }
 
+  public getReactedPosts(): Observable<PostReactionsModel> {
+    return this.http.get<PostReactionsModel>('http://localhost:8080/api/post/getReactedPosts');
   }
 }

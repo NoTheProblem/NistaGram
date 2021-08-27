@@ -1,0 +1,21 @@
+<br><br><br><br><br>
+<div style="text-align: center;">
+  <p>List of reacted posts</p>
+  <ul *ngFor="let likedPost of reactedPosts?.likedPosts ; let i = index">
+    <li (click)="open(Post,i,true)">
+      Like | user: {{likedPost?.owner}}; description: {{likedPost?.description}}
+    </li>
+  </ul>
+
+  <ul *ngFor="let dislikedPosts of reactedPosts?.dislikedPosts ; let i = index">
+    <li (click)="open(Post,i,false)">
+      Dislike | user: {{dislikedPosts?.owner}}; description: {{dislikedPosts?.description}}
+    </li>
+  </ul>
+</div>
+
+
+<ng-template #Post let-modal>
+  <app-pop-up-post [post]="post"></app-pop-up-post>
+</ng-template>
+
