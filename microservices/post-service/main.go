@@ -49,6 +49,7 @@ func handleFunc(handler *handler.PostHandler) {
 
 	router.HandleFunc("/uploadPost", handler.CreateNewPost).Methods("POST")
 	router.HandleFunc("/homeFeed", handler.GetHomeFeed).Methods("GET")
+	router.HandleFunc("/explore", handler.Explore).Methods("GET")
 	router.HandleFunc("/username/{username}", handler.GetPostsByUsername).Methods("GET")
 	router.HandleFunc("/commentPost", handler.CommentPost).Methods("PUT")
 	router.HandleFunc("/likePost", handler.LikePost).Methods("PUT")

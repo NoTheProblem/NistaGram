@@ -102,8 +102,8 @@ func (handler *PostHandler) GetAll(writer http.ResponseWriter, request *http.Req
 }
 
 func (handler *PostHandler) GetHomeFeed(writer http.ResponseWriter, request *http.Request) {
-	//username := getUsernameFromToken(request)
-	publicPosts := handler.PostService.GetHomeFeed("username")
+
+	publicPosts := handler.PostService.GetHomeFeed(request.Header.Get("Authorization"))
 	writer.Header().Set("Content-Type", "application/json")
 	publicPostsJson, err := json.Marshal(publicPosts)
 	if err != nil {
@@ -113,6 +113,19 @@ func (handler *PostHandler) GetHomeFeed(writer http.ResponseWriter, request *htt
 		_, _ = writer.Write(publicPostsJson)
 	}
 }
+
+func (handler *PostHandler) Explore(writer http.ResponseWriter, request *http.Request) {
+	publicPosts := handler.PostService.GetHomeFeed("")
+	writer.Header().Set("Content-Type", "application/json")
+	publicPostsJson, err := json.Marshal(publicPosts)
+	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
+	} else {
+		writer.WriteHeader(http.StatusOK)
+		_, _ = writer.Write(publicPostsJson)
+	}
+}
+
 
 func (handler *PostHandler) GetPostsByUsername(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
@@ -348,6 +361,7 @@ func (handler *PostHandler) GetReactedPosts(writer http.ResponseWriter, request 
 		_, _ = writer.Write(reactedPostsJson)
 	}
 }
+
 
 func getUserFromToken(r *http.Request) (model.Auth, error) {
 	client := &http.Client{}

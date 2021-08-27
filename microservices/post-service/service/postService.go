@@ -40,11 +40,11 @@ func (service *PostService) GetAll() interface{} {
 	return publicPosts
 }
 
-func (service *PostService) GetHomeFeed(username string) interface{} {
-	publicPostsDocuments := service.PostRepository.GetHomeFeedPublic()
+func (service *PostService) GetHomeFeed(token string) interface{} {
 
-	publicPosts := CreatePostsFromDocuments(publicPostsDocuments)
-	for i, s := range publicPosts {
+	homePostsDocument := service.getPostsForHomeFeed(token)
+	homePosts := CreatePostsFromDocuments(homePostsDocument)
+	for i, s := range homePosts {
 		for j, _ := range s.Path {
 			b, err := ioutil.ReadFile(s.Path[j])
 			if err != nil {
@@ -52,13 +52,26 @@ func (service *PostService) GetHomeFeed(username string) interface{} {
 			}
 			var image model.PostImages
 			image.Image = b
-			publicPosts[i].Images = append(publicPosts[i].Images, image)
+			homePosts[i].Images = append(homePosts[i].Images, image)
 		}
 	}
-
-	return publicPosts
-
+	return homePosts
 }
+
+func (service *PostService) getPostsForHomeFeed(token string) []bson.D {
+	if token == ""{
+		fmt.Println("public wall")
+		return service.PostRepository.GetHomeFeedPublic()
+	}
+	followingUsers := getFollowingUsers(token)
+	var postsDocument []bson.D
+	for _, user := range followingUsers.Usernames {
+		posts := service.PostRepository.GetProfilePosts(user)
+		postsDocument = append(postsDocument, posts...)
+	}
+	return postsDocument
+}
+
 
 func (service *PostService) GetProfilePosts(username string, token string) (interface{}, error) {
 	publicPostsDocuments := service.PostRepository.GetProfilePosts(username)
@@ -142,7 +155,6 @@ func (service *PostService) CommentPost(commentDTO dto.CommentDTO, username stri
 }
 
 func (service *PostService) LikePost(id string, username string) error {
-	// TODO save to another db? for 2.10
 	uid, err := uuid.Parse(id)
 	if err != nil {
 		return err
@@ -495,6 +507,24 @@ func getRelationType(username string, token string) model.RelationType {
 func getUnavailableUsers(token string) model.UsersList {
 	client := &http.Client{}
 	requestUrl := fmt.Sprintf("http://%s:%s/getUnavailableUsers", os.Getenv("FOLLOWERS_SERVICE_DOMAIN"), os.Getenv("FOLLOWERS_SERVICE_PORT"))
+	req, _ := http.NewRequest("GET", requestUrl, nil)
+	req.Header.Set("Host", "http://post-service:8080")
+	if  token == ""{
+		return model.UsersList{Usernames: nil}
+	}
+	req.Header.Set("Authorization", token)
+	res, err2 := client.Do(req)
+	if err2 != nil {
+		return model.UsersList{Usernames: nil}
+	}
+	var users model.UsersList
+	_ = json.NewDecoder(res.Body).Decode(&users)
+	return users
+}
+
+func getFollowingUsers(token string) model.UsersList {
+	client := &http.Client{}
+	requestUrl := fmt.Sprintf("http://%s:%s/following", os.Getenv("FOLLOWERS_SERVICE_DOMAIN"), os.Getenv("FOLLOWERS_SERVICE_PORT"))
 	req, _ := http.NewRequest("GET", requestUrl, nil)
 	req.Header.Set("Host", "http://post-service:8080")
 	if  token == ""{

@@ -10,6 +10,8 @@ import {FollowService} from '../../services/follow.service';
 export class SuggestedComponent implements OnInit {
   isLogged: boolean;
   usernames: string[];
+  isError = false;
+  err = '';
 
   constructor(private tokenStorageService: TokenStorageService, private followService: FollowService) { }
 
@@ -18,14 +20,14 @@ export class SuggestedComponent implements OnInit {
     if (this.isLogged){
       this.followService.getRecommendedUsers().subscribe((users: string[]) => {
         this.usernames = users;
+        if (this.usernames.length === 0 ){
+          this.err = 'No suggestions available';
+          this.isError = true;
+        }
         },
         (error => {
-          this.usernames = [];
-          this.usernames.push('slav');
-          this.usernames.push('slav');
-          this.usernames.push('slav');
-          this.usernames.push('slav');
-          this.usernames.push('slav');
+          this.err = 'No suggestions.\nThere is some issue please come later';
+          this.isError = true;
           console.log(error);
         })
       );

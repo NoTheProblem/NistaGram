@@ -97,4 +97,8 @@ export class PostService {
   public getReactedPosts(): Observable<PostReactionsModel> {
     return this.http.get<PostReactionsModel>('http://localhost:8080/api/post/getReactedPosts');
   }
+
+  public explore(): Observable<Array<PostModel>> {
+    return this.http.get<Array<PostModel>>('http://localhost:8080/api/post/explore');
+  }
 }

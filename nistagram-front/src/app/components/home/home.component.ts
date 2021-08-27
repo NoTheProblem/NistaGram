@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {PostModel} from '../../models/post.model';
 import {PostService} from '../../services/post.service';
-import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 
 
 @Component({
@@ -11,23 +10,21 @@ import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 })
 export class HomeComponent implements OnInit {
   public posts: Array<PostModel> = new Array<PostModel>();
-  closeResult = '';
 
-
-
-  constructor(private postService: PostService, private modalService: NgbModal) { }
+  constructor(private postService: PostService) {
+  }
 
   ngOnInit(): void {
     this.initPosts();
   }
+
   private initPosts(): void {
     this.postService.HomeFeed()
       .subscribe((postsList: Array<PostModel>) => {
         this.posts = postsList;
       });
+
   }
-
-
 }
 
 

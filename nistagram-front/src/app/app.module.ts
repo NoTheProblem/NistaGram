@@ -43,6 +43,7 @@ import { ReportAdminComponent } from './components/report-admin/report-admin.com
 import { SearchListComponent } from './components/search-list/search-list.component';
 import { SuggestedComponent } from './components/suggested/suggested.component';
 import { ReactedPostsListComponent } from './components/reacted-posts-list/reacted-posts-list.component';
+import { HomeExploreComponent } from './components/home-explore/home-explore.component';
 
 
 @NgModule({
@@ -69,7 +70,8 @@ import { ReactedPostsListComponent } from './components/reacted-posts-list/react
     ReportAdminComponent,
     SearchListComponent,
     SuggestedComponent,
-    ReactedPostsListComponent
+    ReactedPostsListComponent,
+    HomeExploreComponent
   ],
   imports: [
     BrowserModule,

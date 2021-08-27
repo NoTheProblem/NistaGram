@@ -1,8 +1,13 @@
 <div *ngIf="isLogged">
   <p>Suggestions For You</p>
-  <ul *ngFor="let username of usernames">
-    <li routerLink="/{{username}}" style="text-align: left">
-      {{username}}
-    </li>
-  </ul>
+  <div *ngIf="isError">
+    <p>{{err}}</p>
+  </div>
+  <div *ngIf="!isError">
+    <ul *ngFor="let username of usernames">
+      <li routerLink="/{{username}}" style="text-align: left">
+        {{username}}
+      </li>
+    </ul>
+  </div>
 </div>
