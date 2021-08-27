@@ -124,11 +124,10 @@ func (u *FollowRepository) Unblock(following string, follower string) error {
 }
 
 func (u *FollowRepository) AcceptRequest(following string, follower string) error {
-	// TODO token username
 	session := *u.DatabaseSession
 
 	_, err := session.Run("match (u1:User{Username:$followerUsername})-[f:follow]->(u2:User{Username:$followingUsername}) set f.IsPrivate = false  return f;",
-		map[string]interface{}{"followingUsername":following,"followerUsername":follower,})
+		map[string]interface{}{"followingUsername":following,"followerUsername":follower})
 
 	if err != nil {
 		return err
@@ -138,7 +137,7 @@ func (u *FollowRepository) AcceptRequest(following string, follower string) erro
 
 }
 
-func (u *FollowRepository) FindAllFollowingsUsername(follower string) ([]string)  {
+func (u *FollowRepository) FindAllFollowingsUsername(follower string) DTO.UsersListDTO  {
 
 	session := *u.DatabaseSession
 	//Both public
@@ -151,7 +150,7 @@ func (u *FollowRepository) FindAllFollowingsUsername(follower string) ([]string)
 
 	}
 	if err != nil {
-		return nil
+		return DTO.UsersListDTO{}
 
 	}
 	//fmt.Println(followingsUsernames)
@@ -165,9 +164,10 @@ func (u *FollowRepository) FindAllFollowingsUsername(follower string) ([]string)
 
 	}
 	if err2 != nil {
-		return nil
+		return DTO.UsersListDTO{}
 
 	}
+
 	//fmt.Println(followingsUsernames)
 
 	//Follower private, following public
@@ -179,7 +179,7 @@ func (u *FollowRepository) FindAllFollowingsUsername(follower string) ([]string)
 
 	}
 	if err3 != nil {
-		return nil
+		return DTO.UsersListDTO{}
 
 	}
 	//fmt.Println(followingsUsernames)
@@ -198,7 +198,7 @@ func (u *FollowRepository) FindAllFollowingsUsername(follower string) ([]string)
 	fmt.Println(optFollowingsUsernames)
 	fmt.Println(result4.Next())
 	if err4 != nil {
-		return nil
+		return DTO.UsersListDTO{}
 
 	}
 
@@ -210,20 +210,17 @@ func (u *FollowRepository) FindAllFollowingsUsername(follower string) ([]string)
 			followingsUsernames = append(followingsUsernames, optUsername)
 		}
 		if err5 != nil {
-			return nil
+			return DTO.UsersListDTO{}
 		}
 	}
 
-
-
-
 	fmt.Println(followingsUsernames)
-	return  followingsUsernames
+	return  DTO.UsersListDTO{Usernames: followingsUsernames}
 
 
 }
 
-func (u *FollowRepository) FindAllFollowersUsername(following string)  ([]string) {
+func (u *FollowRepository) FindAllFollowersUsername(following string)  DTO.UsersListDTO {
 	session := *u.DatabaseSession
 
 
@@ -237,7 +234,7 @@ func (u *FollowRepository) FindAllFollowersUsername(following string)  ([]string
 
 	}
 	if err != nil {
-		return nil
+		return DTO.UsersListDTO{}
 
 	}
 
@@ -252,7 +249,7 @@ func (u *FollowRepository) FindAllFollowersUsername(following string)  ([]string
 
 	}
 	if err3 != nil {
-		return nil
+		return DTO.UsersListDTO{}
 
 	}
 
@@ -268,7 +265,7 @@ func (u *FollowRepository) FindAllFollowersUsername(following string)  ([]string
 
 	}
 	if err2 != nil {
-		return nil
+		return DTO.UsersListDTO{}
 
 	}
 	fmt.Println(followingsUsernames)
@@ -286,7 +283,7 @@ func (u *FollowRepository) FindAllFollowersUsername(following string)  ([]string
 	fmt.Println(optFollowingsUsernames)
 	fmt.Println(result4.Next())
 	if err4 != nil {
-		return nil
+		return DTO.UsersListDTO{}
 
 	}
 
@@ -298,7 +295,7 @@ func (u *FollowRepository) FindAllFollowersUsername(following string)  ([]string
 			followingsUsernames = append(followingsUsernames, optUsername)
 		}
 		if err5 != nil {
-			return nil
+			return DTO.UsersListDTO{}
 		}
 	}
 
@@ -307,7 +304,7 @@ func (u *FollowRepository) FindAllFollowersUsername(following string)  ([]string
 
 
 
-	return followingsUsernames
+	return DTO.UsersListDTO{Usernames: followingsUsernames}
 
 
 }
@@ -342,7 +339,7 @@ func (u *FollowRepository) TurnNotificationsForUserOff(username string) error {
 
 }
 
-func (u *FollowRepository) FindAllFollowersWithNotificationTurnOn(follower string) ([]string) {
+func (u *FollowRepository) FindAllFollowersWithNotificationTurnOn(follower string) DTO.UsersListDTO {
 
 	session := *u.DatabaseSession
 
@@ -350,7 +347,7 @@ func (u *FollowRepository) FindAllFollowersWithNotificationTurnOn(follower strin
 
 	var followingWithNot []string;
 
-	var followersUsernames []string = u.FindAllFollowersUsername(follower);
+	var followersUsernames []string = u.FindAllFollowersUsername(follower).Usernames
 	fmt.Println(followersUsernames)
 
 
@@ -362,12 +359,12 @@ func (u *FollowRepository) FindAllFollowersWithNotificationTurnOn(follower strin
 			followingWithNot = append(followingWithNot, optUsername)
 		}
 		if err5 != nil {
-			return nil
+			return DTO.UsersListDTO{}
 		}
 	}
 
 
-	return followingWithNot;
+	return DTO.UsersListDTO{Usernames: followersUsernames}
 
 
 	
@@ -407,15 +404,15 @@ func (u *FollowRepository) DeleteUser(username string) error {
 
 }
 
-func (u *FollowRepository) GetRecommendedProfiles(username string)   ([]string) {
+func (u *FollowRepository) GetRecommendedProfiles(username string)   DTO.UsersListDTO {
 	var followingsUsernames []string
-	followingsUsernames = u.FindAllFollowingsUsername(username);
+	followingsUsernames = u.FindAllFollowingsUsername(username).Usernames
 
 	var followingsFollowingsUsernames []string
 	var optRecommendationMyFollowingsFollowings []string
 
 	for _, optUsername := range followingsUsernames {
-		optRecommendationMyFollowingsFollowings = u.FindAllFollowingsUsername(optUsername)
+		optRecommendationMyFollowingsFollowings = u.FindAllFollowingsUsername(optUsername).Usernames
 		for _, optUsername2 := range optRecommendationMyFollowingsFollowings {
 			if optUsername2!=username{
 				var k = true
@@ -456,7 +453,7 @@ func (u *FollowRepository) GetRecommendedProfiles(username string)   ([]string) 
 	var recommend recommendStruct
 
 	for _, optUsername := range list {
-		optRecommendation = u.FindAllFollowingsUsername(optUsername);
+		optRecommendation = u.FindAllFollowingsUsername(optUsername).Usernames
 		for _, firstList := range followingsUsernames {
 			for _, secondList := range optRecommendation {
 				if secondList == firstList {
@@ -504,7 +501,7 @@ func (u *FollowRepository) GetRecommendedProfiles(username string)   ([]string) 
 		}
 	}
 	fmt.Println(winners)
-	return winners
+	return DTO.UsersListDTO{ Usernames: winners}
 }
 
 func (u *FollowRepository) GetRelationship(username string, username2 string) DTO.RelationTypeDTO {
@@ -570,8 +567,24 @@ func (u *FollowRepository) GetUser(username string) DTO.UserDTO {
 }
 
 func (u *FollowRepository) GetUnavailableUsers(username string) DTO.UsersListDTO {
-	 // TODO
-	return DTO.UsersListDTO{}
+
+	session := *u.DatabaseSession
+	var unavailableUsernames []string
+	result, _ := session.Run("match (u1:User{Username:$followerUsername})-[b:block}]->(u) return u.Username; ",
+		map[string]interface{}{"followerUsername":username})
+	for result.Next() {
+		Username, _ := result.Record().GetByIndex(0).(string)
+		unavailableUsernames = append(unavailableUsernames, Username)
+	}
+
+	result, _ = session.Run("match (u1})-[b:block}]->(u:User{Username:$followerUsername}) return u1.Username; ",
+		map[string]interface{}{"followerUsername":username})
+	for result.Next() {
+		Username, _ := result.Record().GetByIndex(0).(string)
+		unavailableUsernames = append(unavailableUsernames, Username)
+	}
+
+	return DTO.UsersListDTO{ Usernames: unavailableUsernames}
 }
 
 

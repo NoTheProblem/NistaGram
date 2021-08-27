@@ -78,10 +78,9 @@ func (handler *FollowHandler) AcceptRequest(writer http.ResponseWriter, request 
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-
 	vars := mux.Vars(request)
 	follower := vars["follower"]
-	var res = handler.FollowService.AcceptRequest(follower, user.Username)
+	var res = handler.FollowService.AcceptRequest(user.Username, follower)
 	fmt.Println(res)
 }
 
@@ -92,13 +91,6 @@ func (handler *FollowHandler) FindAllFollowing(writer http.ResponseWriter, reque
 		return
 	}
 	following := handler.FollowService.FindAllFollowing(user.Username)
-	/*if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}*/
-	for _, optUsername := range following {
-		fmt.Println(optUsername)
-	}
 	writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(writer).Encode(following)
 }
@@ -111,9 +103,6 @@ func (handler *FollowHandler) FindAllFollowers(writer http.ResponseWriter, reque
 		return
 	}
 	followers:= handler.FollowService.FindAllFollowers(user.Username)
-	for _, optUsername := range followers {
-		fmt.Println(optUsername)
-	}
 	writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(writer).Encode(followers)
 }
@@ -141,16 +130,12 @@ func (handler *FollowHandler) TurnNotificationsForUserOff(writer http.ResponseWr
 }
 
 func (handler *FollowHandler) FindAllFollowersWithNotificationTurnOn(writer http.ResponseWriter, request *http.Request) {
-	// TODO isPrivate
 	user , err := getUserFromToken(request)
 	if err != nil{
 		writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 	followingNotOn := handler.FollowService.FindAllFollowersWithNotificationTurnOn(user.Username)
-	for _, optUsername := range followingNotOn {
-		fmt.Println(optUsername)
-	}
 	writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(writer).Encode(followingNotOn)
 }
@@ -267,9 +252,6 @@ func (handler *FollowHandler) GetRecommendedProfiles(writer http.ResponseWriter,
 		return
 	}
 	recommend:= handler.FollowService.GetRecommendedProfiles(user.Username)
-	for _, optUsername := range recommend {
-		fmt.Println(optUsername)
-	}
 	writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(writer).Encode(recommend)
 }
