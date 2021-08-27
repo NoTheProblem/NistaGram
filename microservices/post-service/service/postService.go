@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
@@ -63,14 +64,30 @@ func (service *PostService) GetHomeFeed(username string) interface{}{
 
 }
 
-func (service *PostService) GetProfilePosts(username string, token string) interface{} {
+func (service *PostService) GetProfilePosts(username string, token string) (interface{}, error) {
 	publicPostsDocuments := service.PostRepository.GetProfilePosts(username)
 
 	publicPosts := CreatePostsFromDocuments(publicPostsDocuments)
+	var relationType = getRelationType(username, token)
 
-	if !publicPosts[0].IsPublic {
-		if !isFollowing(username, token) {
-			return model.Post{}
+	if relationType.Relation == model.Blocked{
+		return nil, errors.New("record not found")
+
+	}
+
+
+	if len(publicPosts)>0 {
+		if publicPosts[0].IsPrivate {
+			switch relationType.Relation {
+			case model.Blocking:
+				return nil, errors.New("user blocked")
+			case model.NotAccepted:
+				return nil, errors.New("request not accepted")
+			case model.NotFollowing:
+				return nil, errors.New("private profile, send request")
+			case model.Following:
+				return publicPosts, nil
+			}
 		}
 	}
 
@@ -86,7 +103,7 @@ func (service *PostService) GetProfilePosts(username string, token string) inter
 		}
 	}
 
-	return  publicPosts
+	return publicPosts, nil
 }
 
 func (service *PostService) GetPostByID(id string) model.Post {
@@ -334,7 +351,7 @@ func mapPostDtoTOPost(postDTO *dto.PostDTO, username string, paths []string) (*m
 	post.Id, _ = uuid.NewUUID()
 	post.Tags = postDTO.Tags
 	post.Description = postDTO.Description
-	post.IsPublic = postDTO.IsPublic
+	post.IsPrivate = postDTO.IsPrivate
 	post.Location = postDTO.Location
 	post.NumberOfDislikes, post.NumberOfLikes, post.NumberOfReaches = 0 , 0 , 0
 	post.IsAdd =  postDTO.IsAdd
@@ -396,23 +413,20 @@ func removeStringFromSLice(s string,l []string) []string {
 }
 
 
-func isFollowing(username string, token string) bool {
+func getRelationType(username string, token string) model.RelationType {
 	client := &http.Client{}
-	requestUrl := fmt.Sprintf("http://%s:%s/isFollowing/" + username, os.Getenv("FOLLOWERS_SERVICE_DOMAIN"), os.Getenv("FOLLOWERS_SERVICE_PORT"))
+	requestUrl := fmt.Sprintf("http://%s:%s/getRelationship/" + username, os.Getenv("FOLLOWERS_SERVICE_DOMAIN"), os.Getenv("FOLLOWERS_SERVICE_PORT"))
 	req, _ := http.NewRequest("GET", requestUrl, nil)
 	req.Header.Set("Host", "http://user-service:8080")
 	if  token == ""{
-		return false
+		return model.RelationType{Relation: model.NotFollowing}
 	}
 	req.Header.Set("Authorization", token)
 	res, err2 := client.Do(req)
 	if err2 != nil {
 		fmt.Println(err2)
 	}
-	var isFollowing bool
-	fmt.Println(res)
-	fmt.Println(res.Body)
-	_ = json.NewDecoder(res.Body).Decode(&isFollowing)
-	fmt.Println(isFollowing)
-	return isFollowing
+	var relationType model.RelationType
+	_ = json.NewDecoder(res.Body).Decode(&relationType)
+	return relationType
 }

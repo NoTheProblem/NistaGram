@@ -509,6 +509,11 @@ func (u *FollowRepository) GetRecommendedProfiles(username string)   ([]string) 
 
 func (u *FollowRepository) GetRelationship(username string, username2 string) DTO.RelationTypeDTO {
 
+	//It's me?
+	if username == username2{
+		return DTO.RelationTypeDTO{ Relation: DTO.Following}
+	}
+
 	session := *u.DatabaseSession
 
 	//Blocking user
@@ -540,7 +545,7 @@ func (u *FollowRepository) GetRelationship(username string, username2 string) DT
 		map[string]interface{}{"followerUsername":username,"followingUsername":username2})
 
 	if result.Next() {
-		return DTO.RelationTypeDTO{ Relation: DTO.Following}
+		return DTO.RelationTypeDTO{ Relation: DTO.NotAccepted}
 	}
 
 	return DTO.RelationTypeDTO{ Relation: DTO.NotFollowing}

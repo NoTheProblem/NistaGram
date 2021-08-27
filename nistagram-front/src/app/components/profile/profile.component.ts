@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {PostModel} from '../../models/post.model';
 import {UserModel} from '../../models/user.model';
 import {UserService} from '../../services/user.service';
 import {TokenStorageService} from '../../_services/token-storage.service';
 import {FollowService} from '../../services/follow.service';
+import {RELATION_TYPE, RelationType} from '../../models/relationshipType.model';
 
 @Component({
   selector: 'app-profile',
@@ -19,9 +20,9 @@ export class ProfileComponent implements OnInit {
   public isMe = false;
   isError = false;
   isLogged = false;
-  isFollowing = false;
   showFollowButton = true;
   isBlocked = false;
+  relationType: RELATION_TYPE;
 
   constructor(private route: ActivatedRoute, private userService: UserService, private followService: FollowService,
               private tokenStorageService: TokenStorageService) { }
@@ -29,6 +30,14 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     const routeParam = this.route.snapshot.paramMap;
     this.username = routeParam.get('username');
+    this.followService.getRelationship(this.username).subscribe((relationType: RelationType) => {
+        this.relationType = relationType.relation;
+      },
+      error => {
+        this.relationType = RELATION_TYPE.NOT_FOLLOWING;
+      }
+    );
+
     this.userService.loadProfile(this.username)
       .subscribe((profile: UserModel) => {
         this.profile = profile;
@@ -57,15 +66,9 @@ export class ProfileComponent implements OnInit {
 
     this.isLogged = this.tokenStorageService.isLoggedIn();
     if (this.isLogged){
-      this.followService.isFollowing(this.username).subscribe((is: boolean) => {
-        this.isFollowing = is;
-      },
-        (error => {
-          this.isError = true;
-          console.log(error.error);
-          this.error = this.error + error.error;
-        })
-      );
+      if ( this.username === this.tokenStorageService.getUsername()){
+        this.isMe = true;
+      }
     }
   }
 

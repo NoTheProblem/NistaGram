@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {ToastrService} from 'ngx-toastr';
 import {Observable} from 'rxjs';
+import {RelationType} from '../models/relationshipType.model';
 
 @Injectable({
   providedIn: 'root'
@@ -62,8 +63,8 @@ export class FollowService {
       );
   }
 
-  isFollowing(username: string): Observable<boolean> {
-    return this.http.get<boolean>('http://localhost:8080/api/followers/isFollowing/' + username);
+  getRelationship(username: string): Observable<RelationType> {
+    return this.http.get<RelationType>('http://localhost:8080/api/followers/getRelationship/' + username);
   }
 
   getRecommendedUsers(): Observable<string[]> {

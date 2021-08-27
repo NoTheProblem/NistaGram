@@ -33,7 +33,8 @@ func (handler *PostHandler) CreateNewPost(w http.ResponseWriter, r *http.Request
 	var tags = r.FormValue("tags")
 	var description = r.FormValue("description")
 	var numberOfImagesStr = r.FormValue("numberOfImages")
-	var isPublic, _ = strconv.ParseBool(r.FormValue("isPublic"))
+	// TODO check somewhere else
+	var isPrivate, _ = strconv.ParseBool(r.FormValue("isPrivate"))
 	var numberOfImages, _ = strconv.Atoi(numberOfImagesStr)
 	fileNames := make([]string, numberOfImages)
 	fmt.Println(numberOfImages)
@@ -80,7 +81,7 @@ func (handler *PostHandler) CreateNewPost(w http.ResponseWriter, r *http.Request
 	// return that we have successfully uploaded our file!
 	var post dto.PostDTO
 	post.Location = location
-	post.IsPublic = isPublic
+	post.IsPrivate = isPrivate
 	json.Unmarshal([]byte(tags), &post.Tags)
 
 	post.Description = description
@@ -116,12 +117,15 @@ func (handler *PostHandler) GetHomeFeed(writer http.ResponseWriter, request *htt
 func (handler *PostHandler) GetPostsByUsername(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	username := vars["username"]
-	publicPosts :=handler.PostService.GetProfilePosts(username, request.Header.Get("Authorization"))
+	publicPosts, err :=handler.PostService.GetProfilePosts(username, request.Header.Get("Authorization"))
 	writer.Header().Set("Content-Type", "application/json")
-	publicPostsJson, err := json.Marshal(publicPosts)
 	if err != nil {
-		writer.WriteHeader(http.StatusInternalServerError)
+		writer.WriteHeader(http.StatusBadRequest)
+		http.Error(writer,err.Error(),http.StatusBadRequest)
+
 	} else {
+
+		publicPostsJson, _ := json.Marshal(publicPosts)
 		writer.WriteHeader(http.StatusOK)
 		_, _ = writer.Write(publicPostsJson)
 	}

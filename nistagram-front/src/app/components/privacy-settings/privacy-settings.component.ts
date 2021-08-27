@@ -10,20 +10,22 @@ import {SettingsService} from '../../services/settings.service';
 })
 export class PrivacySettingsComponent implements OnInit {
   @Input() userProfile: UserModel;
-  privacy: boolean;
+  isPrivate: boolean;
   messages: boolean;
   tag: boolean;
 
   constructor(private settingsService: SettingsService) { }
 
   ngOnInit(): void {
-    this.privacy = this.userProfile.profilePrivacy;
+    console.log(this.userProfile.isPrivate);
+    this.isPrivate = this.userProfile.isPrivate;
     this.messages = this.userProfile.receiveMessages;
     this.tag = this.userProfile.taggable;
   }
 
   updateProfile(): void {
-    this.settingsService.updatePrivacySettings(this.privacy, this.messages, this.tag);
+    console.log(this.isPrivate);
+    this.settingsService.updatePrivacySettings(this.isPrivate, this.messages, this.tag);
 
   }
 }

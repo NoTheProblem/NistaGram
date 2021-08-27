@@ -4,9 +4,9 @@
       <mat-card-content class="login_card_form">
         <form #form="ngForm"  class="register-form">
           <p>Profile privacy:</p>
-          <input type="radio" id="public" name="profilePrivacy"  [(ngModel)]="privacy" [value]="true">
+          <input type="radio" id="public" name="profilePrivacy"  [(ngModel)]="isPrivate" [value]="false">
           <label for="public">Public</label><br>
-          <input type="radio" id="private" name="profilePrivacy" [(ngModel)]="privacy" [value]="false">
+          <input type="radio" id="private" name="profilePrivacy" [(ngModel)]="isPrivate" [value]="true">
           <label for="private">Private</label><br>
           <hr>
           <p>Receive messages from unfollowed profiles:</p>

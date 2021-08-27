@@ -21,7 +21,7 @@ func (service *UserService) RegisterUser (dto dto.UserRegisterDTO) error {
 	t := true
 	f := false
 	user := model.User{Id: uuid.New(), Email: dto.Email, UserRole: model.Role(dto.UserRole), Username: dto.Username,
-		Taggable: &t, ReceiveMessages: &t, NumberOfFollowers: 0, NumberOfFollowing: 0, ProfilePrivacy: &f,
+		Taggable: &t, ReceiveMessages: &t, NumberOfFollowers: 0, NumberOfFollowing: 0, IsPrivate: &f,
 		NumberOfPosts: 0, Verified: &f, ReceiveMessagesNotifications: &t, ReceivePostNotifications: &f,
 		ReceiveCommentNotifications: &f}
 	err := service.UserRepository.RegisterUser(&user)
@@ -57,15 +57,15 @@ func (service *UserService) UpdateUserPrivacy(privacyDTO dto.UserPrivacyDTO, use
 	if err != nil {
 		return err
 	}
-	if user.ProfilePrivacy != &privacyDTO.ProfilePrivacy{
+	if user.IsPrivate != &privacyDTO.IsPrivate{
 		var userF dto.UserFollowerDTO
 		userF.Username = user.Username
-		userF.IsPrivate = privacyDTO.ProfilePrivacy
+		userF.IsPrivate = privacyDTO.IsPrivate
 		userF.IsNotifications = *user.ReceivePostNotifications
 		updateUserFollower(userF, token)
-		updatePosts(privacyDTO.ProfilePrivacy,token)
+		updatePosts(privacyDTO.IsPrivate,token)
 	}
-	user.ProfilePrivacy = &privacyDTO.ProfilePrivacy
+	user.IsPrivate = &privacyDTO.IsPrivate
 	user.ReceiveMessages = &privacyDTO.ReceiveMessages
 	user.Taggable = &privacyDTO.Taggable
 	err = service.UserRepository.UpdateUserProfileInfo(user)
@@ -85,7 +85,7 @@ func (service *UserService) UpdateProfileNotification(notificationDTO dto.UserNo
 	if user.ReceivePostNotifications != &notificationDTO.ReceivePostNotifications{
 		var userF dto.UserFollowerDTO
 		userF.Username = user.Username
-		userF.IsPrivate = *user.ProfilePrivacy
+		userF.IsPrivate = *user.IsPrivate
 		userF.IsNotifications = notificationDTO.ReceivePostNotifications
 		updateUserFollower(userF, token)
 	}
@@ -157,12 +157,25 @@ func (service *UserService) GetUserProfile(username string, requester string, to
 	if err != nil {
 		return nil, err
 	}
-	if !*user.ProfilePrivacy {
+	var relationType = getRelationType(username, token)
+
+	if relationType.Relation == model.Blocked{
+		return nil, errors.New("record not found")
+
+	}
+
+	if *user.IsPrivate {
 		if requester != "" {
-			if isFollowing(username, token){
+			switch relationType.Relation {
+			case model.Blocking:
+				return nil, errors.New("user blocked")
+			case model.NotAccepted:
+				return nil, errors.New("request not accepted")
+			case model.NotFollowing:
+				return nil, errors.New("private profile, send request")
+			case model.Following:
 				return user, nil
 			}
-			return nil, errors.New("private profile, send request to follow")
 		}else {
 			return nil, errors.New("private profile, log in to send request")
 		}
@@ -183,25 +196,22 @@ func (service *UserService) SearchPublicUsers(username string) interface{} {
 }
 
 
-func isFollowing(username string, token string) bool {
+func getRelationType(username string, token string) model.RelationType {
 	client := &http.Client{}
-	requestUrl := fmt.Sprintf("http://%s:%s/isFollowing/" + username, os.Getenv("FOLLOWERS_SERVICE_DOMAIN"), os.Getenv("FOLLOWERS_SERVICE_PORT"))
+	requestUrl := fmt.Sprintf("http://%s:%s/getRelationship/" + username, os.Getenv("FOLLOWERS_SERVICE_DOMAIN"), os.Getenv("FOLLOWERS_SERVICE_PORT"))
 	req, _ := http.NewRequest("GET", requestUrl, nil)
 	req.Header.Set("Host", "http://user-service:8080")
 	if  token == ""{
-		return false
+		return model.RelationType{Relation: model.NotFollowing}
 	}
 	req.Header.Set("Authorization", token)
 	res, err2 := client.Do(req)
 	if err2 != nil {
 		fmt.Println(err2)
 	}
-	var isFollowing bool
-	fmt.Println(res)
-	fmt.Println(res.Body)
-	_ = json.NewDecoder(res.Body).Decode(&isFollowing)
-	fmt.Println(isFollowing)
-	return isFollowing
+	var relationType model.RelationType
+	_ = json.NewDecoder(res.Body).Decode(&relationType)
+	return relationType
 }
 
 

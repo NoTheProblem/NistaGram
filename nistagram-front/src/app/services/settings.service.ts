@@ -33,7 +33,7 @@ export class SettingsService {
 
   updatePrivacySettings(privacy: boolean, messages: boolean, tag: boolean): void {
     this.http.post('http://localhost:8080/api/user/updatePrivacySettings', {
-      profilePrivacy: privacy,
+      isPrivate: privacy,
       receiveMessages: messages,
       taggable: tag
     }).subscribe(

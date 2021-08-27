@@ -132,7 +132,7 @@ func (handler *UserHandler) GetUserProfile(writer http.ResponseWriter, request *
 	user, userErr := handler.UserService.GetUserProfile(username, requester.Username, request.Header.Get("Authorization"))
 	if userErr != nil{
 		writer.WriteHeader(http.StatusBadRequest)
-		http.Error(writer,userErr.Error(),400)
+		http.Error(writer,userErr.Error(),http.StatusBadRequest)
 	}
 	userJson, err := json.Marshal(user)
 	if err != nil {

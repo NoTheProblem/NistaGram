@@ -18,7 +18,7 @@ type User struct {
 	NumberOfFollowers int `json:"numberOfFollowers"`
 	NumberOfFollowing int `json:"numberOfFollowing"`
 	Verified *bool `json:"verified"`
-	ProfilePrivacy *bool `json:"profilePrivacy"`
+	IsPrivate *bool `json:"isPrivate"`
 	ReceiveMessages *bool `json:"receiveMessages"`
 	Taggable *bool `json:"taggable"`
 	ReceivePostNotifications *bool `json:"receivePostNotifications"`

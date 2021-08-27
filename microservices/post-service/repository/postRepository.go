@@ -220,7 +220,7 @@ func (repository *PostRepository) DeleteUserPosts(username string) error{
 
 func (repository *PostRepository) GetPublicPosts() []bson.D {
 	postsCollection := repository.Database.Collection("posts")
-	filterCursor, err := postsCollection.Find(context.TODO(), bson.M{"ispublic": true})
+	filterCursor, err := postsCollection.Find(context.TODO(), bson.M{"isprivate": false})
 	if err != nil {
 		fmt.Println("other error")
 		log.Fatal(err)
@@ -240,7 +240,7 @@ func (repository *PostRepository) UpdatePostsPrivacyByOwner(username string, pri
 		context.TODO(),
 		bson.M{"owner": username},
 		bson.D{
-			{"$set", bson.D{{"ispublic", privacy}}},
+			{"$set", bson.D{{"isprivate", privacy}}},
 		},
 	)
 	fmt.Printf("Updated %v Documents!\n", result.ModifiedCount)

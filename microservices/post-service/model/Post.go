@@ -16,7 +16,7 @@ type Post struct {
 	IsAlbum bool `json:"isAlbum"`
 	NumberOfReaches int `json:"NumberOfReaches"`
 	PostComments []Comment `json:"comments"`
-	IsPublic bool `json:"isPublic"`
+	IsPrivate bool `json:"isPrivate"`
 	Location string `json:"location"`
 	Tags []string `json:"tags"`
 	Path  []string `json:"path"`

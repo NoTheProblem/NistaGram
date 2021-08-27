@@ -1,72 +1,72 @@
 <br><Br><Br>
-<div *ngIf="isBlocked" style="text-align: center;">
-  <br><Br><Br>
-  <p>You blocked this user!</p>
-  <br>
-  <button class="btn profile-settings-btn" aria-label="profile settings" (click)="unBlockUser()">UnBlock</button> &nbsp; &nbsp;&nbsp;
-
-</div>
-
-<div *ngIf="!isBlocked">
-
 <div *ngIf="isError" style="text-align: center;">
   <br><Br><Br>
+
   <p>{{error}}</p>
 
-  <button class="btn profile-settings-btn" aria-label="profile settings" *ngIf="showFollowButton" (click)="followUser()">Follow</button> &nbsp; &nbsp;&nbsp;
+  <div *ngIf="relationType === 0"> <!-- NOT_FOLLOWING -->
+    <button class="btn profile-settings-btn" aria-label="profile settings" *ngIf="showFollowButton" (click)="followUser()">Follow</button> &nbsp; &nbsp;&nbsp;
+  </div>
+  <div *ngIf="relationType === 2"> <!-- NOT_ACCEPTED -->
+    <button class="btn profile-settings-btn" aria-label="profile settings" *ngIf="showFollowButton" (click)="unFollowUser()">Cancel Request</button> &nbsp; &nbsp;&nbsp;
+  </div>
+  <div *ngIf="relationType === 3"> <!-- BLOCKED -->
 
+  </div>
+  <div *ngIf="relationType === 4"> <!-- BLOCKING -->
+    <button class="btn profile-settings-btn" aria-label="profile settings" *ngIf="showFollowButton" (click)="unBlockUser()">UnBlock</button> &nbsp; &nbsp;&nbsp;
+  </div>
 </div>
 
 
 <div *ngIf="!isError">
-<div class="container" >
-  <div class="profile">
-    <div class="profile-image">
-      <!-- TODO get profile picture -->
-      <img src="https://images.unsplash.com/photo-1513721032312-6a18a42c8763?w=152&h=152&fit=crop&crop=faces" alt="">
-    </div>
-    <div class="profile-user-settings">
-      <h2 class="profile-user-name">{{username}}</h2> &nbsp;&nbsp;&nbsp;
-      <mat-icon routerLink="upload-post" *ngIf="profile?.verified">verified</mat-icon>
-
-      <div *ngIf="isLogged && !isMe" >
-        <div *ngIf="!isFollowing">
-          <button class="btn profile-settings-btn" aria-label="profile settings" (click)="followUser()">Follow</button> &nbsp; &nbsp;&nbsp;
-          <button *ngIf="profile?.receiveMessages" class="btn profile-settings-btn" aria-label="profile settings">Message</button>
-          <button class="btn profile-settings-btn" aria-label="profile settings" (click)="blockUser()">Block</button> &nbsp; &nbsp;&nbsp;
-        </div>
-        <div *ngIf="isFollowing">
-          <button class="btn profile-settings-btn" aria-label="profile settings" (click)="unFollowUser()">UnFollow</button> &nbsp; &nbsp;&nbsp;
-          <button class="btn profile-settings-btn" aria-label="profile settings">Message</button>
-          <button class="btn profile-settings-btn" aria-label="profile settings" (click)="blockUser()">Block</button> &nbsp; &nbsp;&nbsp;
-        </div>
+  <div class="container" >
+    <div class="profile">
+      <div class="profile-image">
+        <!-- TODO get profile picture -->
+        <img src="https://images.unsplash.com/photo-1513721032312-6a18a42c8763?w=152&h=152&fit=crop&crop=faces" alt="">
       </div>
+      <div class="profile-user-settings">
+        <h2 class="profile-user-name">{{username}}</h2> &nbsp;&nbsp;&nbsp;
+        <mat-icon routerLink="upload-post" *ngIf="profile?.verified">verified</mat-icon>
 
-    </div>
-    <div class="profile-stats">
-      <ul>
-        <li><span class="profile-stat-count">{{profile?.numberOfPosts}}</span> posts</li>
-        <li><span class="profile-stat-count">{{profile?.numberOfFollowers}}</span> followers</li>
-        <li><span class="profile-stat-count">{{profile?.numberOfFollowing}}</span> following</li>
-      </ul>
-    </div>
-    <div class="profile-bio">
-      <p><span class="profile-real-name">{{profile?.name}} {{profile?.surname}}</span> </p>
-      <p><span>{{profile?.webSite}}</span></p>
-      <p><span>{{profile?.bio}}</span></p>
-    </div>
-  </div>
-</div>
+        <div *ngIf="isLogged && !isMe" >
+          <div *ngIf="relationType === 0">
+            <button class="btn profile-settings-btn" aria-label="profile settings" (click)="followUser()">Follow</button> &nbsp; &nbsp;&nbsp;
+            <button *ngIf="profile?.receiveMessages" class="btn profile-settings-btn" aria-label="profile settings">Message</button>
+            <button class="btn profile-settings-btn" aria-label="profile settings" (click)="blockUser()">Block</button> &nbsp; &nbsp;&nbsp;
+          </div>
+          <div *ngIf="relationType === 1">
+            <button class="btn profile-settings-btn" aria-label="profile settings" (click)="unFollowUser()">UnFollow</button> &nbsp; &nbsp;&nbsp;
+            <button class="btn profile-settings-btn" aria-label="profile settings">Message</button>
+            <button class="btn profile-settings-btn" aria-label="profile settings" (click)="blockUser()">Block</button> &nbsp; &nbsp;&nbsp;
+          </div>
+        </div>
 
-
-<main>
-  <div class="container">
-    <div class="gallery" >
-      <div class="gallery-item" tabindex="0" *ngFor="let p of posts">
-        <app-profile-post [post]="p"></app-profile-post>
       </div>
+      <div class="profile-stats">
+        <ul>
+          <li><span class="profile-stat-count">{{profile?.numberOfPosts}}</span> posts</li>
+          <li><span class="profile-stat-count">{{profile?.numberOfFollowers}}</span> followers</li>
+          <li><span class="profile-stat-count">{{profile?.numberOfFollowing}}</span> following</li>
+        </ul>
+      </div>
+      <div class="profile-bio">
+        <p><span class="profile-real-name">{{profile?.name}} {{profile?.surname}}</span> </p>
+        <p><span>{{profile?.webSite}}</span></p>
+        <p><span>{{profile?.bio}}</span></p>
+      </div>
+    </div>
   </div>
-  </div>
-</main>
-</div>
+
+
+  <main>
+    <div class="container">
+      <div class="gallery" >
+        <div class="gallery-item" tabindex="0" *ngFor="let p of posts">
+          <app-profile-post [post]="p"></app-profile-post>
+        </div>
+    </div>
+    </div>
+  </main>
 </div>

@@ -10,7 +10,7 @@ export interface UserModel {
   birth: Date;
   webSite: string;
   bio: string;
-  profilePrivacy: boolean;
+  isPrivate: boolean;
   receiveMessages: boolean;
   taggable: boolean;
   receivePostNotifications: boolean;
@@ -20,5 +20,4 @@ export interface UserModel {
   numberOfFollowers: number;
   numberOfFollowing: number;
   verified: boolean;
-
 }
