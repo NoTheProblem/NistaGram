@@ -35,7 +35,7 @@ func handleFunc(handler *handler.FollowHandler) {
 	router.HandleFunc("/deleteUser/{username}", handler.DeleteUser).Methods("DELETE")
 	router.HandleFunc("/follow/{username}", handler.Follow).Methods("POST")
 	router.HandleFunc("/unfollow/{username}", handler.RemoveFollower).Methods("PUT")
-	router.HandleFunc("/isFollowing/{username}", handler.IsFollowing).Methods("GET")
+	router.HandleFunc("/getRelationship/{username}", handler.GetRelationship).Methods("GET")
 	router.HandleFunc("/block/{user}", handler.Block).Methods("POST")
 	router.HandleFunc("/unblock/{user}", handler.Unblock).Methods("PUT")
 	router.HandleFunc("/acceptRequest/{follower}", handler.AcceptRequest).Methods("PUT")

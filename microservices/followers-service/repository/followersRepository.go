@@ -385,8 +385,9 @@ func (u *FollowRepository) AddUser(user DTO.UserDTO) error {
 }
 
 func (u *FollowRepository) UpdateUser(user DTO.UserDTO) error {
+	fmt.Println(user)
 	session := *u.DatabaseSession
-	_, err := session.Run("match (u:User{Username:$followingUsername}) set u.IsPrivate = $followingPrivate and u.IsNotifications = $notifications",
+	_, err := session.Run("match (u:User{Username:$followingUsername}) set u.IsPrivate = $followingPrivate , u.IsNotifications = $notifications",
 		map[string]interface{}{"followingUsername":user.Username,"followingPrivate":user.IsPrivate,"notifications": user.IsNotifications})
 	if err != nil {
 		return err
@@ -414,7 +415,7 @@ func (u *FollowRepository) GetRecommendedProfiles(username string)   ([]string) 
 	var optRecommendationMyFollowingsFollowings []string
 
 	for _, optUsername := range followingsUsernames {
-		optRecommendationMyFollowingsFollowings = u.FindAllFollowingsUsername(optUsername);
+		optRecommendationMyFollowingsFollowings = u.FindAllFollowingsUsername(optUsername)
 		for _, optUsername2 := range optRecommendationMyFollowingsFollowings {
 			if optUsername2!=username{
 				var k = true
@@ -490,30 +491,59 @@ func (u *FollowRepository) GetRecommendedProfiles(username string)   ([]string) 
 
 	fmt.Println(recommendations)
 
-	recommendations = recommendations[0:5]
 	var winners []string
 
-	for _, winner := range recommendations {
-		winners = append(winners, winner.username)
+	if len(recommendations) >=5 {
+		recommendations = recommendations[0:5]
+		for _, winner := range recommendations {
+			winners = append(winners, winner.username)
+		}
+	} else{
+		for _, winner := range recommendations {
+			winners = append(winners, winner.username)
+		}
 	}
-
 	fmt.Println(winners)
 	return winners
 }
 
-func (u *FollowRepository) IsFollowing(username string, username2 string) bool {
+func (u *FollowRepository) GetRelationship(username string, username2 string) DTO.RelationTypeDTO {
 
 	session := *u.DatabaseSession
 
-	result, _ := session.Run("match (u1:User{Username:$followerUsername})-[f:follow]->(u2:User{Username:$followingUsername}) return f; ",
-	map[string]interface{}{"followerUsername":username,"followingUsername":username2})
+	//Blocking user
+	result, _ := session.Run("match (u1:User{Username:$followerUsername})-[b:block]->(u2:User{Username:$followingUsername}) return b; ",
+		map[string]interface{}{"followerUsername":username,"followingUsername":username2})
 
 	if result.Next() {
-		return true
+		return DTO.RelationTypeDTO{ Relation: DTO.Blocking}
 	}
-	return false
 
+	//Blocked user
+	result, _ = session.Run("match (u1:User{Username:$followerUsername})-[b:block]->(u2:User{Username:$followingUsername}) return b; ",
+		map[string]interface{}{"followerUsername":username2,"followingUsername":username})
 
+	if result.Next() {
+		return DTO.RelationTypeDTO{ Relation: DTO.Blocked}
+	}
+
+	//Following user
+	result, _ = session.Run("match (u1:User{Username:$followerUsername})-[f:follow{IsPrivate:false}]->(u2:User{Username:$followingUsername}) return f; ",
+		map[string]interface{}{"followerUsername":username,"followingUsername":username2})
+
+	if result.Next() {
+		return DTO.RelationTypeDTO{ Relation: DTO.Following}
+	}
+
+	//NotAccepted user
+	result, _ = session.Run("match (u1:User{Username:$followerUsername})-[f:follow{IsPrivate:true}]->(u2:User{Username:$followingUsername}) return f; ",
+		map[string]interface{}{"followerUsername":username,"followingUsername":username2})
+
+	if result.Next() {
+		return DTO.RelationTypeDTO{ Relation: DTO.Following}
+	}
+
+	return DTO.RelationTypeDTO{ Relation: DTO.NotFollowing}
 
 }
 

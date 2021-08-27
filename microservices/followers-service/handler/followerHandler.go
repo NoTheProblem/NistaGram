@@ -218,7 +218,7 @@ func (handler *FollowHandler) DeleteUser(writer http.ResponseWriter, request *ht
 }
 
 
-func (handler *FollowHandler) IsFollowing(writer http.ResponseWriter, request *http.Request) {
+func (handler *FollowHandler) GetRelationship(writer http.ResponseWriter, request *http.Request) {
 	user , err := getUserFromToken(request)
 	if err != nil{
 		writer.WriteHeader(http.StatusUnauthorized)
@@ -226,10 +226,10 @@ func (handler *FollowHandler) IsFollowing(writer http.ResponseWriter, request *h
 	}
 	vars := mux.Vars(request)
 	username := vars["username"]
-
-	isFollowing := handler.FollowService.FollowRepository.IsFollowing(user.Username, username)
+	var relationType DTO.RelationTypeDTO
+	relationType = handler.FollowService.FollowRepository.GetRelationship(user.Username, username)
 	writer.WriteHeader(http.StatusOK)
-	json.NewEncoder(writer).Encode(isFollowing)
+	json.NewEncoder(writer).Encode(relationType)
 }
 
 
