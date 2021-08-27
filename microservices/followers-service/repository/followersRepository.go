@@ -570,14 +570,14 @@ func (u *FollowRepository) GetUnavailableUsers(username string) DTO.UsersListDTO
 
 	session := *u.DatabaseSession
 	var unavailableUsernames []string
-	result, _ := session.Run("match (u1:User{Username:$followerUsername})-[b:block}]->(u) return u.Username; ",
+	result, _ := session.Run("match (u1:User{Username:$followerUsername})-[b:block]->(u) return u.Username; ",
 		map[string]interface{}{"followerUsername":username})
 	for result.Next() {
 		Username, _ := result.Record().GetByIndex(0).(string)
 		unavailableUsernames = append(unavailableUsernames, Username)
 	}
 
-	result, _ = session.Run("match (u1})-[b:block}]->(u:User{Username:$followerUsername}) return u1.Username; ",
+	result, _ = session.Run("match (u1)-[b:block]->(u:User{Username:$followerUsername}) return u1.Username; ",
 		map[string]interface{}{"followerUsername":username})
 	for result.Next() {
 		Username, _ := result.Record().GetByIndex(0).(string)

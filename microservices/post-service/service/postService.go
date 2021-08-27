@@ -286,7 +286,6 @@ func (service *PostService) SearchLocation(location string, username string, tok
 	for _, p := range publicPosts {
 		if strings.Contains(strings.ToLower(p.Location), strings.ToLower(location)) {
 			locationPosts = append(locationPosts, p)
-			fmt.Println(p.Location)
 		}
 	}
 
@@ -302,19 +301,12 @@ func (service *PostService) SearchLocation(location string, username string, tok
 		}
 	}
 	if token == ""{
-		fmt.Println("no token return location testing")
-		return locationPosts
-	}
-	if username == ""{
-		fmt.Println("no username return location testing")
 		return locationPosts
 	}
 	unavailableUsers := getUnavailableUsers(token)
 	for i, post := range locationPosts {
 		for _, username := range unavailableUsers.Usernames {
 			if username == post.Owner{
-				fmt.Println("match")
-				fmt.Println(username)
 				locationPosts = append(locationPosts[:i], locationPosts[i+1:]...)
 				break
 			}
@@ -351,22 +343,15 @@ func (service *PostService) SearchTag(tag string, username string, token string)
 	if token == ""{
 		return tagPosts
 	}
-	if username == ""{
-		return tagPosts
-	}
 	unavailableUsers := getUnavailableUsers(token)
 	for i, post := range tagPosts {
 		for _, username := range unavailableUsers.Usernames {
 			if username == post.Owner{
-				fmt.Println("match")
-				fmt.Println(username)
 				tagPosts = append(tagPosts[:i], tagPosts[i+1:]...)
 				break
 			}
 		}
 	}
-
-
 
 	return tagPosts
 	// TODO limit? pagable?

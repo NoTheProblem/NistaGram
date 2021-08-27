@@ -194,9 +194,6 @@ func (service *UserService) SearchPublicUsers(username string, requester string,
 	if token == ""{
 		return publicUsers
 	}
-	if username == ""{
-		return publicUsers
-	}
 	unavailableUsers := getUnavailableUsers(token)
 	for i, publicUser := range publicUsers {
 		for _, username := range unavailableUsers.Usernames {
