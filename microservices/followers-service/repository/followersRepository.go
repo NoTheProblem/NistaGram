@@ -569,5 +569,10 @@ func (u *FollowRepository) GetUser(username string) DTO.UserDTO {
 
 }
 
+func (u *FollowRepository) GetUnavailableUsers(username string) DTO.UsersListDTO {
+	 // TODO
+	return DTO.UsersListDTO{}
+}
+
 
 

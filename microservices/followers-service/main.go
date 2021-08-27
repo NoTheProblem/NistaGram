@@ -41,6 +41,7 @@ func handleFunc(handler *handler.FollowHandler) {
 	router.HandleFunc("/acceptRequest/{follower}", handler.AcceptRequest).Methods("PUT")
 	router.HandleFunc("/following", handler.FindAllFollowing).Methods("GET")
 	router.HandleFunc("/followers", handler.FindAllFollowers).Methods("GET")
+	router.HandleFunc("/getUnavailableUsers", handler.GetUnavailableUsers).Methods("GET")
 	router.HandleFunc("/turnOnNotification/{username}", handler.TurnNotificationsForUserOn).Methods("PUT")
 	router.HandleFunc("/turnOffNotification/{username}", handler.TurnNotificationsForUserOff).Methods("PUT")
 	router.HandleFunc("/followersWithNotification", handler.FindAllFollowersWithNotificationTurnOn).Methods("GET")
