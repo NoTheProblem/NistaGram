@@ -26,7 +26,6 @@ func initDB() *gorm.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	database.AutoMigrate(&model.User{})
 	return database
 }

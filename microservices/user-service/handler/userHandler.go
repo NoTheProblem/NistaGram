@@ -180,7 +180,8 @@ func (handler *UserHandler) DeleteUser(writer http.ResponseWriter, request *http
 func (handler *UserHandler) SearchPublicUsers(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	username := vars["username"]
-	publicUsers :=handler.UserService.SearchPublicUsers(username)
+	userRequester , _ := getUserFromToken(request)
+	publicUsers :=handler.UserService.SearchPublicUsers(username, userRequester.Username,request.Header.Get("Authorization"))
 	writer.Header().Set("Content-Type", "application/json")
 	publicUsersJson, err := json.Marshal(publicUsers)
 	if err != nil {

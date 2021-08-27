@@ -189,8 +189,25 @@ func (service *UserService) DeleteUser(username string) {
 
 }
 
-func (service *UserService) SearchPublicUsers(username string) interface{} {
+func (service *UserService) SearchPublicUsers(username string, requester string, token string) interface{} {
 	publicUsers, _:= service.UserRepository.GetPublicUsersByUsername(username)
+	if token == ""{
+		return publicUsers
+	}
+	if username == ""{
+		return publicUsers
+	}
+	unavailableUsers := getUnavailableUsers(token)
+	for i, publicUser := range publicUsers {
+		for _, username := range unavailableUsers.Usernames {
+			if username == publicUser.Username{
+				fmt.Println("match")
+				fmt.Println(username)
+				publicUsers = append(publicUsers[:i], publicUsers[i+1:]...)
+				break
+			}
+		}
+	}
 	return publicUsers
 	// TODO pagable?
 }
@@ -238,4 +255,22 @@ func updatePosts(privacy bool, token string) {
 	req.Header.Set("Host", "http://user-service:8080")
 	req.Header.Set("Authorization", token)
 	client.Do(req)
+}
+
+func getUnavailableUsers(token string) model.UsersList {
+	client := &http.Client{}
+	requestUrl := fmt.Sprintf("http://%s:%s/getUnavailableUsers", os.Getenv("FOLLOWERS_SERVICE_DOMAIN"), os.Getenv("FOLLOWERS_SERVICE_PORT"))
+	req, _ := http.NewRequest("GET", requestUrl, nil)
+	req.Header.Set("Host", "http://user-service:8080")
+	if  token == ""{
+		return model.UsersList{Usernames: nil}
+	}
+	req.Header.Set("Authorization", token)
+	res, err2 := client.Do(req)
+	if err2 != nil {
+		return model.UsersList{Usernames: nil}
+	}
+	var users model.UsersList
+	_ = json.NewDecoder(res.Body).Decode(&users)
+	return users
 }

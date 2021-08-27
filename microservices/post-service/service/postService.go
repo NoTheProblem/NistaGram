@@ -278,7 +278,7 @@ func (service *PostService) AnswerReport(reportDTO dto.ReportDTO, token string) 
 	return nil
 }
 
-func (service *PostService) SearchLocation(location string) interface{} {
+func (service *PostService) SearchLocation(location string, username string, token string) interface{} {
 	publicPostsDocuments := service.PostRepository.GetPublicPosts()
 	publicPosts := CreatePostsFromDocuments(publicPostsDocuments)
 	var locationPosts []model.Post
@@ -301,12 +301,30 @@ func (service *PostService) SearchLocation(location string) interface{} {
 			locationPosts[i].Images = append(locationPosts[i].Images, image)
 		}
 	}
-
+	if token == ""{
+		fmt.Println("no token return location testing")
+		return locationPosts
+	}
+	if username == ""{
+		fmt.Println("no username return location testing")
+		return locationPosts
+	}
+	unavailableUsers := getUnavailableUsers(token)
+	for i, post := range locationPosts {
+		for _, username := range unavailableUsers.Usernames {
+			if username == post.Owner{
+				fmt.Println("match")
+				fmt.Println(username)
+				locationPosts = append(locationPosts[:i], locationPosts[i+1:]...)
+				break
+			}
+		}
+	}
 	return locationPosts
 	// TODO limit? pagable?
 }
 
-func (service *PostService) SearchTag(tag string) interface{} {
+func (service *PostService) SearchTag(tag string, username string, token string) interface{} {
 	publicPostsDocuments := service.PostRepository.GetPublicPosts()
 	publicPosts := CreatePostsFromDocuments(publicPostsDocuments)
 	var tagPosts []model.Post
@@ -330,6 +348,26 @@ func (service *PostService) SearchTag(tag string) interface{} {
 			tagPosts[i].Images = append(tagPosts[i].Images, image)
 		}
 	}
+	if token == ""{
+		return tagPosts
+	}
+	if username == ""{
+		return tagPosts
+	}
+	unavailableUsers := getUnavailableUsers(token)
+	for i, post := range tagPosts {
+		for _, username := range unavailableUsers.Usernames {
+			if username == post.Owner{
+				fmt.Println("match")
+				fmt.Println(username)
+				tagPosts = append(tagPosts[:i], tagPosts[i+1:]...)
+				break
+			}
+		}
+	}
+
+
+
 	return tagPosts
 	// TODO limit? pagable?
 }
@@ -467,4 +505,22 @@ func getRelationType(username string, token string) model.RelationType {
 	var relationType model.RelationType
 	_ = json.NewDecoder(res.Body).Decode(&relationType)
 	return relationType
+}
+
+func getUnavailableUsers(token string) model.UsersList {
+	client := &http.Client{}
+	requestUrl := fmt.Sprintf("http://%s:%s/getUnavailableUsers", os.Getenv("FOLLOWERS_SERVICE_DOMAIN"), os.Getenv("FOLLOWERS_SERVICE_PORT"))
+	req, _ := http.NewRequest("GET", requestUrl, nil)
+	req.Header.Set("Host", "http://post-service:8080")
+	if  token == ""{
+		return model.UsersList{Usernames: nil}
+	}
+	req.Header.Set("Authorization", token)
+	res, err2 := client.Do(req)
+	if err2 != nil {
+		return model.UsersList{Usernames: nil}
+	}
+	var users model.UsersList
+	_ = json.NewDecoder(res.Body).Decode(&users)
+	return users
 }
