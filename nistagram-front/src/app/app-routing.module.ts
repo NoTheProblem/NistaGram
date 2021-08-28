@@ -10,7 +10,7 @@ import {VerificationListComponent} from './components/verification-list/verifica
 import {ReportListComponent} from './components/report-list/report-list.component';
 import {SearchListComponent} from './components/search-list/search-list.component';
 import {ReactedPostsListComponent} from './components/reacted-posts-list/reacted-posts-list.component';
-import {MenageAccountsComponent} from './components/menage-accounts/menage-accounts.component';
+import {ManageAccountsComponent} from './components/manage-accounts/manage-accounts.component';
 
 const routes: Routes = [
 
@@ -23,7 +23,7 @@ const routes: Routes = [
   {path: 'report-list', component: ReportListComponent},
   {path: 'search', component: SearchListComponent},
   {path: 'reactions', component: ReactedPostsListComponent},
-  {path: 'menage-accounts', component: MenageAccountsComponent},
+  {path: 'manage-accounts', component: ManageAccountsComponent},
 
   // Ovaj mora da bude poslednji za sada
   {path: ':username', component: ProfileComponent},

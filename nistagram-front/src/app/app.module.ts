@@ -44,7 +44,7 @@ import { SearchListComponent } from './components/search-list/search-list.compon
 import { SuggestedComponent } from './components/suggested/suggested.component';
 import { ReactedPostsListComponent } from './components/reacted-posts-list/reacted-posts-list.component';
 import { HomeExploreComponent } from './components/home-explore/home-explore.component';
-import { MenageAccountsComponent } from './components/menage-accounts/menage-accounts.component';
+import { ManageAccountsComponent } from './components/manage-accounts/manage-accounts.component';
 
 
 @NgModule({
@@ -73,7 +73,7 @@ import { MenageAccountsComponent } from './components/menage-accounts/menage-acc
     SuggestedComponent,
     ReactedPostsListComponent,
     HomeExploreComponent,
-    MenageAccountsComponent
+    ManageAccountsComponent
   ],
   imports: [
     BrowserModule,

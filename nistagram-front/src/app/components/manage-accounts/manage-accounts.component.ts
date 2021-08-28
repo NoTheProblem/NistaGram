@@ -5,10 +5,10 @@ import {STATUS_TYPE} from '../../models/business-request.model';
 
 @Component({
   selector: 'app-menage-accounts',
-  templateUrl: './menage-accounts.component.html',
-  styleUrls: ['./menage-accounts.component.css']
+  templateUrl: './manage-accounts.component.html',
+  styleUrls: ['./manage-accounts.component.css']
 })
-export class MenageAccountsComponent implements OnInit {
+export class ManageAccountsComponent implements OnInit {
 
   businessRequests: Array<BusinessRequestModel> = new Array<BusinessRequestModel>();
   isBusinessRequests = false;
