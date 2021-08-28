@@ -38,6 +38,9 @@
         <mat-icon routerLink="/reactions">star_border</mat-icon>
       </div>
       <div *ngIf="isLoggedIn">
+        <mat-icon routerLink="/followers-requests">favorite_border</mat-icon>
+      </div>
+      <div *ngIf="isLoggedIn">
         <mat-icon routerLink="settings">settings</mat-icon>
       </div>
       <div *ngIf="role===1">

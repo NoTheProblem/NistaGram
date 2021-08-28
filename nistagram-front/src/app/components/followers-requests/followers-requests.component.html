@@ -1,0 +1,18 @@
+<br>
+<br>
+<br>
+<br>
+<div style="text-align: center;">
+  <p>Manage followers</p>
+  <hr>
+  <button (click)="getRequests()"> Get pending requests </button>&nbsp;&nbsp;
+  <hr>
+    <ul *ngFor="let username of requests.usernames; let i = index">
+      <li>
+        Request &nbsp;| Username:<a href="" routerLink="/{{username}}">{{username}}</a>
+        <button (click)="confirmRequest(i)">Confirm</button>&nbsp;&nbsp;
+        <button (click)="declineRequest(i)">Decline</button>
+        <hr>
+      </li>
+    </ul>
+</div>

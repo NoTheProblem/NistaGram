@@ -45,6 +45,7 @@ import { SuggestedComponent } from './components/suggested/suggested.component';
 import { ReactedPostsListComponent } from './components/reacted-posts-list/reacted-posts-list.component';
 import { HomeExploreComponent } from './components/home-explore/home-explore.component';
 import { ManageAccountsComponent } from './components/manage-accounts/manage-accounts.component';
+import { FollowersRequestsComponent } from './components/followers-requests/followers-requests.component';
 
 
 @NgModule({
@@ -73,7 +74,8 @@ import { ManageAccountsComponent } from './components/manage-accounts/manage-acc
     SuggestedComponent,
     ReactedPostsListComponent,
     HomeExploreComponent,
-    ManageAccountsComponent
+    ManageAccountsComponent,
+    FollowersRequestsComponent
   ],
   imports: [
     BrowserModule,

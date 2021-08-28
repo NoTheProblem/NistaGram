@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {ToastrService} from 'ngx-toastr';
 import {Observable} from 'rxjs';
 import {RelationType} from '../models/relationshipType.model';
+import {UsernameListModel} from '../models/username-list.model';
 
 @Injectable({
   providedIn: 'root'
@@ -67,7 +68,25 @@ export class FollowService {
     return this.http.get<RelationType>('http://localhost:8080/api/followers/getRelationship/' + username);
   }
 
-  getRecommendedUsers(): Observable<string[]> {
-    return this.http.get<string[]>('http://localhost:8080/api/followers/recommendedProfiles');
+  getRecommendedUsers(): Observable<UsernameListModel> {
+    return this.http.get<UsernameListModel>('http://localhost:8080/api/followers/recommendedProfiles');
+  }
+
+  getPendingRequests(): Observable<UsernameListModel> {
+    return this.http.get<UsernameListModel>('http://localhost:8080/api/followers/getFollowerRequests');
+  }
+
+  acceptRequest(username: string): void{
+    this.http.put('http://localhost:8080/api/followers/acceptRequest/' + username, null)
+      .subscribe(
+        res => {
+          this.toastr.success('User accepted');
+        },
+        (error => {
+          console.log(error);
+          this.toastr.error('Failed to accept user');
+        })
+      );
   }
 }
+

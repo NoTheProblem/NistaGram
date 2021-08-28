@@ -11,6 +11,7 @@ import {ReportListComponent} from './components/report-list/report-list.componen
 import {SearchListComponent} from './components/search-list/search-list.component';
 import {ReactedPostsListComponent} from './components/reacted-posts-list/reacted-posts-list.component';
 import {ManageAccountsComponent} from './components/manage-accounts/manage-accounts.component';
+import {FollowersRequestsComponent} from './components/followers-requests/followers-requests.component';
 
 const routes: Routes = [
 
@@ -24,6 +25,7 @@ const routes: Routes = [
   {path: 'search', component: SearchListComponent},
   {path: 'reactions', component: ReactedPostsListComponent},
   {path: 'manage-accounts', component: ManageAccountsComponent},
+  {path: 'followers-requests', component: FollowersRequestsComponent},
 
   // Ovaj mora da bude poslednji za sada
   {path: ':username', component: ProfileComponent},

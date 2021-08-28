@@ -280,6 +280,7 @@ func (handler *FollowHandler) GetUnavailableUsers(writer http.ResponseWriter, re
 	writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(writer).Encode(usersDTO)
 }
+
 func (handler *FollowHandler) GetFollowerRequests(writer http.ResponseWriter, request *http.Request) {
 	user , err := getUserFromToken(request)
 	if err != nil{
