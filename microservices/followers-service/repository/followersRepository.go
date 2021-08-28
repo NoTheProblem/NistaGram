@@ -587,5 +587,24 @@ func (u *FollowRepository) GetUnavailableUsers(username string) DTO.UsersListDTO
 	return DTO.UsersListDTO{ Usernames: unavailableUsernames}
 }
 
+func (u *FollowRepository) GetFollowerRequests(username string) DTO.UsersListDTO {
+
+	session := *u.DatabaseSession
+
+	var followerRequests []string
+
+	result, _ := session.Run("match (u1)-[f:follow{IsPrivate:true}]->(u:User{Username:$followerUsername}) return u1.Username; ",
+		map[string]interface{}{"followerUsername":username})
+
+	for result.Next() {
+		Username, _ := result.Record().GetByIndex(0).(string)
+		followerRequests = append(followerRequests, Username)
+	}
+
+
+	return DTO.UsersListDTO{ Usernames: followerRequests}
+
+}
+
 
 
