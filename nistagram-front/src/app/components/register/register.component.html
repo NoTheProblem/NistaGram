@@ -3,25 +3,51 @@
   <div class="register_card">
     <mat-card class="register_card_content">
       <div style="text-align: center;">
-        <h1>Register form</h1>
+        <h1 *ngIf="!registerBusiness">Register as a user</h1>
+        <h1 *ngIf="registerBusiness">Register as a business</h1>
       </div>
       <mat-card-content class="register_card_form">
-        <form #form="ngForm" (ngSubmit)="register(form)" class="register-form">
-          <input name="username" ngModel placeholder="Username" required type="text">
-          <input name="email" ngModel placeholder="Email" required type="email">
-          <input name="password" ngModel placeholder="Password" required type="password">
-          <input name="passwordConf" ngModel placeholder="Confirm Password" required type="password">
-          <button [disabled]="form.invalid || form.pending"
-                  class="register-button"
-                  *ngIf="!form.pending"
-                  type="submit">Sign Up
-          </button>
-        </form>
-        <div class="alert alert-success" *ngIf="isSuccessful">
-          Your registration is successful!
+        <div *ngIf="!registerBusiness">
+          <form #form="ngForm" (ngSubmit)="register(form)" class="register-form" >
+            <input name="username" ngModel placeholder="Username" required type="text">
+            <input name="password" ngModel placeholder="Password" required type="password">
+            <input name="passwordConf" ngModel placeholder="Confirm Password" required type="password">
+            <button [disabled]="form.invalid || form.pending"
+                    class="register-button"
+                    *ngIf="!form.pending"
+                    type="submit">Sign Up
+            </button>
+          </form>
+          <a href="javascript:void(0)" (click)="registerBusiness = true">Register business?</a>
+          <div class="alert alert-success" *ngIf="isSuccessful">
+            Your registration is successful!
+          </div>
+          <div class="alert alert-warning" *ngIf="isSignUpFailed">
+            Signup failed!<br />{{ errorMessage }}
+          </div>
         </div>
-        <div class="alert alert-warning" *ngIf="isSignUpFailed">
-          Signup failed!<br />{{ errorMessage }}
+
+        <div *ngIf="registerBusiness">
+          <form #form="ngForm" (ngSubmit)="register(form)" class="register-form" >
+            <input name="username" ngModel placeholder="Username" required type="text">
+            <input name="email" ngModel placeholder="Email" required type="email">
+            <input name="web" ngModel placeholder="Link to website" required type="text">
+            <input name="password" ngModel placeholder="Password" required type="password">
+            <input name="passwordConf" ngModel placeholder="Confirm Password" required type="password">
+            <button [disabled]="form.invalid || form.pending"
+                    class="register-button"
+                    *ngIf="!form.pending"
+                    type="submit">Sign Up
+            </button>
+          </form>
+          <a href="javascript:void(0)" (click)="registerBusiness = false">Register user?</a>
+          <div class="alert alert-success" *ngIf="isSuccessful">
+            Registration applied, you will get answer on email!
+          </div>
+          <div class="alert alert-warning" *ngIf="isSignUpFailed">
+            Failed to apply registration!<br />{{ errorMessage }}
+          </div>
+
         </div>
       </mat-card-content>
     </mat-card>

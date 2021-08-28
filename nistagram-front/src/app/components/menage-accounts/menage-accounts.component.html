@@ -1,0 +1,21 @@
+<br>
+<br>
+<br>
+<br>
+<div style="text-align: center;">
+  <p>Menage accounts</p>
+  <hr>
+    <button (click)="getBusinessRequests()"> Get business requests </button>&nbsp;&nbsp;
+    <button> Get all users </button>
+  <hr>
+  <div *ngIf="isBusinessRequests">
+    <ul *ngFor="let request of businessRequests; let i = index">
+      <li>
+        Request &nbsp;| Username:{{request?.username}}; Email: {{request?.email}}; website: {{request?.web}}&nbsp;&nbsp;
+        <button (click)="confirmRequest(i)">Confirm</button>&nbsp;&nbsp;
+        <button (click)="declineRequest(i)">Decline</button>
+        <hr>
+      </li>
+    </ul>
+  </div>
+</div>

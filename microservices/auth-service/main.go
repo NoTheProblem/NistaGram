@@ -28,8 +28,19 @@ func initDB() *gorm.DB {
 	}
 
 	database.AutoMigrate(&model.User{})
+	database.AutoMigrate(&model.BusinessRequests{})
+
+/*
+	admin := model.User{
+		Username: "admin",
+		UserRole: model.Administrator,
+	}
+	database.Create(&admin)
+*/
 	return database
+
 }
+
 
 func initRepo(database *gorm.DB) *repository.AuthRepository {
 	return &repository.AuthRepository{Database: database}
@@ -44,9 +55,12 @@ func initHandler(service *service.AuthService) *handler.AuthHandler {
 func handleFunc(handler *handler.AuthHandler) {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/register", handler.RegisterUser).Methods("POST")
+	router.HandleFunc("/businessRegister", handler.RegisterBusiness).Methods("POST")
 	router.HandleFunc("/login", handler.Login).Methods("POST")
 	router.HandleFunc("/passwordChange", handler.PasswordChange).Methods("POST")
 	router.HandleFunc("/authorize", handler.Authorize).Methods("GET")
+	router.HandleFunc("/getPendingBusinessRequests", handler.GetPendingBusinessRequests).Methods("GET")
+	router.HandleFunc("/answerBusinessRequest", handler.AnswerBusinessRequest).Methods("POST")
 	router.HandleFunc("/deleteUser/{username}", handler.DeleteUser).Methods("DELETE")
 
 	c := SetupCors()

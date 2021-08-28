@@ -44,6 +44,7 @@ import { SearchListComponent } from './components/search-list/search-list.compon
 import { SuggestedComponent } from './components/suggested/suggested.component';
 import { ReactedPostsListComponent } from './components/reacted-posts-list/reacted-posts-list.component';
 import { HomeExploreComponent } from './components/home-explore/home-explore.component';
+import { MenageAccountsComponent } from './components/menage-accounts/menage-accounts.component';
 
 
 @NgModule({
@@ -71,7 +72,8 @@ import { HomeExploreComponent } from './components/home-explore/home-explore.com
     SearchListComponent,
     SuggestedComponent,
     ReactedPostsListComponent,
-    HomeExploreComponent
+    HomeExploreComponent,
+    MenageAccountsComponent
   ],
   imports: [
     BrowserModule,

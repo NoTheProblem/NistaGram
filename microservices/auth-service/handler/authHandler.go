@@ -126,3 +126,64 @@ func (handler *AuthHandler) DeleteUser(writer http.ResponseWriter, request *http
 	writer.WriteHeader(http.StatusAccepted)
 }
 
+func (handler *AuthHandler) RegisterBusiness(writer http.ResponseWriter, request *http.Request) {
+	var businessDTO dto.BusinessDTO
+	err := json.NewDecoder(request.Body).Decode(&businessDTO)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = handler.AuthService.RegisterBusiness(businessDTO)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	writer.WriteHeader(http.StatusCreated)
+}
+
+func (handler *AuthHandler) GetPendingBusinessRequests(writer http.ResponseWriter, request *http.Request) {
+	role := util.GetRoleFromToken(request)
+	if model.Role(role) != model.Administrator{
+		http.Error(writer, "Only admins have this permission" ,http.StatusUnauthorized)
+		return
+	}
+	writer.Header().Set("Content-Type", "application/json")
+
+	requests, err := handler.AuthService.AuthRepository.GetAllPendingBusinessRequests()
+	if err != nil{
+		http.Error(writer, err.Error() ,http.StatusBadRequest)
+		return
+	}
+	requestsJson, err := json.Marshal(requests)
+	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
+	} else {
+		writer.WriteHeader(http.StatusOK)
+		_, _ = writer.Write(requestsJson)
+	}
+}
+
+func (handler *AuthHandler) AnswerBusinessRequest(writer http.ResponseWriter, request *http.Request) {
+	var answerDTO dto.BusinessRequestAnswer
+	err := json.NewDecoder(request.Body).Decode(&answerDTO)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	role := util.GetRoleFromToken(request)
+	if model.Role(role) != model.Administrator {
+		http.Error(writer, "Only admins have this permission" ,http.StatusUnauthorized)
+		return
+	}
+	err = handler.AuthService.AnswerBusinessRequest(answerDTO)
+	if err != nil{
+		http.Error(writer, err.Error() ,http.StatusBadRequest)
+
+	}
+	writer.WriteHeader(http.StatusOK)
+}
+

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {environment} from '../../environments/environment';
+import {BusinessRequestModel} from '../models/business-request.model';
+import {ToastrService} from 'ngx-toastr';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -17,11 +18,11 @@ const httpOptions = {
 })
 export class AuthService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private toastr: ToastrService) { }
 
-  login(usrn, pw): Observable<any> {
+  login(userName, pw): Observable<any> {
     const loginCredentials = {
-      username: usrn,
+      username: userName,
       password: pw
     };
     return this.http.post('http://localhost:8080/api/auth/login', {
@@ -32,9 +33,38 @@ export class AuthService {
 
   register(user): Observable<any> {
     return this.http.post('http://localhost:8080/api/auth/register', {
-      email: user.email,
       username: user.username,
       password: user.password,
     }, httpOptions);
   }
+
+  registerBusiness(business): Observable<any> {
+    return this.http.post('http://localhost:8080/api/auth/businessRegister', {
+      username: business.username,
+      email: business.email,
+      web: business.web,
+      password: business.password,
+    });
+  }
+
+
+  getPendingBusinessRequests(): Observable<Array<BusinessRequestModel>> {
+    return this.http.get<Array<BusinessRequestModel>>('http://localhost:8080/api/auth/getPendingBusinessRequests');
+  }
+
+  answerBusinessRequest(answer): void{
+    this.http.post('http://localhost:8080/api/auth/answerBusinessRequest', {
+      username: answer.username,
+      status: answer.status,
+    }).subscribe(
+      res => {
+        this.toastr.success('Success');
+      },
+      (error => {
+        console.log(error);
+        this.toastr.error('Failed to answer');
+      })
+    );
+  }
+
 }

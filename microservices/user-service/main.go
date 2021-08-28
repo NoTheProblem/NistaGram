@@ -27,6 +27,14 @@ func initDB() *gorm.DB {
 		log.Fatal(err)
 	}
 	database.AutoMigrate(&model.User{})
+	/*
+	admin := model.User{
+		Username: "admin",
+		UserRole: model.Administrator,
+
+	}
+	database.Create(&admin)
+	*/
 	return database
 }
 

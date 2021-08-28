@@ -15,11 +15,12 @@
   justify-content: center;
 }
 .register_card_content {
-  height: 400px;
+  height: 570px;
   width: 400px;
   padding: 10px;
   border-radius: 10px;
-  margin-bottom: 30px;
+  margin-top: 50px;
+  /* margin-bottom: 30px; */
 }
 .register_card_form {
   padding: 5px;

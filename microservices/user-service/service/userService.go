@@ -20,7 +20,7 @@ type UserService struct {
 func (service *UserService) RegisterUser (dto dto.UserRegisterDTO) error {
 	t := true
 	f := false
-	user := model.User{Id: uuid.New(), Email: dto.Email, UserRole: model.Role(dto.UserRole), Username: dto.Username,
+	user := model.User{Id: uuid.New(), UserRole: model.Role(dto.UserRole), Username: dto.Username,
 		Taggable: &t, ReceiveMessages: &t, NumberOfFollowers: 0, NumberOfFollowing: 0, IsPrivate: &f,
 		NumberOfPosts: 0, Verified: &f, ReceiveMessagesNotifications: &t, ReceivePostNotifications: &f,
 		ReceiveCommentNotifications: &f}
@@ -39,7 +39,7 @@ func (service *UserService) UpdateProfileInfo(profileDTO dto.UserEditDTO, userna
 	user.Name = profileDTO.Name
 	user.Surname = profileDTO.Surname
 	user.Username = profileDTO.Username
-	user.Email = profileDTO.Email
+	user.Email = &profileDTO.Email
 	user.Gender = profileDTO.Gender
 	user.PhoneNumber = profileDTO.PhoneNumber
 	user.DateOfBirth = profileDTO.DateOfBirth
