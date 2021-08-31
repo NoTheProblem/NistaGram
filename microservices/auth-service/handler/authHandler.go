@@ -5,10 +5,12 @@ import (
 	"auth-service/model"
 	"auth-service/service"
 	"auth-service/util"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
+	"os"
 )
 
 type AuthHandler struct {
@@ -166,6 +168,27 @@ func (handler *AuthHandler) GetPendingBusinessRequests(writer http.ResponseWrite
 	}
 }
 
+func (handler *AuthHandler) GetAllUsers(writer http.ResponseWriter, request *http.Request) {
+	role := util.GetRoleFromToken(request)
+	if model.Role(role) != model.Administrator{
+		http.Error(writer, "Only admins have this permission" ,http.StatusUnauthorized)
+		return
+	}
+	writer.Header().Set("Content-Type", "application/json")
+
+	requests, err := handler.AuthService.AuthRepository.GetAllUsers()
+	if err != nil{
+		http.Error(writer, err.Error() ,http.StatusBadRequest)
+		return
+	}
+	requestsJson, err := json.Marshal(requests)
+	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
+	} else {
+		writer.WriteHeader(http.StatusOK)
+		_, _ = writer.Write(requestsJson)
+	}
+}
 func (handler *AuthHandler) AnswerBusinessRequest(writer http.ResponseWriter, request *http.Request) {
 	var answerDTO dto.BusinessRequestAnswer
 	err := json.NewDecoder(request.Body).Decode(&answerDTO)
@@ -184,6 +207,35 @@ func (handler *AuthHandler) AnswerBusinessRequest(writer http.ResponseWriter, re
 		http.Error(writer, err.Error() ,http.StatusBadRequest)
 
 	}
+
 	writer.WriteHeader(http.StatusOK)
 }
+
+func (handler *AuthHandler) ChangeRole(writer http.ResponseWriter, request *http.Request) {
+	role := util.GetRoleFromToken(request)
+	if model.Role(role) != model.Administrator {
+		http.Error(writer, "Only admins have this permission" ,http.StatusUnauthorized)
+		return
+	}
+	var userRoleChange dto.AuthDTO
+	err := json.NewDecoder(request.Body).Decode(&userRoleChange)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	err = handler.AuthService.AuthRepository.ChangeRole(userRoleChange)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	body , _ := json.Marshal(userRoleChange)
+	client := &http.Client{}
+	requestUrl := fmt.Sprintf("http://%s:%s/changeRole", os.Getenv("USER_SERVICE_DOMAIN"), os.Getenv("USER_SERVICE_PORT"))
+	req, _ := http.NewRequest("PUT", requestUrl, bytes.NewBuffer(body))
+	client.Do(req)
+	writer.WriteHeader(http.StatusOK)
+}
+
 

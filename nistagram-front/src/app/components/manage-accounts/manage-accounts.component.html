@@ -6,14 +6,31 @@
   <p>Manage accounts</p>
   <hr>
     <button (click)="getBusinessRequests()"> Get business requests </button>&nbsp;&nbsp;
-    <button> Get all users </button>
+    <button (click)="getAllUsers()"> Get all users </button>
   <hr>
+  <br>
   <div *ngIf="isBusinessRequests">
+    <p *ngIf="businessRequests.length === 0"> No business requests</p>
     <ul *ngFor="let request of businessRequests; let i = index">
       <li>
         Request &nbsp;| Username:{{request?.username}}; Email: {{request?.email}}; website: {{request?.web}}&nbsp;&nbsp;
         <button (click)="confirmRequest(i)">Confirm</button>&nbsp;&nbsp;
         <button (click)="declineRequest(i)">Decline</button>
+        <hr>
+      </li>
+    </ul>
+  </div>
+
+  <div *ngIf="isUsers">
+    <ul *ngFor="let user of users; let i = index">
+      <li>
+        <span *ngIf="user.role ===0">Regular user</span>
+        <span *ngIf="user.role ===1">Admin</span>
+        <span *ngIf="user.role ===2">Agent</span>
+        : &nbsp; Username: <b>{{user?.username}}</b>&nbsp;
+        <button (click)="makeRole(i,0)" *ngIf="user?.role !== 0">Make regular user</button>&nbsp;&nbsp;
+        <button (click)="makeRole(i,1)" *ngIf="user?.role !== 1">Make admin</button>&nbsp;&nbsp;
+        <button (click)="makeRole(i,2)" *ngIf="user?.role !== 2">Make agent</button>&nbsp;&nbsp;
         <hr>
       </li>
     </ul>

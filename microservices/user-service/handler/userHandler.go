@@ -193,6 +193,28 @@ func (handler *UserHandler) SearchPublicUsers(writer http.ResponseWriter, reques
 
 }
 
+func (handler *UserHandler) ChangeRole(writer http.ResponseWriter, request *http.Request) {
+	user , _ := getUserFromToken(request)
+	if model.Role(user.Role) != model.Administrator {
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	var userRoleChange dto.UserRegisterDTO
+	err := json.NewDecoder(request.Body).Decode(&userRoleChange)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	err = handler.UserService.UserRepository.ChangeRole(userRoleChange)
+	if err != nil {
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	writer.WriteHeader(http.StatusOK)
+}
+
 
 func getUserFromToken(r *http.Request) (model.Auth, error) {
 	client := &http.Client{}

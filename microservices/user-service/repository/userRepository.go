@@ -3,6 +3,7 @@ package repository
 import (
 	"fmt"
 	"gorm.io/gorm"
+	"user-service/dto"
 	"user-service/model"
 )
 
@@ -50,4 +51,12 @@ func (repository *UserRepository) GetPublicUsersByUsername(username string) ([]m
 		return nil, err
 	}
 	return users, nil
+}
+
+func (repository *UserRepository) ChangeRole(change dto.UserRegisterDTO) error {
+	err := repository.Database.Table("users").Where("username = ?", change.Username).Update("user_role",change.UserRole)
+	if err != nil{
+		return err.Error
+	}
+	return nil
 }

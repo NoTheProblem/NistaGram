@@ -1,7 +1,7 @@
 package dto
 
 type UserRegisterDTO struct {
-	Username string `json:"username" gorm:"unique;not null;default:null"`
+	Username string `json:"username"`
 	UserRole int `json:"role"`
 }
 

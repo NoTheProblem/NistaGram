@@ -69,4 +69,21 @@ func (repository *AuthRepository) UpdateBusinessRequestStatus(d *dto.BusinessReq
 	return nil
 }
 
+func (repository *AuthRepository) GetAllUsers() ([]model.User, error) {
+	var users []model.User
+	err := repository.Database.Table("users").Find(&users).Error
+	if  err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+func (repository *AuthRepository) ChangeRole(change dto.AuthDTO) error {
+	err := repository.Database.Table("users").Where("username = ?", change.Username).Update("user_role",change.Role)
+	if err != nil{
+		return err.Error
+	}
+	return nil
+}
+
 

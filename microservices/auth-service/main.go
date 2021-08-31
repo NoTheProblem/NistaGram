@@ -60,8 +60,10 @@ func handleFunc(handler *handler.AuthHandler) {
 	router.HandleFunc("/passwordChange", handler.PasswordChange).Methods("POST")
 	router.HandleFunc("/authorize", handler.Authorize).Methods("GET")
 	router.HandleFunc("/getPendingBusinessRequests", handler.GetPendingBusinessRequests).Methods("GET")
+	router.HandleFunc("/getAllUsers", handler.GetAllUsers).Methods("GET")
 	router.HandleFunc("/answerBusinessRequest", handler.AnswerBusinessRequest).Methods("POST")
 	router.HandleFunc("/deleteUser/{username}", handler.DeleteUser).Methods("DELETE")
+	router.HandleFunc("/changeRole", handler.ChangeRole).Methods("PUT")
 
 	c := SetupCors()
 

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {TokenStorageService} from '../../_services/token-storage.service';
 import {FollowService} from '../../services/follow.service';
+import {UsernameListModel} from '../../models/username-list.model';
 
 @Component({
   selector: 'app-suggested',
@@ -18,8 +19,8 @@ export class SuggestedComponent implements OnInit {
   ngOnInit(): void {
     this.isLogged = this.tokenStorageService.isLoggedIn();
     if (this.isLogged){
-      this.followService.getRecommendedUsers().subscribe((users: string[]) => {
-        this.usernames = users;
+      this.followService.getRecommendedUsers().subscribe((users: UsernameListModel) => {
+        this.usernames = users.usernames;
         if (this.usernames.length === 0 ){
           this.err = 'No suggestions available';
           this.isError = true;

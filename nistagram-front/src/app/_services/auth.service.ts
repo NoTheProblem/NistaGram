@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {BusinessRequestModel} from '../models/business-request.model';
+import {BusinessRequestModel, STATUS_TYPE} from '../models/business-request.model';
 import {ToastrService} from 'ngx-toastr';
+import {UserModel} from '../models/user.model';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -67,4 +68,22 @@ export class AuthService {
     );
   }
 
+  getAllUsers(): Observable<Array<UserModel>> {
+    return this.http.get<Array<UserModel>>('http://localhost:8080/api/auth/getAllUsers');
+  }
+
+  chagneRole(answer): void {
+    this.http.put('http://localhost:8080/api/auth/changeRole', {
+      username: answer.username,
+      role: answer.role,
+    }).subscribe(
+      res => {
+        this.toastr.success('Success');
+      },
+      (error => {
+        console.log(error);
+        this.toastr.error('Failed to change role');
+      })
+    );
+  }
 }

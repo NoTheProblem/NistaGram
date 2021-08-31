@@ -2,7 +2,7 @@ export interface UserModel {
   id: string;
   email: string;
   username: string;
-  role: string;
+  role: USER_TYPE;
   name: string;
   surname: string;
   phoneNumber: string;
@@ -20,4 +20,10 @@ export interface UserModel {
   numberOfFollowers: number;
   numberOfFollowing: number;
   verified: boolean;
+}
+
+export enum USER_TYPE  {
+  REGULAR,
+  ADMINISTRATOR,
+  AGENT
 }
