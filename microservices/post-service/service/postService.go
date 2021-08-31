@@ -12,6 +12,7 @@ import (
 	"post-service/dto"
 	"post-service/model"
 	"post-service/repository"
+	"sort"
 	"strings"
 	"time"
 )
@@ -55,6 +56,7 @@ func (service *PostService) GetHomeFeed(token string) interface{} {
 			homePosts[i].Images = append(homePosts[i].Images, image)
 		}
 	}
+	sort.Slice(homePosts, func(i, j int) bool { return homePosts[i].Date.After(homePosts[j].Date) })
 	return homePosts
 }
 
