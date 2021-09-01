@@ -19,10 +19,6 @@ type VerificationHandler struct {
 
 func (handler *VerificationHandler) CreateNewUserRequest(writer http.ResponseWriter, request *http.Request) {
 	user , _ := getUserFromToken(request)
-	if model.Role(user.Role) != model.Administrator {
-		writer.WriteHeader(http.StatusUnauthorized)
-		return
-	}
 	fmt.Println(user.Username)
 	makeDirectoryIfNotExists(user.Username)
 
